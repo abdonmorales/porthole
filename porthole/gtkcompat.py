@@ -130,12 +130,13 @@ def _setup_gi():
 
 
 try:
-    _setup_pygtk()
-except Exception as e_pygtk:
+    # Prefer modern GI/GTK3 first; PyGTK is deprecated and unavailable on Python 3.
+    _setup_gi()
+except Exception as e_gi:
     try:
-        _setup_gi()
-    except Exception as e_gi:
-        raise ImportError("Unable to load GTK; PyGTK failed with '%s' and PyGObject failed with '%s'"
-                          % (e_pygtk, e_gi))
+        _setup_pygtk()
+    except Exception as e_pygtk:
+        raise ImportError("Unable to load GTK; PyGObject failed with '%s' and PyGTK fallback failed with '%s'"
+                          % (e_gi, e_pygtk))
 
 __all__ = ["gtk", "gobject", "pango", "USE_PYGTK", "USE_GI", "_resolve_glade_file"]

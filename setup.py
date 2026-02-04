@@ -33,6 +33,9 @@ setup(
     url="http://porthole.sourceforge.net",
     license="GPL-2",
     python_requires=">=3.8",
+    install_requires=[
+        "PyGObject>=3.34; platform_system=='Linux'",
+    ],
     packages=[
         'porthole', 'porthole.advancedemerge', 'porthole.backends', 'porthole.config',
         'porthole.db', 'porthole.dialogs', 'porthole.loaders', 'porthole.packagebook',

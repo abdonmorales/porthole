@@ -35,9 +35,10 @@ If you don't want to use the ebuild, you can download the tarball
 (porthole-0.5.0.tar.bz2) and install it yourself.
 
 Porthole requires:
->=python-2.3
->=PyGTK-2.4
->=libglade-2.5.0
+>=python-3.8 (Python 3 only)
+GTK stack:
+  - Preferred: PyGObject with GTK 3 (Gentoo: dev-python/pygobject, x11-libs/gtk+:3)
+  - Legacy: PyGTK + libglade (deprecated in Portage; only for old environments)
 and, of course, Portage
 
 
