@@ -32,7 +32,7 @@ from sys import stderr
 import pygtk; pygtk.require("2.0") # make sure we have the right version
 import gtk
 import grp
-import pwd, pickle
+import pwd, cPickle
 from gettext import gettext as _
 
 from porthole.version import version
@@ -197,7 +197,7 @@ def estimate(package_name, log_file_name="/var/log/emerge.log"):
         else:
             return None          
     except:
-        raise BadLogFile(_("Error reading emerge log file.  Check file permissions, or check for corrupt log file."))
+        raise BadLogFile, _("Error reading emerge log file.  Check file permissions, or check for corrupt log file.")
 
 def pretend_check(command_string):
     isPretend = (re.search("--pretend", command_string) != None)

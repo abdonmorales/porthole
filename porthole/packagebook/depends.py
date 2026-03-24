@@ -364,7 +364,7 @@ def atomize_depends_list(depends_list, parent = None):
                 #debug.dprint("DependsTree: atomize_depends_list();354 next recursion level, temp_atom: "+str(temp_atom))
                 group, depends_list = split_group(depends_list)
                 temp_atom.children = atomize_depends_list(group, temp_atom)
-                if not [a for a in atomized_list if temp_atom == a]:
+                if not filter(lambda a: temp_atom == a, atomized_list):
                 # i.e. if temp_atom is not any atom in atomized_list.
                 # This is checked by calling DependAtom.__eq__().
                     #debug.dprint("DependsTree: atomize_depends_list();360 ')'-1, atomized_list.append(temp_atom) = " + str(temp_atom) + ", parent = " +str(parent))
@@ -375,7 +375,7 @@ def atomize_depends_list(depends_list, parent = None):
             #debug.dprint("DependsTree: atomize_depends_list();365 next recursion level, depends_list: "+str(depends_list))
             #debug.dprint("DependsTree: atomize_depends_list();366 next recursion level, temp_atom: "+str(temp_atom))
             temp_atom.children = atomize_depends_list(depends_list, temp_atom)
-            if not [a for a in atomized_list if temp_atom == a]:
+            if not filter(lambda a: temp_atom == a, atomized_list):
             # i.e. if temp_atom is not any atom in atomized_list.
             # This is checked by calling DependAtom.__eq__().
                 #debug.dprint("DependsTree: atomize_depends_list();371 ')'-1, atomized_list.append(temp_atom) = " + str(temp_atom) + ", parent = " +str(parent))
@@ -390,7 +390,7 @@ def atomize_depends_list(depends_list, parent = None):
                 #debug.dprint("DependsTree: atomize_depends_list();380 finished recursion level, returning atomized list") 
             return atomized_list
         else: # hopefully a nicely formatted dependency
-            if [a for a in ['(', '|', ')'] if a in item]:  # , '?']): remove '?' from the list due to required USE flags that may have it. 
+            if filter(lambda a: a in item, ['(', '|', ')']):  # , '?']): remove '?' from the list due to required USE flags that may have it. 
                 debug.dprint(" *** DEPENDS: atomize_depends_list: ILLEGAL ITEM!!! " + \
                     "Please report this to the authorities. (item = %s)" % item)
             temp_atom = DependAtom(parent)
@@ -411,7 +411,7 @@ def atomize_depends_list(depends_list, parent = None):
             temp_atom.name = ns[0]
             temp_atom.slot = ns[1]
             temp_atom.required_use = nu[1]
-            if not [a for a in atomized_list if temp_atom == a]:
+            if not filter(lambda a: temp_atom == a, atomized_list):
             # i.e. if temp_atom is not any atom in atomized_list.
             # This is checked by calling DependsAtom.__eq__().
                 #debug.dprint("DependsTree: atomize_depends_list();407 ')'-2, atomized_list.append(temp_atom) = " + str(temp_atom) + ", parent = " +str(parent))

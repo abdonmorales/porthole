@@ -137,7 +137,7 @@ class Summary(gtk.TextView):
         # create popup menu for rmb-click
         menu = gtk.Menu()
        
-        for item in list(menuitems.values()):
+        for item in menuitems.values():
             menu.append(item)
             item.show()
         
@@ -168,7 +168,7 @@ class Summary(gtk.TextView):
             mymenuitems[item_name] = myitems
                 
             mysubmenu[item_name] = gtk.Menu()
-            for item in list(myitems.values()):
+            for item in myitems.values():
                 mysubmenu[item_name].append(item)
                 item.show()
             myparentmenuitems[item_name].set_submenu(mysubmenu[item_name])
@@ -182,9 +182,9 @@ class Summary(gtk.TextView):
         """ Define all markup tags """
         def create(descs):
             table = gtk.TextTagTable()
-            for name, properties in list(descs.items()):
+            for name, properties in descs.items():
                 tag = gtk.TextTag(name); table.add(tag)
-                for property, value in list(properties.items()):
+                for property, value in properties.items():
                     tag.set_property(property, value)
             return table
 
@@ -612,7 +612,7 @@ class Summary(gtk.TextView):
         use_flags = reduce_flags(iuse)
         keywords = props.get_keywords()
         licenses = props.license
-        slot = str(props.get_slot())
+        slot = unicode(props.get_slot())
 
         # Sort the versions in release order
         versions = ver_sort(versions)

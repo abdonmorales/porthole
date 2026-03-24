@@ -41,7 +41,7 @@ version = 1.1
 def dprint(message):
     """Print debug message if debug is true."""
     if debug:
-        print(message)
+        print message
 
 def Header(filename):
     """creates a file creation header including:
@@ -324,7 +324,7 @@ class MakeConf:
             for i in overlays:
                 if i[:len(self.storage)] == self.storage:
                     oname = os.path.basename(i)
-                    if  oname in list(self.db.keys()):
+                    if  oname in self.db.keys():
                         self.overlays.append(self.db[oname])
                     else:
                         # These are additional overlays that we dont know
@@ -394,7 +394,7 @@ class MakeConf:
             make_conf = codecs.open(path, 'w', 'utf-8')
             make_conf.write(content)
             make_conf.close()
-        except Exception as error:
+        except Exception, error:
             raise Exception('MAKE_CONF: write_file(); Failed to write "' + path + '".\nError was:\n'
                             + str(error))
         return True
@@ -426,7 +426,7 @@ class MakeConf:
                 make_conf = codecs.open(self.path, 'r', 'utf-8')
                 self.data = make_conf.read()
                 make_conf.close()
-            except Exception as error:
+            except Exception, error:
                 raise Exception('MAKE_CONF: content(); Failed to read "' + self.path + '".\nError was:\n'
                                 + str(error))
             self.get_property_list()
@@ -478,8 +478,8 @@ if __name__ == "__main__":
 
     try:
         opts, args = getopt(argv[1:], "lvdf:n:e:a:r:p:c:R:P", ["local", "version", "debug"])
-    except GetoptError as e:
-        print(e.msg, file=stderr)
+    except GetoptError, e:
+        print >>stderr, e.msg
         exit(1)
 
     file = ""

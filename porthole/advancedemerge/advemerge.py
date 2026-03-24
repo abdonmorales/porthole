@@ -25,7 +25,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print("ADVEMERGE: id initialized to ", id)
+print "ADVEMERGE: id initialized to ", id
 
 import gtk
 import gtk.glade

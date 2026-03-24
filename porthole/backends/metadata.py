@@ -23,7 +23,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print("METADATA: id initialized to ", id)
+print "METADATA: id initialized to ", id
 
 from xml.sax import make_parser
 from xml.sax.handler import *
@@ -149,9 +149,9 @@ if __name__ == '__main__':
     def main():
         from sys import argv
         metadata = parse_metadata(argv[1])
-        print("Long description:", metadata.longdescription)
-        print("Herds:", metadata.herds)
-        print("Maintainers:", metadata.maintainers)
+        print "Long description:", metadata.longdescription
+        print "Herds:", metadata.herds
+        print "Maintainers:", metadata.maintainers
 
     import profile, pstats
     from sys import stdout

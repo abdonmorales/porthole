@@ -24,7 +24,7 @@
 '''
 import datetime
 id = datetime.datetime.now().microsecond
-print("MAINWINDOW: id initialized to ", id)
+print "MAINWINDOW: id initialized to ", id
 
 import pygtk; pygtk.require("2.0") # make sure we have the right version
 import gtk, gtk.glade, gobject
@@ -344,7 +344,7 @@ class MainWindow:
         if self.widget["view_filter"].get_active() == SHOW_UPGRADE:
             self.loaded["Upgradable"] = False
         else:
-            self.category_view.populate(list(db.db.categories.keys()))
+            self.category_view.populate(db.db.categories.keys())
         self.package_view.clear()
         self.set_package_actions_sensitive(False, None)
         # update the views by calling view_filter_changed
@@ -822,7 +822,7 @@ class MainWindow:
         if model.get_value(iter, PACKAGE_MODEL_ITEM["checkbox"]):
             name = model.get_value(iter, PACKAGE_MODEL_ITEM["name"])
             #debug.dprint("MAINWINDOW; tree_node_to_list(): name '%s'" % name)
-            if name not in self.keyorder and name != _("Upgradable dependencies:"):
+            if name not in self.keyorder and name <> _("Upgradable dependencies:"):
                 self.packages_list[name] = model.get_value(iter, PACKAGE_MODEL_ITEM["package"])
                 #model.get_value(iter, PACKAGE_MODEL_ITEM["world"])
                 # model.get_value(iter, PACKAGE_MODEL_INDEX["package"]), name]
@@ -920,7 +920,7 @@ class MainWindow:
             self.pkg_list["Search"][search_term] = package_list
             self.pkg_count["Search"][search_term] = count
             #Add the current search item & select it
-            self.category_view.populate(list(self.pkg_list["Search"].keys()), True, self.pkg_count["Search"])
+            self.category_view.populate(self.pkg_list["Search"].keys(), True, self.pkg_count["Search"])
             iter = self.category_view.model.get_iter_first()
             while iter != None:
                 if self.category_view.model.get_value(iter, 1) == search_term:
@@ -930,7 +930,7 @@ class MainWindow:
                 iter = self.category_view.model.iter_next(iter)
             self.package_view.populate(package_list)
             if count == 1: # then select it
-                self.current_pkg_name["Search"] = list(package_list.keys())[0]
+                self.current_pkg_name["Search"] = package_list.keys()[0]
             self.category_view.last_category = search_term
             self.category_changed(search_term)
 
@@ -1050,10 +1050,10 @@ class MainWindow:
 
         if x in (SHOW_INSTALLED, SHOW_ALL):
             if x == SHOW_ALL:
-                items = list(db.db.categories.keys())
+                items = db.db.categories.keys()
                 count = db.db.pkg_count
             else:
-                items = list(db.db.installed.keys())
+                items = db.db.installed.keys()
                 count = db.db.installed_pkg_count
             self.category_view.populate(items, True, count)
             cat_scroll.show()
@@ -1071,11 +1071,11 @@ class MainWindow:
             self.category_view.set_search(True)
             if not self.loaded[INDEX_TYPES[x]]:
                 self.set_package_actions_sensitive(False, None)
-                self.category_view.populate(list(self.pkg_list[INDEX_TYPES[x]].keys()), True, self.pkg_count[INDEX_TYPES[x]])
+                self.category_view.populate(self.pkg_list[INDEX_TYPES[x]].keys(), True, self.pkg_count[INDEX_TYPES[x]])
                 self.package_search(None)
                 self.loaded[INDEX_TYPES[x]] = True
             else:
-                self.category_view.populate(list(self.pkg_list[INDEX_TYPES[x]].keys()), True, self.pkg_count[INDEX_TYPES[x]])
+                self.category_view.populate(self.pkg_list[INDEX_TYPES[x]].keys(), True, self.pkg_count[INDEX_TYPES[x]])
             cat_scroll.show();
             debug.dprint("MAIN: Showing search results")
             self.package_view.set_view(SEARCH)
@@ -1099,8 +1099,8 @@ class MainWindow:
                 self.category_view.clear()
                 debug.dprint("MAINWINDOW: view_filter_changed(); back from load_reader_list('" + INDEX_TYPES[x] + "')")
             else:
-                debug.dprint("MAINWINDOW: view_filter_changed(); calling category_view.populate() with categories:" + str(list(self.pkg_list[INDEX_TYPES[x]].keys())))
-                self.category_view.populate(list(self.pkg_list[INDEX_TYPES[x]].keys()), sort_categories, self.pkg_count[INDEX_TYPES[x]])
+                debug.dprint("MAINWINDOW: view_filter_changed(); calling category_view.populate() with categories:" + str(self.pkg_list[INDEX_TYPES[x]].keys()))
+                self.category_view.populate(self.pkg_list[INDEX_TYPES[x]].keys(), sort_categories, self.pkg_count[INDEX_TYPES[x]])
             #self.package_view.set_view(UPGRADABLE)
             debug.dprint("MAINWINDOW: view_filter_changed(); init package_view")
             self.package_view._init_view()
@@ -1191,9 +1191,9 @@ class MainWindow:
             return
         debug.dprint("MAINWINDOW: load_reader_list(); starting thread")
         if reader == "Deprecated":
-            self.reader = DeprecatedReader(list(db.db.installed.items()))
+            self.reader = DeprecatedReader(db.db.installed.items())
         elif reader == "Upgradable":
-            self.reader = UpgradableListReader(list(db.db.installed.items()))
+            self.reader = UpgradableListReader(db.db.installed.items())
         elif reader == "Sets":
             self.reader = SetListReader()
 
@@ -1273,7 +1273,7 @@ class MainWindow:
                         if fraction == 1:
                             self.build_deps = True
                             self.set_statusbar2(_("Building Package List"))
-                except Exception as e:
+                except Exception, e:
                     debug.dprint("MAINWINDOW: update_reader_thread(): Exception: %s" % e)
         return True
 

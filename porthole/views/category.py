@@ -31,7 +31,7 @@ from porthole.packagebook.depends import DependsTree
 from porthole.views.commontreeview import CommonTreeView
 from porthole.utils import debug
 from porthole.views.helpers import *
-from .models import C_ITEM, CategoryModel
+from models import C_ITEM, CategoryModel
 
 class CategoryView(CommonTreeView):
     """ Self contained treeview to hold categories """

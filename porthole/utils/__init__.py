@@ -22,11 +22,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-print("initializing utils.__init__.py")
+print "initializing utils.__init__.py"
 
-from . import debug
+import debug
 
 mydebug = debug
 
-print("UTILS: mydebug.id = ", mydebug.id)
+print "UTILS: mydebug.id = ", mydebug.id
 #print "UTILS: DEBUG.id = ", DEBUG.id

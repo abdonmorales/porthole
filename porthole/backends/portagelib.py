@@ -26,12 +26,11 @@
 """
 
 import datetime
-import importlib
 id = datetime.datetime.now().microsecond
-print("PORTAGELIB: id initialized to ", id)
+print "PORTAGELIB: id initialized to ", id
 
 from sys import exit, stderr
-import os, _thread
+import os, thread
 from gettext import gettext as _
 
 from porthole.utils import debug
@@ -52,9 +51,9 @@ try: # >=portage 2.2 modules
     #print "PORTAGELIB: imported portage-2.2 manifest"
     from _emerge.actions import load_emerge_config as _load_emerge_config
     PORTAGE22 = True
-    print("PORTAGELIB: imported portage-2.2 modules")
+    print "PORTAGELIB: imported portage-2.2 modules"
 except: # portage 2.1.x modules
-    print("PORTAGELIB: importing portage-2.1 modules")
+    print "PORTAGELIB: importing portage-2.1 modules"
     try:
         import portage
         import portage_const
@@ -63,15 +62,15 @@ except: # portage 2.1.x modules
     except ImportError:
         exit(_('Could not find portage module.\n'
              'Are you sure this is a Gentoo system?'))
-print(("PORTAGELIB: portage version = " + portage.VERSION), file=stderr)
+print >>stderr, ("PORTAGELIB: portage version = " + portage.VERSION)
 
 #thread_id = os.getpid()
-thread_id = _thread.get_ident()
+thread_id = thread.get_ident()
 
 
 
 if is_root(): # then import some modules and run it directly
-    from . import set_config
+    import set_config
 
 def get_user_config(file, name=None, ebuild=None):
     """ depricated function. this is now part of the db.user_configs module
@@ -290,7 +289,7 @@ def get_virtuals():
 def reload_portage():
     debug.dprint('PORTAGELIB: reloading portage')
     debug.dprint("PORTAGELIB: old portage version = " + portage.VERSION)
-    importlib.reload(portage)
+    reload(portage)
     debug.dprint("PORTAGELIB: new portage version = " + portage.VERSION)
     settings.reset()
 
@@ -590,7 +589,7 @@ def get_size(mycpv):
             mycount-=3
             mystr=mystr[:mycount]+","+mystr[mycount:]
         mysum[1]=mystr+" kB"
-    except KeyError as e:
+    except KeyError, e:
         mysum[1] = "Unknown (missing digest)"
         debug.dprint( "PORTAGELIB: get_size; Exception: " + str(e)  )
         debug.dprint( "PORTAGELIB: get_size; ebuild: " + str(mycpv))
@@ -608,9 +607,9 @@ def get_digest(ebuild): ## depricated
             for line in myfile.readlines():
                 digest_file.append(line.split(" "))
             myfile.close()
-        except SystemExit as e:
+        except SystemExit, e:
             raise # Needed else can't exit
-        except Exception as e:
+        except Exception, e:
             debug.dprint("PORTAGELIB: get_digest(): Exception: %s" % e)
     return digest_file
 
@@ -619,17 +618,17 @@ def get_properties(ebuild):
     ebuild = str(ebuild) #just in case
     if settings.portdb.cpv_exists(ebuild): # if in portage tree
         try:
-            return Properties(dict(list(zip(settings.keys, settings.portdb.aux_get(ebuild, portage.auxdbkeys)))))
-        except IOError as e: # Sync being performed may delete files
+            return Properties(dict(zip(settings.keys, settings.portdb.aux_get(ebuild, portage.auxdbkeys))))
+        except IOError, e: # Sync being performed may delete files
             debug.dprint(" * PORTAGELIB: get_properties(): IOError: %s" % str(e))
             return Properties()
-        except Exception as e:
+        except Exception, e:
             debug.dprint(" * PORTAGELIB: get_properties(): Exception: %s" %str( e))
             return Properties()
     else:
         vartree = settings.trees[settings.settings["ROOT"]]["vartree"]
         if vartree.dbapi.cpv_exists(ebuild): # elif in installed pkg tree
-            return Properties(dict(list(zip(settings.keys, vartree.dbapi.aux_get(ebuild, portage.auxdbkeys)))))
+            return Properties(dict(zip(settings.keys, vartree.dbapi.aux_get(ebuild, portage.auxdbkeys))))
         else: return Properties()
 
 def get_virtual_dep(atom):
@@ -805,7 +804,7 @@ class PortageSettings:
         # reverse the treemap's key:data for easy name lookup
         t = self.portdb.treemap
         n = {}
-        for x in list(t.keys()):
+        for x in t.keys():
             n[t[x]] = x
         self.repos = n
 

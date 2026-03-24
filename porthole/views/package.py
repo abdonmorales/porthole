@@ -82,7 +82,7 @@ class PackageView(CommonTreeView):
         menuitems["select_all"] = gtk.MenuItem(_("Select all"))
         menuitems["select_all"].connect("activate", self.select_all)
         
-        for item in list(menuitems.values()):
+        for item in menuitems.values():
             menu.append(item)
             item.show()
         
@@ -423,7 +423,7 @@ class PackageView(CommonTreeView):
             return
         self.disable_column_sort()
         model.clear()
-        names = utilities.sort(list(packages.keys()))
+        names = utilities.sort(packages.keys())
         path = None
         locate_count = 0
         for name in names:
@@ -510,7 +510,7 @@ class PackageView(CommonTreeView):
                     debug.dprint("VIEWS populate_info(): Failed to get item description for '%s'" % package.full_name)
                 self.iter = model.iter_next(iter)
                 #gtk.threads_leave()
-            except Exception as e:
+            except Exception, e:
                 debug.dprint("VIEWS: populate_info(): Stopping due to exception '%s'" % e)
                 #self.iter = model.iter_next(iter)
                 return False # will not be called again

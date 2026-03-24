@@ -23,7 +23,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print("USERCONFIGS: id initialized to ", id)
+print "USERCONFIGS: id initialized to ", id
 
 import os
 
@@ -419,7 +419,7 @@ class UserConfigs:
                 self.db[mytype][a.name] = [a]
 
     def get_source_keys(self, mytype):
-        return list(self.sources[mytype].keys())
+        return self.sources[mytype].keys()
 
     def get_source_atoms(self, mytype, filename):
         return self.sources[mytype][filename]

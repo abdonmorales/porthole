@@ -26,7 +26,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print("UTILITIES: id initialized to ", id)
+print "UTILITIES: id initialized to ", id
 
 import os
 from gettext import gettext as _
@@ -47,7 +47,7 @@ def iter_read_bash(bash_source):
         once the file object is no longer referenced, the handle will be closed, but be proactive instead of relying on the 
         garbage collector."""
     try:
-        if isinstance(bash_source, str):
+        if isinstance(bash_source, basestring):
             bash_source = open(bash_source, 'r')
         for s in bash_source:
             s=s.strip()
@@ -107,7 +107,7 @@ def get_sync_info():
         else:
             debug.dprint("BACKENDS Utilities: get_sync_info(); No data read")
     #except os.error:
-    except IOError as v:
+    except IOError, v:
         try:
             (code, message) = v
         except:

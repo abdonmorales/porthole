@@ -23,7 +23,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print("PLUGIN: id initialized to ", id)
+print "PLUGIN: id initialized to ", id
 
 import os
 from glob import glob
@@ -124,7 +124,7 @@ class Plugin:
             self.module = __import__(plugin_name, [], [], ['not empty'])
             debug.dprint('Plugin module = ' + str(self.module))
             self.valid = True
-        except ImportError as e:
+        except ImportError, e:
             debug.dprint("PLUGIN: initialize_plugin(); ImportError '%s'" % e)
             debug.dprint("PLUGIN: initialize_plugin(); Error loading plugin '%s' in %s" % (self.name, self.path))
             self.valid = self.is_installed = False
