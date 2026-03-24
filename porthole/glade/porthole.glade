@@ -25,7 +25,7 @@
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Actions</property>
                 <property name="use_underline">True</property>
-                <child>
+                <child type="submenu">
                   <object class="GtkMenu" id="menuitem1_menu">
                     <child>
                       <object class="GtkImageMenuItem" id="emerge_package1">
@@ -150,7 +150,7 @@
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Settings</property>
                 <property name="use_underline">True</property>
-                <child>
+                <child type="submenu">
                   <object class="GtkMenu" id="settings1_menu">
                     <child>
                       <object class="GtkCheckMenuItem" id="pretend">
@@ -252,7 +252,7 @@
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
-                <child>
+                <child type="submenu">
                   <object class="GtkMenu" id="menuitem4_menu">
                     <child>
                       <object class="GtkImageMenuItem" id="contents2">
@@ -296,7 +296,7 @@
                 <child>
                   <object class="GtkToolButton" id="btn_emerge">
                     <property name="visible">True</property>
-                    <property name="tooltip" translatable="yes">Emerge Package</property>
+                    <property name="tooltip-text" translatable="yes">Emerge Package</property>
                     <property name="label" translatable="yes">E_merge</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-add</property>
@@ -310,7 +310,7 @@
                 <child>
                   <object class="GtkToolButton" id="btn_adv_emerge">
                     <property name="visible">True</property>
-                    <property name="tooltip" translatable="yes">Advanced Emerge Package</property>
+                    <property name="tooltip-text" translatable="yes">Advanced Emerge Package</property>
                     <property name="label" translatable="yes">A_dv Emerge</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-preferences</property>
@@ -324,7 +324,7 @@
                 <child>
                   <object class="GtkToolButton" id="btn_unmerge">
                     <property name="visible">True</property>
-                    <property name="tooltip" translatable="yes">Unmerge Package</property>
+                    <property name="tooltip-text" translatable="yes">Unmerge Package</property>
                     <property name="label" translatable="yes">U_nmerge</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-remove</property>
@@ -347,7 +347,7 @@
                   <object class="GtkToolButton" id="btn_sync">
                     <property name="visible">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip" translatable="yes">Not yet set...</property>
+                    <property name="tooltip-text" translatable="yes">Not yet set...</property>
                     <property name="label" translatable="yes">S_ync</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-refresh</property>
@@ -362,7 +362,7 @@
                   <object class="GtkToolButton" id="btn_upgrade">
                     <property name="visible">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip" translatable="yes">Upgrade packages to newest versions</property>
+                    <property name="tooltip-text" translatable="yes">Upgrade packages to newest versions</property>
                     <property name="label" translatable="yes">_Upgrade</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-go-forward</property>
@@ -376,7 +376,7 @@
                 <child>
                   <object class="GtkToolButton" id="btn_queue">
                     <property name="visible">True</property>
-                    <property name="tooltip" translatable="yes">Not yet implemented in this window.                   Set the terminal queue status, ie. Start, Pause or Timer</property>
+                    <property name="tooltip-text" translatable="yes">Not yet implemented in this window.                   Set the terminal queue status, ie. Start, Pause or Timer</property>
                     <property name="label" translatable="yes">Queue</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-media-play</property>
@@ -400,7 +400,7 @@
                 <child>
                   <object class="GtkToolButton" id="btn_root_warning">
                     <property name="visible">True</property>
-                    <property name="tooltip" translatable="yes">In order to access all the features of Porthole, please run it with root privileges.</property>
+                    <property name="tooltip-text" translatable="yes">In order to access all the features of Porthole, please run it with root privileges.</property>
                     <property name="label" translatable="yes">Not Root</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-dialog-warning</property>
@@ -456,7 +456,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="tooltip" translatable="yes">Refresh the Current View</property>
+                <property name="tooltip-text" translatable="yes">Refresh the Current View</property>
                 <property name="border_width">3</property>
                 <signal name="clicked" handler="on_view_refresh"/>
                 <child>
@@ -825,7 +825,7 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">_Process</property>
                     <property name="use_underline">True</property>
-                    <child>
+                    <child type="submenu">
                       <object class="GtkMenu" id="menuitem4_menu">
                         <child>
                           <object class="GtkImageMenuItem" id="resume">
@@ -835,7 +835,7 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_resume1_activate"/>
-                            <child>
+                            <child type="submenu">
                               <object class="GtkMenu" id="resume_menu">
                                 <child>
                                   <object class="GtkMenuItem" id="normal1">
@@ -933,7 +933,7 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">_Edit</property>
                     <property name="use_underline">True</property>
-                    <child>
+                    <child type="submenu">
                       <object class="GtkMenu" id="menuitem5_menu">
                         <child>
                           <object class="GtkImageMenuItem" id="copy2">
@@ -969,7 +969,7 @@
                     <property name="sensitive">False</property>
                     <property name="label" translatable="yes">_Queue</property>
                     <property name="use_underline">True</property>
-                    <child>
+                    <child type="submenu">
                       <object class="GtkMenu" id="queue1_menu">
                         <child>
                           <object class="GtkSeparatorMenuItem" id="separator13">
@@ -980,7 +980,7 @@
                           <object class="GtkImageMenuItem" id="pause">
                             <property name="label">gtk-media-pause</property>
                             <property name="visible">True</property>
-                            <property name="tooltip" translatable="yes">Temporarily stop any remaining processes from starting</property>
+                            <property name="tooltip-text" translatable="yes">Temporarily stop any remaining processes from starting</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
                             <signal name="activate" handler="on_pause_activate"/>
@@ -990,7 +990,7 @@
                           <object class="GtkImageMenuItem" id="resume_queue">
                             <property name="label" translatable="yes">Re_sume</property>
                             <property name="visible">True</property>
-                            <property name="tooltip" translatable="yes">Resume the queue processes remaining</property>
+                            <property name="tooltip-text" translatable="yes">Resume the queue processes remaining</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_resume_queue_activate"/>
@@ -1014,7 +1014,7 @@
                           <object class="GtkImageMenuItem" id="move_top">
                             <property name="label" translatable="yes">Move _Top</property>
                             <property name="visible">True</property>
-                            <property name="tooltip" translatable="yes">Moves the selected process to start next</property>
+                            <property name="tooltip-text" translatable="yes">Moves the selected process to start next</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_move_top"/>
@@ -1044,7 +1044,7 @@
                           <object class="GtkImageMenuItem" id="move_bottom">
                             <property name="label" translatable="yes">Move _Bottom</property>
                             <property name="visible">True</property>
-                            <property name="tooltip" translatable="yes">Moves the selected process to the end of the queue</property>
+                            <property name="tooltip-text" translatable="yes">Moves the selected process to the end of the queue</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_move_bottom"/>
@@ -1060,7 +1060,7 @@
                             <property name="label">gtk-remove</property>
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
-                            <property name="tooltip" translatable="yes">Removes selected queue item(s)</property>
+                            <property name="tooltip-text" translatable="yes">Removes selected queue item(s)</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
                             <signal name="activate" handler="on_remove"/>
@@ -1070,7 +1070,7 @@
                           <object class="GtkImageMenuItem" id="clear_queue">
                             <property name="label">gtk-clear</property>
                             <property name="visible">True</property>
-                            <property name="tooltip" translatable="yes">Clears the entire queue</property>
+                            <property name="tooltip-text" translatable="yes">Clears the entire queue</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
                             <signal name="activate" handler="on_clear_queue"/>
@@ -1404,7 +1404,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="tooltip" translatable="yes">Pause any commands in the queue</property>
+                <property name="tooltip-text" translatable="yes">Pause any commands in the queue</property>
                 <signal name="clicked" handler="on_pause_button_clicked"/>
                 <child>
                   <object class="GtkImage" id="image487">
@@ -1424,7 +1424,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="tooltip" translatable="yes">Run commands in the queue</property>
+                <property name="tooltip-text" translatable="yes">Run commands in the queue</property>
                 <signal name="clicked" handler="on_play_queue_button_clicked"/>
                 <child>
                   <object class="GtkImage" id="image486">
@@ -1444,7 +1444,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="tooltip" translatable="yes">Not yet implemented.                                     Set run times for commands in the queue</property>
+                <property name="tooltip-text" translatable="yes">Not yet implemented.                                     Set run times for commands in the queue</property>
                 <child>
                   <object class="GtkImage" id="timer_button_img">
                     <property name="visible">True</property>

@@ -66,7 +66,7 @@
                           <object class="GtkEntry" id="su_client">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Enter the command for a GUI su client eg. 'gksu' or 'gnomesu'</property>
+                            <property name="tooltip-text" translatable="yes">Enter the command for a GUI su client eg. 'gksu' or 'gnomesu'</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -2913,7 +2913,7 @@ you wish to be pre-typed</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">Add a new filter expression to the Selected Group</property>
+                            <property name="tooltip-text" translatable="yes">Add a new filter expression to the Selected Group</property>
                             <property name="border_width">5</property>
                             <property name="use_underline">True</property>
                           </object>
@@ -2927,7 +2927,7 @@ you wish to be pre-typed</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">Edit the selected filter expression</property>
+                            <property name="tooltip-text" translatable="yes">Edit the selected filter expression</property>
                             <property name="border_width">5</property>
                             <property name="use_underline">True</property>
                           </object>
@@ -2941,7 +2941,7 @@ you wish to be pre-typed</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">Delete the selected filter expression</property>
+                            <property name="tooltip-text" translatable="yes">Delete the selected filter expression</property>
                             <property name="border_width">5</property>
                             <property name="use_underline">True</property>
                           </object>
@@ -2955,7 +2955,7 @@ you wish to be pre-typed</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">Move the selected filter expression to a different filter group</property>
+                            <property name="tooltip-text" translatable="yes">Move the selected filter expression to a different filter group</property>
                             <property name="border_width">5</property>
                             <property name="use_underline">True</property>
                           </object>
@@ -3002,7 +3002,7 @@ you wish to be pre-typed</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">Reset the filters to the defaults</property>
+                            <property name="tooltip-text" translatable="yes">Reset the filters to the defaults</property>
                             <property name="use_underline">True</property>
                           </object>
                           <packing>
@@ -3016,7 +3016,7 @@ you wish to be pre-typed</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">Save the filters to disk</property>
+                            <property name="tooltip-text" translatable="yes">Save the filters to disk</property>
                             <property name="use_stock">True</property>
                           </object>
                           <packing>
