@@ -276,7 +276,7 @@ class PackageView(CommonTreeView):
     def on_button_press(self, treeview, event):
         debug.dprint("VIEWS: Handling PackageView button press event")
         self.event = event # save the event so we can access it in _clicked()
-        if event.type != Gdk.BUTTON_PRESS:
+        if event.type != Gdk.EventType.BUTTON_PRESS:
             debug.dprint("VIEWS: Strange event type got passed to on_button_press() callback...")
             debug.dprint("VIEWS: event.type =  %s" %str(event.type))
         if event.button == 3: # secondary mouse button

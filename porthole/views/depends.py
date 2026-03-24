@@ -329,7 +329,7 @@ class DependsView(CommonTreeView):
         else:
             self.dopopup = False
 
-        if event.type == Gdk._2BUTTON_PRESS:
+        if event.type == Gdk.EventType._2BUTTON_PRESS:
             #debug.dprint("DependsView: dbl-click event detected")
             # Capture the source of the dbl-click event
             # but do nothing else
@@ -337,11 +337,11 @@ class DependsView(CommonTreeView):
             debug.dprint("DependsView: button release dbl-click event detected, enabling dep popup")
             _do_dep_window = True
 
-        elif event.type != Gdk.BUTTON_PRESS:
+        elif event.type != Gdk.EventType.BUTTON_PRESS:
             debug.dprint("DependsView: Strange event type got passed to on_button_press() callback...")
             debug.dprint("DependsView: event.type =  %s" %str(event.type))
 
-        elif event.type == Gdk.BUTTON_RELEASE and \
+        elif event.type == Gdk.EventType.BUTTON_RELEASE and \
             self.event_src == widget:
             # clear the event source to prevent false restarts
             self.event_src = None

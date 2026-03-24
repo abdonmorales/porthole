@@ -239,12 +239,12 @@ class TerminalNotebook:
             widget occurs, move to the process window and jump to the line
             number clicked on.
         """
-        if event.type == Gdk._2BUTTON_PRESS:
+        if event.type == Gdk.EventType._2BUTTON_PRESS:
             # Capture the source of the dbl-click event
             # but do nothing else
             self.event_src = widget
 
-        elif event.type == Gdk.BUTTON_RELEASE and \
+        elif event.type == Gdk.EventType.BUTTON_RELEASE and \
             self.event_src == widget:
             # clear the event source to prevent false restarts
             self.event_src = None
@@ -253,7 +253,7 @@ class TerminalNotebook:
             # Convert x,y window coords to buffer coords and get line text
             x = int(event.x)
             y = int(event.y)
-            bufcoords = widget.window_to_buffer_coords(Gtk.TEXT_WINDOW_TEXT,x,y)
+            bufcoords = widget.window_to_buffer_coords(Gtk.TextWindowType.TEXT,x,y)
             # Set start iter at beginning of line (0)
             iStart = widget.get_iter_at_location(0,bufcoords[1])
             # Set end iter far enough right to grab number (100)

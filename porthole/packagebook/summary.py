@@ -195,7 +195,7 @@ class Summary(Gtk.TextView):
 
         table = create(
             {'name': ({'weight': Pango.Weight.BOLD,
-                       'scale': Pango.SCALE_X_LARGE,
+                       'scale': 1.44,  # Pango.Scale.X_LARGE equivalent
                        'pixels-above-lines': 5}),
              'description': ({"style": Pango.Style.ITALIC}),
              'url': ({'foreground': 'blue'}),
@@ -209,27 +209,27 @@ class Summary(Gtk.TextView):
 
     def on_url_event(self, tag, widget, event, iter):
         """ Catch when the user clicks the URL """
-        if event.type == Gdk.BUTTON_RELEASE:
+        if event.type == Gdk.EventType.BUTTON_RELEASE:
             load_web_page(tag.get_property("name"))
 
     def on_mouse_motion(self, widget, event, data = None):
         # we need to call get_pointer, or we won't get any more events
         pointer = self.window.get_pointer()
         x, y, spam = self.window.get_pointer()
-        x, y = self.window_to_buffer_coords(Gtk.TEXT_WINDOW_TEXT, x, y)
+        x, y = self.window_to_buffer_coords(Gtk.TextWindowType.TEXT, x, y)
         tags = self.get_iter_at_location(x, y).get_tags()
         if self.underlined_url:
-            self.underlined_url.set_property("underline",Pango.UNDERLINE_NONE)
-            self.get_window(Gtk.TEXT_WINDOW_TEXT).set_cursor(None)
+            self.underlined_url.set_property("underline",Pango.Underline.NONE)
+            self.get_window(Gtk.TextWindowType.TEXT).set_cursor(None)
             self.underlined_url = None
         for tag in tags:
             if tag in self.url_tags:
-                tag.set_property("underline",Pango.UNDERLINE_SINGLE)
-                self.get_window(Gtk.TEXT_WINDOW_TEXT).set_cursor(Gdk.Cursor
-                                                                 (Gdk.HAND2))
+                tag.set_property("underline",Pango.Underline.SINGLE)
+                display = self.get_display()
+                self.get_window(Gtk.TextWindowType.TEXT).set_cursor(Gdk.Cursor.new_for_display(display, Gdk.CursorType.HAND2))
                 self.underlined_url = tag
-        if self.reset_cursor: # defaults to Gdk.XTERM - reset it to None
-            self.get_window(Gtk.TEXT_WINDOW_TEXT).set_cursor(None)
+        if self.reset_cursor: # defaults to Gdk.CursorType.XTERM - reset it to None
+            self.get_window(Gtk.TextWindowType.TEXT).set_cursor(None)
             self.reset_cursor = False
         return False
 
@@ -691,7 +691,7 @@ class Summary(Gtk.TextView):
         """Button press callback for Summary.
         (note: table clicks are handled in on_table_clicked)"""
         debug.dprint("SUMMARY: Handling SummaryView button press event")
-        if event.type != Gdk.BUTTON_PRESS:
+        if event.type != Gdk.EventType.BUTTON_PRESS:
             debug.dprint("SUMMARY: Strange event type got passed to on_button_press() callback...")
             debug.dprint(event.type)
         if event.button == 3: # secondary mouse button
@@ -826,12 +826,12 @@ class Summary(Gtk.TextView):
         self.popup_menu.popup(None, None, None, event.button, event.time)
         # de-select the table cell. Would be nice to leave it selected,
         # but it doesn't get de-selected when the menu is closed.
-        eventbox.emit("leave-notify-event", Gdk.Event(Gdk.LEAVE_NOTIFY))
+        eventbox.emit("leave-notify-event", Gdk.Event.new(Gdk.EventType.LEAVE_NOTIFY))
         return True
 
     def on_table_mouse(self, eventbox, event):
-        if event.mode != Gdk.CROSSING_NORMAL: return False
-        if event.type == Gdk.ENTER_NOTIFY:
+        if event.mode != Gdk.CrossingMode.NORMAL: return False
+        if event.type == Gdk.EventType.ENTER_NOTIFY:
             #debug.dprint("SUMMARY: on_table_mouse(): Enter notify")
             # note: colour should be of form "#xxxxxx" (not name)
             if eventbox.color.startswith('#'):
@@ -850,7 +850,7 @@ class Summary(Gtk.TextView):
                 style = eventbox.get_style().copy()
                 style.bg[Gtk.StateType.NORMAL] = Gdk.color_parse(newcolour)
                 eventbox.set_style(style)
-        elif event.type == Gdk.LEAVE_NOTIFY:
+        elif event.type == Gdk.EventType.LEAVE_NOTIFY:
             #debug.dprint("SUMMARY: on_table_mouse(): Leave notify")
             style = eventbox.get_style().copy()
             style.bg[Gtk.StateType.NORMAL] = Gdk.color_parse(eventbox.color)
