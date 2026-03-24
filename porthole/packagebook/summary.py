@@ -64,7 +64,7 @@ class Summary(Gtk.TextView):
         self.set_left_margin(margin)
         self.set_right_margin(margin)
         tagtable = self.create_tag_table()
-        self.buffer = Gtk.TextBuffer(tagtable)
+        self.buffer = Gtk.TextBuffer(tag_table=tagtable)
         self.set_buffer(self.buffer)
         self.license_dir = "file://"+ portage_lib.settings.portdir + "/licenses/"
         self.package = None
@@ -188,7 +188,7 @@ class Summary(Gtk.TextView):
         def create(descs):
             table = Gtk.TextTagTable()
             for name, properties in list(descs.items()):
-                tag = Gtk.TextTag(name); table.add(tag)
+                tag = Gtk.TextTag(name=name); table.add(tag)
                 for property, value in list(properties.items()):
                     tag.set_property(property, value)
             return table
@@ -323,7 +323,7 @@ class Summary(Gtk.TextView):
             #if True: # saves an unindent for testing change
             rows = 1 + len(ebuilds)
             cols = 3 + len(archlist)
-            table = Gtk.Grid(rows, cols)
+            table = Gtk.Table(n_rows=rows, n_columns=cols)
             table.attach(boxify(Gtk.Label(), "white"), 0, 1, 0, 1)
             label = Gtk.Label(_("Slot"))
             label.set_padding(3, 3)

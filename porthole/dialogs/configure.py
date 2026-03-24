@@ -462,7 +462,7 @@ class ConfigDialog:
         maxrow = size / maxcol - 1
         if maxrow < 1:
             maxrow = 1
-        table = Gtk.Grid(maxrow, maxcol-1, True)
+        table = Gtk.Table(n_rows=int(maxrow), n_columns=int(maxcol-1), homogeneous=True)
         self.KeywordsFrame.add(table)
         self.kwList = []
 

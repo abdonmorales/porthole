@@ -193,8 +193,8 @@ class TerminalNotebook:
             label, tab, pos = _(TAB_LABELS[TAB_QUEUE]), self.queue_tab, 4
             self.tab_showing[TAB_QUEUE] = True
         # pack the icon and label onto the hbox
-        hbox.pack_start(icon)
-        hbox.pack_start(Gtk.Label(label))
+        hbox.pack_start(icon, False, False, 0)
+        hbox.pack_start(Gtk.Label(label), False, False, 0)
         hbox.show_all()
         # insert the tab
         self.notebook.insert_page(tab, hbox, pos)

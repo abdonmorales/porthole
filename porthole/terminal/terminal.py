@@ -813,10 +813,10 @@ class ProcessManager: #dbus.service.Object):
             self.forward_password()
             return
         debug.dprint("TERMINAL: do_password_popup: asking for user's password")
-        dialog = Gtk.Dialog("Password Required",
-                            self.window,
-                            Gtk.DialogFlags.MODAL & Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                            (_("_Cancel"), Gtk.ResponseType.CANCEL))
+        dialog = Gtk.Dialog(title="Password Required",
+                            transient_for=self.window,
+                            flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
         dialog.vbox.set_spacing(10)
         #dialog.set_has_separator(False)
         dialog.set_border_width(10)
@@ -842,16 +842,16 @@ class ProcessManager: #dbus.service.Object):
         else:
             label = Gtk.Label(_("Password Required to perform the command:\n'%s'")
                             % command)
-        dialog.vbox.pack_start(label)
+        dialog.vbox.pack_start(label, True, True, 0)
         label.show()
         hbox = Gtk.Box()
         label = Gtk.Label(_("Password: "))
         entry = Gtk.Entry()
         entry.set_property("visibility", False) # password mode
         entry.connect("activate", self.get_password_cb, dialog)
-        hbox.pack_start(label, expand=False)
-        hbox.pack_start(entry, expand=True)
-        dialog.vbox.pack_start(hbox)
+        hbox.pack_start(label, False, False, 0)
+        hbox.pack_start(entry, True, True, 0)
+        dialog.vbox.pack_start(hbox, True, True, 0)
         hbox.show_all()
         Gdk.threads_enter()
         result = dialog.run()

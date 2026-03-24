@@ -35,13 +35,14 @@ from gi.repository import Gtk
 class CommonDialog(Gtk.Dialog):
     """ A common gtk Dialog class """
     def __init__(self, title, parent, message, callback, button):
-        Gtk.Dialog.__init__(self, title, parent, Gtk.DialogFlags.MODAL or
-                            Gtk.DialogFlags.DESTROY_WITH_PARENT, (str(button), 0))
+        Gtk.Dialog.__init__(self, title=title, transient_for=parent,
+                            flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        self.add_button(str(button), 0)
         # add message
         text = Gtk.Label(message)
         text.set_padding(5, 5)
         text.show()
-        self.vbox.pack_start(text)
+        self.vbox.pack_start(text, True, True, 0)
         # register callback
         if not callback:
             callback = self.__callback

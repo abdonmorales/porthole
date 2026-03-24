@@ -606,7 +606,7 @@ class AdvancedEmergeDialog:
         maxcol = 3  # = number of columns - 1 = index of last column
         maxrow = (size - 1) / (maxcol + 1)  # = number of rows - 1
         # resize the table if it's taller than it is wide
-        table = Gtk.Grid(maxrow+1, maxcol+1, True)
+        table = Gtk.Table(n_rows=int(maxrow+1), n_columns=int(maxcol+1), homogeneous=True)
         if maxrow + 1 >= 6: # perhaps have this number configurable?
             # perhaps add window based on size (in pixels) of table somehow...
             scrolledwindow = Gtk.ScrolledWindow()
@@ -675,7 +675,7 @@ class AdvancedEmergeDialog:
         maxrow = size / maxcol - 1
         if maxrow < 1:
             maxrow = 1
-        table = Gtk.Grid(maxrow, maxcol-1, True)
+        table = Gtk.Table(n_rows=int(maxrow), n_columns=int(maxcol-1), homogeneous=True)
         KeywordsFrame.add(table)
         self.kwList = []
 
@@ -683,7 +683,7 @@ class AdvancedEmergeDialog:
         # checkboxes and attach to table
         col = 0
         row = 0
-        button = Gtk.RadioButton(None, _('None'))
+        button = Gtk.RadioButton(group=None, label=_('None'))
         self.kwList.append([button, None])
         rbGroup = button
         table.attach(button, col, col+1, row, row+1)
@@ -695,7 +695,7 @@ class AdvancedEmergeDialog:
             if keyword[0] == '~' and (keyword[1:] == self.arch) or \
                         (config.Prefs.globals.enable_archlist and
                             ((keyword[1:] in config.Prefs.globals.archlist) or  (keyword in config.Prefs.globals.archlist))):
-                button = Gtk.RadioButton(rbGroup, keyword, use_underline=False)
+                button = Gtk.RadioButton(group=rbGroup, label=keyword, use_underline=False)
                 self.kwList.append([button, keyword])
                 table.attach(button, col, col+1, row, row+1)
                 # connect to on_toggled so we can show changes

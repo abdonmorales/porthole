@@ -196,8 +196,8 @@ class PluginGUI(Gtk.Window):
         return_button.connect("clicked", self.destroy_cb)
         self.vbox.pack_end(return_button, TRUE, TRUE, 0)
         self.textbuffer = Gtk.TextBuffer()
-        self.textbox = Gtk.TextView(self.textbuffer)
-        self.vbox.pack_start(self.textbox)
+        self.textbox = Gtk.TextView(buffer=self.textbuffer)
+        self.vbox.pack_start(self.textbox, True, True, 0)
 
     def create_plugin_list(self):
         """Creates the list-view of the plugins"""
@@ -217,9 +217,9 @@ class PluginGUI(Gtk.Window):
         cell_tg = Gtk.CellRendererToggle()
         cell_tx = Gtk.CellRendererText()
         cell_in = Gtk.CellRendererText()
-        cb_column.pack_start(cell_tg)
-        text_column.pack_start(cell_tx)
-        installed_column.pack_start(cell_in)
+        cb_column.pack_start(cell_tg, True)
+        text_column.pack_start(cell_tx, True)
+        installed_column.pack_start(cell_in, True)
 
         self.plugin_view.append_column(cb_column)
         self.plugin_view.append_column(text_column)

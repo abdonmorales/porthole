@@ -146,7 +146,7 @@ class PackageNotebook:
         self.dep_window["tree"] = parent_tree
         self.dep_window['name'] = parent_name
         if not self.dep_window["window"]:
-            self.dep_window['window'] = Gtk.Window(Gtk.WINDOW_TOPLEVEL)
+            self.dep_window['window'] = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
             #self.dep_window['depth'] += 1 # increase the depth number since it is a new window
             v_box = Gtk.Box()
             h_box = Gtk.Box()
