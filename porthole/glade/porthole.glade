@@ -9,7 +9,6 @@
     <property name="default_width">500</property>
     <property name="default_height">650</property>
     <signal name="destroy" handler="on_main_window_destroy"/>
-    <signal name="size_request" handler="on_main_window_size_request"/>
     <child>
       <object class="GtkBox" id="vbox1">
       <property name="orientation">vertical</property>
