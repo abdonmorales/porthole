@@ -35,13 +35,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_emerge_package"/>
                         <accelerator key="M" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image1">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-add</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -52,13 +45,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_adv_emerge_package"/>
                         <accelerator key="A" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image2">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-preferences</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -69,13 +55,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_unmerge_package"/>
                         <accelerator key="N" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image3">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-remove</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -91,13 +70,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_sync_tree"/>
                         <accelerator key="Y" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image4">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-refresh</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -108,13 +80,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_upgrade_packages"/>
                         <accelerator key="U" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image5">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-go-forward</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -130,13 +95,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_open_log"/>
                         <accelerator key="L" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image6">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-open</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -147,13 +105,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_run_custom"/>
                         <accelerator key="R" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image7">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-execute</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -164,12 +115,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_reload_db"/>
                         <accelerator key="E" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image8">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-justify-fill</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -179,13 +124,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_re_init_portage"/>
                         <accelerator key="Z" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image9">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-redo</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -289,13 +227,6 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_plugin_settings_activate"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image10">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-disconnect</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -310,13 +241,6 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_configure_porthole"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image11">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-preferences</property>
-                            <property name="icon-size">1</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>
@@ -338,12 +262,6 @@
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_help_contents"/>
                         <accelerator key="F2" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <child internal-child="image">
-                          <object class="GtkImage" id="image12">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-help</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -950,13 +868,6 @@
                                 </child>
                               </object>
                             </child>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image7">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-refresh</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -966,13 +877,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_kill"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image8">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-stop</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -987,13 +891,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_save_log"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image9">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-save</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1003,13 +900,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_save_log_as"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image10">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-save-as</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1019,13 +909,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_open_log"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image11">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-open</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1039,13 +922,6 @@
                             <property name="visible">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_quit"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image12">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-close</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -1118,13 +994,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_resume_queue_activate"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image5">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-media-play</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1134,12 +1003,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_timer_activate"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image1">
-                                <property name="visible">True</property>
-                                <property name="pixbuf">../pixmaps/porthole-clock-20x20.png</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1155,13 +1018,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_move_top"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image6">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-goto-top</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1172,13 +1028,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_move_up"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image4">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-go-up</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1189,13 +1038,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_move_down"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image3">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-go-down</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -1206,13 +1048,6 @@
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                             <signal name="activate" handler="on_move_bottom"/>
-                            <child internal-child="image">
-                              <object class="GtkImage" id="image2">
-                                <property name="visible">True</property>
-                                <property name="stock">gtk-goto-bottom</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
