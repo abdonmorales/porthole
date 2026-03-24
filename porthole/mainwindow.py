@@ -748,7 +748,7 @@ class MainWindow:
         Just checks if the window is maximized or not"""
         if widget is not self.mainwindow: return False
         debug.dprint("MAINWINDOW: on_window_state_event(); event detected")
-        if Gdk.WINDOW_STATE_MAXIMIZED & event.new_window_state:
+        if Gdk.WindowState.MAXIMIZED & event.new_window_state:
             config.Prefs.main.maximized = True
         else:
             config.Prefs.main.maximized = False

@@ -69,7 +69,7 @@ def sort(list):
     debug.dprint("BACKENDS Utilities: sort()")
     try:
         spam = [(x[0].upper(), x) for x in list]
-        spam.sort()
+        spam.sort(key=lambda item: item[0])
         #debug.dprint("BACKENDS Utilities: sort(); finished")
         return [x[1] for x in spam]
     except:

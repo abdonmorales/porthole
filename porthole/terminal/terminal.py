@@ -335,7 +335,7 @@ class ProcessManager: #dbus.service.Object):
         #debug.dprint("TERMINAL: window state event: %s" % event.new_window_state) # debug print statements
         #debug.dprint(event.changed_mask
         state = event.new_window_state
-        if state & Gdk.WINDOW_STATE_ICONIFIED:
+        if state & Gdk.WindowState.ICONIFIED:
             #debug.dprint("TERMINAL: new_window_state; event = minimized")
             self.minimized = True
             self.window.set_title(self.status_text)
