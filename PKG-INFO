@@ -1,10 +1,16 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: porthole
-Version: 0.6.0
+Version: 0.7.0
 Summary: GTK+ frontend to Portage
-Home-page: http://porthole.sourceforge.net
+Home-page: https://github.com/abdonmorales/porthole
 Author: Fredrik Arnerup, Daniel G. Taylor, Brian Dolbec, William F. Wheeler
-Author-email: dol-sen@users.sourceforge.net, farnerup@users.sourceforge.net, dgt84@users.sourceforge.net,  tiredoldcoder@users.sourceforge.net
-License: UNKNOWN
-Description: UNKNOWN
-Platform: UNKNOWN
+Author-email: dol-sen@users.sourceforge.net
+License: GPL-2.0-or-later
+Requires-Python: >=3.9
+Description: GTK-based frontend for Portage, the Gentoo package management system
+Platform: Linux
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: X11 Applications :: GTK
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: System :: Installation/Setup

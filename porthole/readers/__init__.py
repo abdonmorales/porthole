@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''    Porthole Reader Package
     Contains the usually threaded functions/methods for gathering data

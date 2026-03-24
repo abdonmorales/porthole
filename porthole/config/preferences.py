@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Utils Package
@@ -22,18 +22,23 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+import gi
+gi.require_version('Pango', '1.0')
+from gi.repository import Pango
+
 import datetime
 id = datetime.datetime.now().microsecond
-print "PREFERENCES: id initialized to ", id
+print("PREFERENCES: id initialized to ", id)
 
 import os 
 from gettext import gettext as _
-from types import *
+# In Python 3, types like StringType, IntType etc. no longer exist.
+# Use built-in type checks instead.
 
 from porthole.version import version
 from porthole._xml.xmlmgr import XMLManager, XMLManagerError
 from porthole.utils import debug
-print "PREFERENCES: imported debug.id = ", debug.id
+print("PREFERENCES: imported debug.id = ", debug.id)
 from porthole.utils.utils import get_user_home_dir, can_gksu
  
 class OptionsClass:
@@ -146,7 +151,7 @@ class PortholePreferences:
             ['history_length', 10]
         ]
         
-        for window_name in preflist.keys():
+        for window_name in list(preflist.keys()):
             setattr(self, window_name, OptionsClass()) # construct self.main etc.
             for pref_name, default_value in preflist[window_name]:
                 try:
@@ -157,8 +162,8 @@ class PortholePreferences:
                 setattr(getattr(self, window_name), pref_name, value) # set self.main.width etc
         
         # Formatting tags for the terminal window tabs.  
-        # Note: normal font weight = 400 (pango.WEIGHT_NORMAL),
-        #       bold = 700 (pango.WEIGHT_BOLD)
+        # Note: normal font weight = 400 (Pango.Weight.NORMAL),
+        #       bold = 700 (Pango.Weight.BOLD)
         # Note: all colors are in hex for future color editor;
         #       '' means use default color.
         
@@ -306,7 +311,7 @@ class PortholePreferences:
         for option, default in globaloptions:
             try:
                 value = dom.getitem(''.join(['/globals/', option]))
-                if type(value) == StringType: # remove xml indent padding
+                if isinstance(value, str): # remove xml indent padding
                    value = value.strip()
                 if value == "emerge sync": # upgrade from depricated action 'sync'
                     value = default

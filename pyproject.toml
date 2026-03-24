@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "porthole"
+version = "0.7.0"
+description = "GTK+ frontend to Portage"
+readme = "README.md"
+license = "GPL-2.0-or-later"
+requires-python = ">=3.9"
+authors = [
+    {name = "Fredrik Arnerup"},
+    {name = "Daniel G. Taylor"},
+    {name = "Brian Dolbec", email = "dol-sen@users.sourceforge.net"},
+    {name = "William F. Wheeler"},
+]
+keywords = ["gentoo", "portage", "package-manager", "gtk"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators",
+"Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Installation/Setup",
+    "Topic :: System :: Software Distribution",
+]
+
+[project.urls]
+Homepage = "https://github.com/abdonmorales/porthole"
+Repository = "https://github.com/abdonmorales/porthole"
+Issues = "https://github.com/abdonmorales/porthole/issues"
+
+[project.scripts]
+porthole = "porthole.startup:main"
+
+[tool.setuptools.packages.find]
+include = ["porthole*"]
+
+[tool.setuptools.package-data]
+porthole = [
+    "glade/*.glade",
+    "pixmaps/*.png",
+    "pixmaps/*.svg",
+    "help/*.html",
+    "help/*.css",
+    "help/*.png",
+    "config/*.xml",
+    "i18n/*.pot",
+    "i18n/*.po",
+    "i18n/TRANSLATING",
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E741",   # ambiguous variable name (legacy code uses 'l', 'id', etc.)
+    "F401",   # unused imports (many in __init__.py files)
+    "F403",   # wildcard imports (legacy code pattern)
+    "F405",   # may be undefined from wildcard import
+    "F841",   # local variable assigned but never used
+    "B007",   # loop variable not used
+    "B023",   # function uses loop variable
+    "SIM108", # ternary operator
+    "UP031",  # printf-style formatting (too many to change)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"porthole/__init__.py" = ["F401"]
+"porthole/utils/__init__.py" = ["F401"]
+"porthole/loaders/loaders.py" = ["F401", "F403"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

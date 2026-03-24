@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Reader Class: Upgradable List Reader
@@ -23,7 +23,6 @@
 '''
 
 import os, time
-from types import *
 
 from porthole.utils import debug
 #from porthole.sterminal import SimpleTerminal
@@ -56,7 +55,7 @@ class DeprecatedReader(CommonReader):
         # find deprecated packages
         for cat, packages in self.installed_items:
             #debug.dprint("READERS: DeprecatedReader; cat = " + str(cat))
-            for name, package in packages.items():
+            for name, package in list(packages.items()):
                 #debug.dprint("READERS: DeprecatedReader; name = " + str(name))
                 self.count += 1
                 if self.cancelled: self.done = True; return
@@ -70,7 +69,7 @@ class DeprecatedReader(CommonReader):
                     ebuilds = package.get_installed()
                     for ebuild in ebuilds:
                         overlay = portage_lib.get_overlay(ebuild)
-                        if type(overlay) is IntType: # catch obsolete
+                        if isinstance(overlay, int): # catch obsolete
                             # add the ebuild to Ebuilds list
                             debug.dprint("READERS: DeprecatedReader; found deprecated ebuild: " + ebuild)
                             self.pkg_dict["Ebuilds"][package.full_name] = package

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Views sorts.py
@@ -22,8 +22,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, gobject, pango
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Pango', '1.0')
+from gi.repository import Gtk, GLib, GObject, Pango
+
 import threading, os
 from gettext import gettext as _
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
     Porthole package
     Copyright (C) 2006 -2008 Brian Dolbec

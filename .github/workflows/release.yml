@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gir1.2-gtk-3.0 \
+            python3-gi \
+            libgirepository1.0-dev \
+            gcc \
+            libcairo2-dev \
+            pkg-config
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install build pytest PyGObject
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Create Gentoo ebuild tarball
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          mkdir -p gentoo-overlay/app-portage/porthole
+          # Generate the ebuild from the template
+          sed "s/@VERSION@/${VERSION}/g" gentoo/porthole.ebuild > \
+            "gentoo-overlay/app-portage/porthole/porthole-${VERSION}.ebuild"
+          tar czf "dist/porthole-gentoo-${VERSION}.tar.gz" -C gentoo-overlay .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/porthole-*.tar.gz
+            dist/porthole-*.whl
+          generate_release_notes: true
+          draft: false
+          prerelease: false

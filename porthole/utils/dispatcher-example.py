@@ -24,11 +24,13 @@
 # Fredrik Arnerup <foo@stacken.kth.se>, 2004-12-19
 # Brian Dolbec<dol-sen@telus.net>,2005-3-30
 
-import pygtk; pygtk.require("2.0")
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib, GObject
+
 from time import sleep
 import threading, gobject, os
-from dispatcher import Dispatcher
+from .dispatcher import Dispatcher
 
 # ####################################
 # dispatcher
@@ -48,7 +50,7 @@ class Thread(threading.Thread):
 
     def run(self):
         done = False
-        print("thread_num = %s; process id = %d ****************" %(self.thread_num,os.getpid()))
+        print(("thread_num = %s; process id = %d ****************" %(self.thread_num,os.getpid())))
         pid_func(self.thread_num)
         for num in range(250):
             #print self.thread_num, " num = ",num
@@ -61,7 +63,7 @@ class Thread(threading.Thread):
 
 
 def pid_func(threadnum):
-    print("pid_func: called from thread_num = %s; process id = %d ****************" %(threadnum,os.getpid()))
+    print(("pid_func: called from thread_num = %s; process id = %d ****************" %(threadnum,os.getpid())))
 
 def message_fun(buffer, message):
     #print ("got a message : %s" %(message[0] + str(message[1])))
@@ -85,12 +87,12 @@ def timerfunc():
         return False
 
 def on_window_map_event(event, param):
-    print 'Window mapped'
+    print('Window mapped')
     thread1 = Thread(Dispatcher(message_fun, buffer), "thread1", 0.9)
     thread2 = Thread(Dispatcher(message_fun, buffer), "thread2", 0.9)
     thread3 = Thread(Dispatcher(message_fun, buffer), "thread3", 0.9)
     thread4 = Thread(Dispatcher(message_fun, buffer), "thread4", 0.5)
-    gobject.timeout_add(100, timerfunc)
+    GLib.timeout_add(100, timerfunc)
     thread1.start()
     thread2.start()
     thread3.start()
@@ -99,23 +101,23 @@ def on_window_map_event(event, param):
 
 if __name__ == "__main__":
        
-    gtk.threads_init()
-    window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    textview = gtk.TextView()
+    Gtk.threads_init()
+    window = Gtk.Window(Gtk.WINDOW_TOPLEVEL)
+    textview = Gtk.TextView()
     buffer = textview.get_buffer()
-    sw = gtk.ScrolledWindow()
+    sw = Gtk.ScrolledWindow()
     sw.add(textview)
-    pbar = gtk.ProgressBar()
-    vbox = gtk.VBox()
+    pbar = Gtk.ProgressBar()
+    vbox = Gtk.Box()
     vbox.pack_start(sw)
     vbox.pack_start(pbar, False)
     window.add(vbox)
     #gui_dispatcher = Dispatcher(message_fun, buffer)
     window.connect('map_event', on_window_map_event)
-    window.connect("destroy", gtk.main_quit)
+    window.connect("destroy", Gtk.main_quit)
     window.resize(400, 600)
     window.show_all()
     thread_finished = {"thread1":False, "thread2":False, "thread3":False, "thread4":False}
-    gtk.threads_enter()
-    gtk.main()
-    gtk.threads_leave()
+    Gtk.threads_enter()
+    Gtk.main()
+    Gtk.threads_leave()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Reader Class: Sets List Reader
@@ -53,7 +53,7 @@ class SetListReader(CommonReader):
         for filename in filenames:
             debug.dprint("READERS: SetListReader(); filename is: " + filename)
             key =get_set_name(filename)
-            if key not in self.pkg_dict.keys():
+            if key not in list(self.pkg_dict.keys()):
                 self.pkg_dict[key] = {}
                 self.pkg_count[key] = 0
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Utils Package
@@ -24,7 +24,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print "CONFIGURATION: id initialized to ", id
+print("CONFIGURATION: id initialized to ", id)
 
 import re
 from gettext import gettext as _

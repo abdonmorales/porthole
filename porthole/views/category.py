@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Views
@@ -22,8 +22,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, gobject, pango
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Pango', '1.0')
+from gi.repository import Gtk, GLib, GObject, Pango
+
 import threading, os
 from gettext import gettext as _
 
@@ -31,7 +34,7 @@ from porthole.packagebook.depends import DependsTree
 from porthole.views.commontreeview import CommonTreeView
 from porthole.utils import debug
 from porthole.views.helpers import *
-from models import C_ITEM, CategoryModel
+from .models import C_ITEM, CategoryModel
 
 class CategoryView(CommonTreeView):
     """ Self contained treeview to hold categories """
@@ -40,14 +43,14 @@ class CategoryView(CommonTreeView):
         # initialize the treeview
         CommonTreeView.__init__(self)
         # setup the column
-        self.cat_column = gtk.TreeViewColumn(_("Categories"),
-                                    gtk.CellRendererText(),
+        self.cat_column = Gtk.TreeViewColumn(_("Categories"),
+                                    Gtk.CellRendererText(),
                                     markup = C_ITEM["short_name"])
         self.append_column(self.cat_column)
         self.cat_column.set_visible(True)
         self.cat_column.set_expand(True)
-        self.count_column = gtk.TreeViewColumn(_("# pkgs"),
-                                    gtk.CellRendererText(),
+        self.count_column = Gtk.TreeViewColumn(_("# pkgs"),
+                                    Gtk.CellRendererText(),
                                     markup = C_ITEM["count"])
         self.append_column(self.count_column)
         self.count_column.set_visible(True)

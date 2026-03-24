@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     Set_config
@@ -22,6 +22,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 import sys, os, os.path, codecs, re, datetime
 
 try: # >=portage 2.2 modules
@@ -41,7 +45,7 @@ version = 1.1
 def dprint(message):
     """Print debug message if debug is true."""
     if debug:
-        print message
+        print(message)
 
 def Header(filename):
     """creates a file creation header including:
@@ -324,7 +328,7 @@ class MakeConf:
             for i in overlays:
                 if i[:len(self.storage)] == self.storage:
                     oname = os.path.basename(i)
-                    if  oname in self.db.keys():
+                    if  oname in list(self.db.keys()):
                         self.overlays.append(self.db[oname])
                     else:
                         # These are additional overlays that we dont know
@@ -394,7 +398,7 @@ class MakeConf:
             make_conf = codecs.open(path, 'w', 'utf-8')
             make_conf.write(content)
             make_conf.close()
-        except Exception, error:
+        except Exception as error:
             raise Exception('MAKE_CONF: write_file(); Failed to write "' + path + '".\nError was:\n'
                             + str(error))
         return True
@@ -426,7 +430,7 @@ class MakeConf:
                 make_conf = codecs.open(self.path, 'r', 'utf-8')
                 self.data = make_conf.read()
                 make_conf.close()
-            except Exception, error:
+            except Exception as error:
                 raise Exception('MAKE_CONF: content(); Failed to read "' + self.path + '".\nError was:\n'
                                 + str(error))
             self.get_property_list()
@@ -478,8 +482,8 @@ if __name__ == "__main__":
 
     try:
         opts, args = getopt(argv[1:], "lvdf:n:e:a:r:p:c:R:P", ["local", "version", "debug"])
-    except GetoptError, e:
-        print >>stderr, e.msg
+    except GetoptError as e:
+        print(e.msg, file=stderr)
         exit(1)
 
     file = ""

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     Package Database
@@ -22,12 +22,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import gi
+from gi.repository import GLib, GObject
+
 import datetime
 id = datetime.datetime.now().microsecond
-print "DATABASE: id initialized to ", id
+print("DATABASE: id initialized to ", id)
 
-import pwd, cPickle, os
-import gobject
+import pwd, pickle, os
 
 from porthole.db.package import Package
 from porthole import backends
@@ -85,7 +87,7 @@ class Database(DBBase):
                     debug.dprint("DATABASE: get_package(); package not found for: " + name + " original full_name = " + full_name)
                     #debug.dprint("DATABASE: get_package(); self.categories[category] = " + str(self.categories[category].keys()))
                 return None
-        except Exception, e:
+        except Exception as e:
             debug.dprint("DATABASE: get_package(); exception occured: " + str(e))
             return None
 
@@ -106,7 +108,7 @@ class Database(DBBase):
             _db = {'sync_date': sync_time, 'descriptions': self.descriptions}
             debug.dprint("DATABASE: save(); Pickling 'db' to file: " + self._DBFile)
             # pickle it baby, yeah!
-            cPickle.dump(_db, open(self._DBFile, "w"))
+            pickle.dump(_db, open(self._DBFile, "w"))
             del _db
         
     def load(self, filename = None):
@@ -115,7 +117,7 @@ class Database(DBBase):
         _db = None
         current, self.valid_sync = get_sync_info()
         if self.valid_sync and os.access(self._DBFile, os.F_OK):
-            _db = cPickle.load(open(self._DBFile))
+            _db = pickle.load(open(self._DBFile))
         elif not self.valid_sync:
             debug.dprint("DATABASE: load(); Current portage tree did Not return a valid sync timestamp, not loading descriptions from the saved file" )
             return -1
@@ -201,7 +203,7 @@ class Database(DBBase):
                 # create a new db
                 self.desc_thread = DescriptionReader(self.list)
                 self.desc_thread.start()
-                gobject.timeout_add(100, self.desc_thread_update)
+                GLib.timeout_add(100, self.desc_thread_update)
 
     def cancell_desc_update(self):
         if self.desc_thread:

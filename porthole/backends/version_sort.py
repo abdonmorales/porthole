@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole's Version string list sorting functions that follows portages
@@ -25,7 +25,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print "VERSION_SORT: id initialized to ", id
+print("VERSION_SORT: id initialized to ", id)
 
 if __name__ == "__main__":
     

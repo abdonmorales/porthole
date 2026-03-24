@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Package class
@@ -24,7 +24,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print "PACKAGE: id initialized to ", id
+print("PACKAGE: id initialized to ", id)
 
 ## circular import problem
 ##from porthole.db import userconfigs

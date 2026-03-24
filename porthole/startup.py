@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole
@@ -21,17 +21,22 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf, GLib, GObject
+
 import datetime
 id = datetime.datetime.now().microsecond
-print "STARTUP: id initialized to ", id
+print("STARTUP: id initialized to ", id)
 
 # proper way to enable threading.  Do this first before any other code
-import gobject
-gobject.threads_init()
+# GObject.threads_init() not needed in GTK3
 # now for the rest
 
 # setup our path so we can load our custom modules
-import sys, os, thread
+import sys, os, _thread
 
 # Add path to portage module if 
 # missing from path (ref bug # 924100)
@@ -60,8 +65,7 @@ DIR_LIST = [LOG_FILE_DIR, DB_FILE_DIR]
 
 import os
 #from thread import *
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, time, pwd
+import time, pwd
 while '/usr/bin' in sys.path: # and now importing gtk re-adds it! Grrrr, rude
     sys.path.remove('/usr/bin')
 from getopt import getopt, GetoptError
@@ -69,29 +73,30 @@ import locale, gettext
 from gettext import gettext as _
 
 # it is recommended to init threads right after importing gtk just in case
-#gtk.threads_init()
-#gtk.gdk.threads_init()
+#Gtk.threads_init()
+#Gdk.threads_init()
 
 
 def create_dir(new_dir):
     """Creates the directory passed into it"""
-    print "STARTUP: create_dir; ", new_dir + " does not exist, creating..."
+    print("STARTUP: create_dir; ", new_dir + " does not exist, creating...")
     try:
         os.mkdir(new_dir)
-    except OSError, (errnum, errmsg):
-        print "Failed to create %s:" % new_dir, errmsg
+    except OSError as xxx_todo_changeme:
+        (errnum, errmsg) = xxx_todo_changeme.args
+        print("Failed to create %s:" % new_dir, errmsg)
    
 
 def import_error(e):
-	print "*** Error loading porthole modules!\n*** If you are running a", \
+	print("*** Error loading porthole modules!\n*** If you are running a", \
 		"local (not installed in python's site-packages) version, please use the '--local'", \
 		"or '-l' flag.\n", \
 		"*** Otherwise, verify that porthole was installed correctly and", \
 		"that python's path includes the site-packages directory.\n",\
-		"If you have recently updated python, then run 'python-updater'\n"
-	print "Your sys.path: %s\n" % sys.path
-	print "Your sys.version: %s\n" % sys.version
-	print "Original exception was: ImportError: %s\n" % e
+		"If you have recently updated python, then run 'python-updater'\n")
+	print("Your sys.path: %s\n" % sys.path)
+	print("Your sys.version: %s\n" % sys.version)
+	print("Original exception was: ImportError: %s\n" % e)
 	sys.exit()
 
 def local():
@@ -99,7 +104,7 @@ def local():
     # if opt in ("-l", "--local"):
     # running a local version (i.e. not installed in /usr/*)
     import os
-    print "STARTUP: local(); setting to local paths"
+    print("STARTUP: local(); setting to local paths")
     DATA_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/porthole/"
     #DATA_PATH = getcwd() + "/"
     i18n_DIR = DATA_PATH + 'i18n'
@@ -108,13 +113,13 @@ def local():
 def set_debug(arg):
     from porthole.utils import debug
     debug.set_debug(True)
-    print "Debug printing is enabled = ", debug.debug, "; debug.id = ", debug.id
+    print("Debug printing is enabled = ", debug.debug, "; debug.id = ", debug.id)
     debug.debug_target = arg
-    print("Debug print filter set to ", debug.debug_target)
+    print(("Debug print filter set to ", debug.debug_target))
 
 def print_version():
     # print version info
-    print "Porthole " + version
+    print("Porthole " + version)
     sys.exit(0)
 
 def set_backend(arg):
@@ -125,19 +130,19 @@ def set_backend(arg):
 
 def insert_path():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    print(sys.path)
+    print((sys.path))
 
 
 def main():
     """start the porthole frontend"""
     try:
-        print "STARTUP: main(); thread id = ", thread.get_ident()
-        print "STARTUP: main(); importing config"
+        print("STARTUP: main(); thread id = ", _thread.get_ident())
+        print("STARTUP: main(); importing config")
         from porthole import config
-        print "STARTUP: config.id = ", config.id
-        print "STARTUP: main(); importing config.preferences"
+        print("STARTUP: config.id = ", config.id)
+        print("STARTUP: main(); importing config.preferences")
         from porthole.config import preferences
-    except ImportError, e:
+    except ImportError as e:
         import_error(e)
     # load prefs
     prefs_additions = [
@@ -148,31 +153,29 @@ def main():
         ["LOG_FILE_DIR",LOG_FILE_DIR],
         ["PORTAGE", BACKEND]
     ]
-    print "STARTUP: main(); loading preferences"
+    print("STARTUP: main(); loading preferences")
     config.Prefs = preferences.PortholePreferences(prefs_additions)
     #print config.Prefs
-    print "STARTUP: main(); importing version"
+    print("STARTUP: main(); importing version")
     from porthole.version import version
-    print "STARTUP: main(); importing utils"
+    print("STARTUP: main(); importing utils")
     from porthole.utils import debug
-    print "PORTHOLE: importing MainWindow"
+    print("PORTHOLE: importing MainWindow")
     from porthole.mainwindow import MainWindow
 
     locale.setlocale (locale.LC_ALL, '')
     gettext.bindtextdomain (APP, i18n_DIR)
     gettext.textdomain (APP)
-    gettext.install (APP, i18n_DIR, unicode=1)
-    gtk.glade.bindtextdomain (APP, i18n_DIR)
-    gtk.glade.textdomain (APP)
+    gettext.install(APP, i18n_DIR)
 
     # make sure gtk lets threads run
     #os.putenv("PYGTK_USE_GIL_STATE_API", "True")
-    gtk.gdk.threads_init()
+    Gdk.threads_init()
 
     debug.dprint("PORTHOLE: process id = %d ****************" %os.getpid())
     # setup our app icon
-    myicon = gtk.gdk.pixbuf_new_from_file(DATA_PATH + "pixmaps/porthole-icon.png")
-    gtk.window_set_default_icon_list(myicon)
+    myicon = GdkPixbuf.Pixbuf.new_from_file(DATA_PATH + "pixmaps/porthole-icon.png")
+    Gtk.Window.set_default_icon_list([myicon])
     # load config info
     config.Config.set_path(DATA_PATH)
     config.Config.load()
@@ -180,7 +183,7 @@ def main():
     # create the main window
     myapp = MainWindow() #config.Prefs, config.Config)
     # start the program loop
-    gtk.main()
+    Gtk.main()
     # save the prefs to disk for next time
     config.Prefs.save()
 

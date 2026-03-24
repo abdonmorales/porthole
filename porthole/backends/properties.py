@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Properties class
@@ -24,7 +24,7 @@
 
 import datetime
 id = datetime.datetime.now().microsecond
-print "PROPERTIES: id initialized to ", id
+print("PROPERTIES: id initialized to ", id)
 
 
 class Properties:

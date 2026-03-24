@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
     Porthole version
     Copyright (C) 2006 -2009 Brian Dolbec
@@ -20,6 +20,6 @@
 """
 from gettext import gettext as _
 
-version = "0.6.0"
+version = "0.7.0"
 
-copyright = _("Copyright (c) 2003 - 2009")
+copyright = _("Copyright (c) 2003 - 2009, 2026")

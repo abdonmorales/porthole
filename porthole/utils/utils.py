@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Utils Module
@@ -23,16 +23,18 @@
 '''
 
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 import os, threading
 import errno
 import string
 import re
 import datetime
 from sys import stderr
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk
 import grp
-import pwd, cPickle
+import pwd, pickle
 from gettext import gettext as _
 
 from porthole.version import version
@@ -44,11 +46,11 @@ def get_icon_for_package(package):
     """Return an icon for a package"""
     # if it's installed, find out if it can be upgraded
     if package and package.get_installed():
-        icon = gtk.STOCK_YES
+        icon = Gtk.STOCK_YES
     else:
         # just put the STOCK_NO icon
         # switched to blank icon if not installed
-        icon = '' # gtk.STOCK_NO
+        icon = '' # Gtk.STOCK_NO
     return icon       
 
 def get_icon_for_upgrade_package(package):
@@ -57,10 +59,10 @@ def get_icon_for_upgrade_package(package):
         return '', 'blue'
     #  find out if it can be upgraded
     if package.is_upgradable() == 1:  # 1 for only upgrades (no downgrades)
-        icon = gtk.STOCK_GO_UP
+        icon = Gtk.STOCK_GO_UP
         color = config.Prefs.views.upgradable_fg
     else: # it's a downgrade
-        icon = gtk.STOCK_GO_DOWN
+        icon = Gtk.STOCK_GO_DOWN
         color = config.Prefs.views.downgradable_fg
     return icon, color      
 
@@ -197,7 +199,7 @@ def estimate(package_name, log_file_name="/var/log/emerge.log"):
         else:
             return None          
     except:
-        raise BadLogFile, _("Error reading emerge log file.  Check file permissions, or check for corrupt log file.")
+        raise BadLogFile(_("Error reading emerge log file.  Check file permissions, or check for corrupt log file."))
 
 def pretend_check(command_string):
     isPretend = (re.search("--pretend", command_string) != None)

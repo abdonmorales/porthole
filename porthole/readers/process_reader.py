@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole  ProcessOutputReader Class
@@ -21,6 +21,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk
 
 import signal, os, threading, time, gtk
 import errno, string
@@ -61,14 +66,14 @@ class ProcessOutputReader(threading.Thread):
                 if self.process_running and (self.fd != None):
                     try:
                         char = os.read(self.fd, 1)
-                    except OSError, e:
+                    except OSError as e:
                         if e.args[0] == 5: # 5 = i/o error
                             debug.dprint("PROCESS_READER: ProcessOutputReader: process finished, closing")
                             try:
                                 debug.dprint("PROCESS_READER: is self.fd a tty? '%s'" % os.isatty(self.fd))
                                 os.close(self.fd)
                                 debug.dprint("PROCESS_READER: ProcessOutputReader: closed okay")
-                            except Exception, e:
+                            except Exception as e:
                                 # probably already closed
                                 debug.dprint("PROCESS_READER: ProcessOutputReader: couldn't close self.fd. exception: %s" % e)
                         else:
@@ -80,7 +85,7 @@ class ProcessOutputReader(threading.Thread):
                         # keep read(number) small so as to not cripple the 
                         # system reading large files.  even 2 can hinder gui response
                         char = self.f.read(1)
-                    except OSError, e:
+                    except OSError as e:
                         debug.dprint("PROCESS_READER: ProcessOutputReader: .f OSError: %s" % e)
                         # maybe the process died?
                         char = None
@@ -111,9 +116,9 @@ class ProcessOutputReader(threading.Thread):
                     if self.file_input:
                         self.file_input = False
                     else:
-                        gtk.gdk.threads_enter()
+                        Gdk.threads_enter()
                         self.dispatcher()
-                        gtk.gdk.threads_leave()
+                        Gdk.threads_leave()
             else:
                 # sleep for .5 seconds before we check again
                 if time:

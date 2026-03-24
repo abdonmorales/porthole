@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -29,13 +29,15 @@
         from fileselector import FileSel
 """
 
-import pygtk; pygtk.require('2.0')
-import gtk
 
 
-class FileSel(gtk.FileSelection):
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+class FileSel(Gtk.FileSelection):
     def __init__(self, title):
-        gtk.FileSelection.__init__(self, title)
+        Gtk.FileSelection.__init__(self, title)
         self.result = False
 
     def ok_cb(self, button):
@@ -53,9 +55,9 @@ class FileSel(gtk.FileSelection):
         self.ok_func = func
         self.ok_button.connect("clicked", self.ok_cb)
         self.cancel_button.connect("clicked", lambda x: self.destroy())
-        self.connect("destroy", lambda x: gtk.main_quit())
+        self.connect("destroy", lambda x: Gtk.main_quit())
         self.set_modal(True)
         self.show()
-        gtk.main()
+        Gtk.main()
         return self.result
 

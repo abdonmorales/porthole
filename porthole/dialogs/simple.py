@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole dialogs.simple Package
@@ -23,20 +23,22 @@
 '''
 
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 from gettext import gettext as _
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk
 
 #from porthole.utils import debug
 
-class CommonDialog(gtk.Dialog):
+class CommonDialog(Gtk.Dialog):
     """ A common gtk Dialog class """
     def __init__(self, title, parent, message, callback, button):
-        gtk.Dialog.__init__(self, title, parent, gtk.DIALOG_MODAL or
-                            gtk.DIALOG_DESTROY_WITH_PARENT, (str(button), 0))
+        Gtk.Dialog.__init__(self, title, parent, Gtk.DialogFlags.MODAL or
+                            Gtk.DialogFlags.DESTROY_WITH_PARENT, (str(button), 0))
         # add message
-        text = gtk.Label(message)
+        text = Gtk.Label(message)
         text.set_padding(5, 5)
         text.show()
         self.vbox.pack_start(text)
@@ -67,7 +69,7 @@ class SingleButtonDialog(CommonDialog):
         CommonDialog.__init__(self, title, parent, message,
                                            callback, button)
         if progressbar:
-            self.progbar = gtk.ProgressBar()
+            self.progbar = Gtk.ProgressBar()
             self.progbar.set_text(_("Loading"))
             self.progbar.show()
             self.vbox.add(self.progbar)

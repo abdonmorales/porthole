@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -44,10 +44,13 @@
 """
 
 # import external [system] modules
-import pygtk; pygtk.require('2.0')
-import gtk, gtk.glade, gobject
-import pango
-from types import *
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('Pango', '1.0')
+from gi.repository import Gtk, Gdk, GLib, GObject, Pango
+
+from types import FunctionType, MethodType, BuiltinFunctionType, BuiltinMethodType
 #import signal, os, pty, threading, time, sre, portagelib
 #import datetime, pango, errno
 
@@ -60,17 +63,17 @@ from porthole.dialogs.simple import SingleButtonDialog
 
 FUNCTIONTYPES = [FunctionType, MethodType, BuiltinFunctionType, BuiltinMethodType]
 
-class QueueModel(gtk.ListStore):
+class QueueModel(Gtk.ListStore):
     def __init__(self):
-        gtk.ListStore.__init__(self, gtk.gdk.Pixbuf,            # hold the status icon
-                                        gobject.TYPE_STRING,         # package name/ command name
-                                        gobject.TYPE_STRING,         # command
-                                        gobject.TYPE_INT,                # entry id
-                                        gobject.TYPE_STRING,        # sender
-                                        gobject.TYPE_BOOLEAN,    # killed
-                                        gobject.TYPE_PYOBJECT,   # callback function
-                                        gobject.TYPE_BOOLEAN,    # completed
-                                        gobject.TYPE_INT                # killed_id
+        Gtk.ListStore.__init__(self, Gdk.Pixbuf,            # hold the status icon
+                                        GObject.TYPE_STRING,         # package name/ command name
+                                        GObject.TYPE_STRING,         # command
+                                        GObject.TYPE_INT,                # entry id
+                                        GObject.TYPE_STRING,        # sender
+                                        GObject.TYPE_BOOLEAN,    # killed
+                                        GObject.TYPE_PYOBJECT,   # callback function
+                                        GObject.TYPE_BOOLEAN,    # completed
+                                        GObject.TYPE_INT                # killed_id
                                         )
         self.column = {'icon': 0,
                                 'name':  1,
@@ -107,12 +110,12 @@ class QueueModel(gtk.ListStore):
 
     def set_data(self, iter, data):
         if iter:
-            if type(data) is DictType:
-                debug.dprint("QueueModel: set_data(); DictType data['icon'] type = " + str(type(data['icon'])))
+            if isinstance(data, dict):
+                debug.dprint("QueueModel: set_data(); dict data['icon'] type = " + str(type(data['icon'])))
                 for i in data:
                     self.set_value(iter,self.column[i], data[i])
-            elif type(data) is ListType:
-                debug.dprint("QueueModel: set_data(); ListType data = " + str(data))
+            elif isinstance(data, list):
+                debug.dprint("QueueModel: set_data(); list data = " + str(data))
                 #if type(data[self.column['icon']]) is NoneType:
                 self.set(iter, self.column['icon'], data[self.column['icon']],
                                     self.column['name'], data[self.column['name']],
@@ -134,42 +137,42 @@ class TerminalQueue:
         self.wtree = wtree
         self.term = term
         self.set_resume = set_resume
-        self.window = wtree.get_widget("process_window")
-        self.queue_tree = wtree.get_widget("queue_treeview")
-        self.queue_menu = wtree.get_widget("queue1")
-        self.resume_menu = self.wtree.get_widget("resume")
-        self.skip_first_menu = self.wtree.get_widget("skip_first1")
-        self.skip_queue_menu = self.wtree.get_widget("skip_queue")
-        self.qmenu_items = { "move_top" : self.wtree.get_widget("move_top"),
-                                            "move_up": self.wtree.get_widget("move_up1"),
-                                            "move_down" : self.wtree.get_widget("move_down1"),
-                                            "move_bottom": self.wtree.get_widget("move_bottom"),
-                                            "queue_remove": self.wtree.get_widget("remove1"),
-                                            "clear_queue" : self.wtree.get_widget("clear_queue")
+        self.window = wtree.get_object("process_window")
+        self.queue_tree = wtree.get_object("queue_treeview")
+        self.queue_menu = wtree.get_object("queue1")
+        self.resume_menu = self.wtree.get_object("resume")
+        self.skip_first_menu = self.wtree.get_object("skip_first1")
+        self.skip_queue_menu = self.wtree.get_object("skip_queue")
+        self.qmenu_items = { "move_top" : self.wtree.get_object("move_top"),
+                                            "move_up": self.wtree.get_object("move_up1"),
+                                            "move_down" : self.wtree.get_object("move_down1"),
+                                            "move_bottom": self.wtree.get_object("move_bottom"),
+                                            "queue_remove": self.wtree.get_object("remove1"),
+                                            "clear_queue" : self.wtree.get_object("clear_queue")
                                             }
         # manually assin the keys array since .keys() may not return them in the correct order
         self.qmenu_keys = ["move_top","move_up", "move_down", "move_bottom", "queue_remove", "clear_queue"]
-        self.save_menu = self.wtree.get_widget("save1")
-        self.save_as_menu = self.wtree.get_widget("save_as")
-        self.open_menu = self.wtree.get_widget("open")
-        self.play_btn = self.wtree.get_widget("play_queue_button")
-        self.play_menu = self.wtree.get_widget("resume_queue")
-        self.pause_btn = self.wtree.get_widget("pause_button")
-        self.pause_menu = self.wtree.get_widget("pause")
+        self.save_menu = self.wtree.get_object("save1")
+        self.save_as_menu = self.wtree.get_object("save_as")
+        self.open_menu = self.wtree.get_object("open")
+        self.play_btn = self.wtree.get_object("play_queue_button")
+        self.play_menu = self.wtree.get_object("resume_queue")
+        self.pause_btn = self.wtree.get_object("pause_button")
+        self.pause_menu = self.wtree.get_object("pause")
         #debug.dprint("TERM_QUEUE: Attempting to change the pause, paly button image colors")
         """ Set up different colors for the pause & play buttons depending on it's state
-            gtk.STATE_NORMAL	State during normal operation.
-            gtk.STATE_ACTIVE	State of a currently active widget, such as a depressed button.
-            gtk.STATE_PRELIGHT	State indicating that the mouse pointer is over the widget and the widget will respond to mouse clicks.
-            gtk.STATE_SELECTED	State of a selected item, such the selected row in a list.
-            gtk.STATE_INSENSITIVE	State indicating that the widget is unresponsive to user actions.
+            Gtk.StateType.NORMAL	State during normal operation.
+            Gtk.StateType.ACTIVE	State of a currently active widget, such as a depressed button.
+            Gtk.StateType.PRELIGHT	State indicating that the mouse pointer is over the widget and the widget will respond to mouse clicks.
+            Gtk.StateType.SELECTED	State of a selected item, such the selected row in a list.
+            Gtk.StateType.INSENSITIVE	State indicating that the widget is unresponsive to user actions.
         """
-        self.pause_btn.modify_fg(gtk.STATE_INSENSITIVE, gtk.gdk.color_parse("#962A1C"))
-        self.pause_btn.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#DA311B"))
-        self.pause_btn.modify_fg(gtk.STATE_PRELIGHT, gtk.gdk.color_parse("#F65540"))
-        self.play_btn.modify_fg(gtk.STATE_INSENSITIVE, gtk.gdk.color_parse("#3C6E38"))
-        self.play_btn.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#4EBA44"))
-        self.play_btn.modify_fg(gtk.STATE_PRELIGHT, gtk.gdk.color_parse("#58F64A"))
+        self.pause_btn.modify_fg(Gtk.StateType.INSENSITIVE, Gdk.color_parse("#962A1C"))
+        self.pause_btn.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#DA311B"))
+        self.pause_btn.modify_fg(Gtk.StateType.PRELIGHT, Gdk.color_parse("#F65540"))
+        self.play_btn.modify_fg(Gtk.StateType.INSENSITIVE, Gdk.color_parse("#3C6E38"))
+        self.play_btn.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#4EBA44"))
+        self.play_btn.modify_fg(Gtk.StateType.PRELIGHT, Gdk.color_parse("#58F64A"))
         # initialize the model
         self.queue_model = QueueModel()
         # initialize some variables
@@ -179,26 +182,26 @@ class TerminalQueue:
         # catch clicks to the queue tree
         self.queue_tree.connect("cursor-changed", self.clicked)
         # setup the queue treeview
-        column = gtk.TreeViewColumn(_("id"))
-        text = gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(_("id"))
+        text = Gtk.CellRendererText()
         column.pack_start(text, expand = True)
         column.add_attribute(text, "text",self.queue_model.column['id'])
         self.queue_tree.append_column(column)
-        column = gtk.TreeViewColumn(_("Packages to be merged      "))
-        pixbuf = gtk.CellRendererPixbuf()
+        column = Gtk.TreeViewColumn(_("Packages to be merged      "))
+        pixbuf = Gtk.CellRendererPixbuf()
         column.pack_start(pixbuf, expand = False)
         column.add_attribute(pixbuf, "pixbuf", self.queue_model.column['icon'])
-        text = gtk.CellRendererText()
+        text = Gtk.CellRendererText()
         column.pack_start(text, expand = False)
         column.add_attribute(text, "text", self.queue_model.column['name'])
         self.queue_tree.append_column(column)
-        column = gtk.TreeViewColumn(_("Command"))
-        text = gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(_("Command"))
+        text = Gtk.CellRendererText()
         column.pack_start(text, expand = True)
         column.add_attribute(text, "text", self.queue_model.column['command'])
         self.queue_tree.append_column(column)
-        column = gtk.TreeViewColumn(_("Sender"))
-        text = gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(_("Sender"))
+        text = Gtk.CellRendererText()
         column.pack_start(text, expand = True)
         column.add_attribute(text, "text", self.queue_model.column['sender'])
         self.queue_tree.append_column(column)
@@ -222,9 +225,9 @@ class TerminalQueue:
                 message = _("The package you selected is already in the emerge queue,\n" \
                             "but it has been killed. Would you like to resume the emerge?")
                 result = self.resume_dialog(message)
-                if result == gtk.RESPONSE_ACCEPT: # Execute
+                if result == Gtk.ResponseType.ACCEPT: # Execute
                     self.cleanup()
-                elif result == gtk.RESPONSE_YES: # Resume
+                elif result == Gtk.ResponseType.YES: # Resume
                     self.resume_string = " --resume"
                 else: # Cancel
                     return False
@@ -319,14 +322,14 @@ class TerminalQueue:
                 # update the queue tree wait for it to return, it might prevent crashes
                 result = self.clicked(self.queue_tree)
             # remove process from list
-            self.next()
+            next(self)
         # check for pending processes, and run them
         debug.dprint("TERM_QUEUE: start();         ==> check for pending processes, and run them process_iter = " +str(self.process_iter))
         if self.process_iter and not self.get_completed():
                 self.run_process()
         else:
             debug.dprint("TERM_QUEUE: start();         ==> try setting to next iter")
-            self.next()
+            next(self)
             if self.process_iter:
                 debug.dprint("TERM_QUEUE: start();         ==> next iter=good; checking process_iter is completed, self.get_completed = %s" %self.get_completed())
                 debug.dprint("TERM_QUEUE: start();   new process iter id = %d" %self.get_id())
@@ -351,7 +354,7 @@ class TerminalQueue:
         self._run(command, self.process_id)
         self.last_run_iter = self.process_iter.copy()
 
-    def next( self):
+    def __next__( self):
         debug.dprint("TERM_QUEUE: next();" )
         if self.last_run_iter == None:
             self.process_iter = self.queue_model.get_iter_first()
@@ -474,7 +477,7 @@ class TerminalQueue:
             id = self.queue_model.get_value(selected_iter,  self.queue_model.column['id'])
             end_iter = self.queue_model.get_iter(self.next_id-2)
             self.queue_model.move_after(selected_iter, end_iter)
-        except Exception, e:
+        except Exception as e:
             debug.dprint("TERM_QUEUE: move_item_bottom(); exception moving selected_iter, exception :" + str(e))
         if path == self.paused_path:
             debug.dprint("TERM_QUEUE: move_item_bottom(); detected paused item moved, resetting paused_iter, etc., path, paused_path = "  + str(path) + ", " + str(self.paused_path))
@@ -482,7 +485,7 @@ class TerminalQueue:
             try:
                 self.queue_model.set_value(selected_iter, self.queue_model.column['icon'], None)
                 self.paused_iter = self.queue_model.get_iter(self.paused_path)
-            except Exception, e:
+            except Exception as e:
                 debug.dprint("TERM_QUEUE: move_item_bottom(); exception resetting paused_iter, exception :" + str(e))
         self.renum_ids(path, id)
         # We're done, reset queue moves
@@ -626,7 +629,7 @@ class TerminalQueue:
             if id != process_id:
                 #debug.dprint("TERM_QUEUE: locate_id(); ID mismatch, something is out of sink")
                 raise Exception("ID mismatch", id, process_id)
-        except Exception, e:
+        except Exception as e:
             debug.dprint("TERM_QUEUE: locate_id(); execption raised = " + str(e) + " ^^^ path = " + str(path))
             self.locate_iter = self.queue_model.get_iter_first()
             while self.queue_model.get_value(self.locate_iter,self.queue_model.column['id']) != process_id:
@@ -642,15 +645,15 @@ class TerminalQueue:
         debug.dprint("TERM_QUEUE: set_icon(); type = " + str(action_type))
         icon = None
         if action_type == KILLED:
-            icon = gtk.STOCK_CANCEL
+            icon = Gtk.STOCK_CANCEL
         elif action_type == FAILED:
-            icon = gtk.STOCK_STOP
+            icon = Gtk.STOCK_STOP
         elif action_type == COMPLETED:
-            icon = gtk.STOCK_APPLY
+            icon = Gtk.STOCK_APPLY
         elif action_type == EXECUTE:
-            icon = gtk.STOCK_EXECUTE
+            icon = Gtk.STOCK_EXECUTE
         elif action_type == PAUSED:
-            icon = gtk.STOCK_MEDIA_PAUSE
+            icon = Gtk.STOCK_MEDIA_PAUSE
         elif action_type == PENDING:
             icon = None
         if icon:
@@ -671,7 +674,7 @@ class TerminalQueue:
                         self.locate_id(process_id)
                         #debug.dprint("TERM_QUEUE: set_icon(): back from locate_id()")
                         self.queue_model.set_value(self.locate_iter, self.queue_model.column['icon'], self.render_icon(icon))
-                except Exception, e:
+                except Exception as e:
                     debug.dprint("TERM_QUEUE: set_icon(): blasted #!* exception %s" %str(e))
         else: # no icon
             self.locate_id(process_id)
@@ -682,7 +685,7 @@ class TerminalQueue:
     def render_icon(self, icon):
         """ Render an icon for the queue tree """
         return self.queue_tree.render_icon(icon,
-                    size = gtk.ICON_SIZE_MENU, detail = None)
+                    size = Gtk.IconSize.MENU, detail = None)
 
     def set_process( self, action_type):
         if action_type == KILLED:
@@ -704,7 +707,7 @@ class TerminalQueue:
         self.task_completed = True
         if not self.queue_paused:
             # get the next process
-            self.next()
+            next(self)
             # check for pending processes, and run them
             self.start(False)
         if self.term.tab_showing[TAB_QUEUE]:
@@ -796,12 +799,12 @@ class TerminalQueue:
 
     def resume_dialog(self, message):
         """ Handle response when user tries to re-add killed process to queue """
-        window = self.wtree.get_widget("process_window")
-        _dialog = gtk.MessageDialog(window, gtk.DIALOG_MODAL,
-                                    gtk.MESSAGE_QUESTION,
-                                    gtk.BUTTONS_CANCEL, message);
-        _dialog.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_ACCEPT)
-        _dialog.add_button("Resume", gtk.RESPONSE_YES)
+        window = self.wtree.get_object("process_window")
+        _dialog = Gtk.MessageDialog(window, Gtk.DialogFlags.MODAL,
+                                    Gtk.MessageType.QUESTION,
+                                    Gtk.ButtonsType.CANCEL, message);
+        _dialog.add_button(Gtk.STOCK_EXECUTE, Gtk.ResponseType.ACCEPT)
+        _dialog.add_button("Resume", Gtk.ResponseType.YES)
         result = _dialog.run()
         _dialog.destroy()
         return result

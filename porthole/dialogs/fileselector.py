@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -27,15 +27,17 @@
         from fileselector import FileSelector
 """
 
-import pygtk; pygtk.require('2.0')
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 import os, os.path
 
 from porthole.utils import debug
 
-class FileSel(gtk.FileSelection):
+class FileSel(Gtk.FileSelection):
     def __init__(self, title):
-        gtk.FileSelection.__init__(self, title)
+        Gtk.FileSelection.__init__(self, title)
         self.result = False
 
     def ok_cb(self, button):
@@ -53,10 +55,10 @@ class FileSel(gtk.FileSelection):
         self.ok_func = func
         self.ok_button.connect("clicked", self.ok_cb)
         self.cancel_button.connect("clicked", lambda x: self.destroy())
-        self.connect("destroy", lambda x: gtk.main_quit())
+        self.connect("destroy", lambda x: Gtk.main_quit())
         self.set_modal(True)
         self.show()
-        gtk.main()
+        Gtk.main()
         return self.result
 
 class FileSelector:
@@ -76,12 +78,12 @@ class FileSelector:
         if self.overwrite_confirm and (not self.filename or filename != self.filename):
             if os.path.exists(filename):
                 err = _("Ovewrite existing file '%s'?")  % filename
-                dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                            gtk.MESSAGE_QUESTION,
-                                            gtk.BUTTONS_YES_NO, err);
+                dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                            Gtk.MessageType.QUESTION,
+                                            Gtk.ButtonsType.YES_NO, err);
                 result = dialog.run()
                 dialog.destroy()
-                if result != gtk.RESPONSE_YES:
+                if result != Gtk.ResponseType.YES:
                     return False
 
         self.filename = filename
