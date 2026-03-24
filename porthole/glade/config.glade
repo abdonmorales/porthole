@@ -313,7 +313,6 @@
                             <child>
                               <object class="GtkComboBox" id="combobox1">
                                 <property name="visible">True</property>
-                                <property name="items" translatable="yes"></property>
                               </object>
                               <packing>
                                 <property name="padding">12</property>

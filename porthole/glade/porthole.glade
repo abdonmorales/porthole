@@ -442,7 +442,6 @@
             <child>
               <object class="GtkComboBox" id="view_filter">
                 <property name="visible">True</property>
-                <property name="items" translatable="yes"></property>
                 <signal name="changed" handler="view_filter_changed"/>
               </object>
               <packing>
