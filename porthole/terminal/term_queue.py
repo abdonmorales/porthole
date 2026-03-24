@@ -170,12 +170,16 @@ class TerminalQueue:
             Gtk.StateType.SELECTED	State of a selected item, such the selected row in a list.
             Gtk.StateType.INSENSITIVE	State indicating that the widget is unresponsive to user actions.
         """
-        self.pause_btn.modify_fg(Gtk.StateType.INSENSITIVE, Gdk.color_parse("#962A1C"))
-        self.pause_btn.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#DA311B"))
-        self.pause_btn.modify_fg(Gtk.StateType.PRELIGHT, Gdk.color_parse("#F65540"))
-        self.play_btn.modify_fg(Gtk.StateType.INSENSITIVE, Gdk.color_parse("#3C6E38"))
-        self.play_btn.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#4EBA44"))
-        self.play_btn.modify_fg(Gtk.StateType.PRELIGHT, Gdk.color_parse("#58F64A"))
+        for btn, state, color_str in [
+            (self.pause_btn, Gtk.StateType.INSENSITIVE, "#962A1C"),
+            (self.pause_btn, Gtk.StateType.NORMAL, "#DA311B"),
+            (self.pause_btn, Gtk.StateType.PRELIGHT, "#F65540"),
+            (self.play_btn, Gtk.StateType.INSENSITIVE, "#3C6E38"),
+            (self.play_btn, Gtk.StateType.NORMAL, "#4EBA44"),
+            (self.play_btn, Gtk.StateType.PRELIGHT, "#58F64A"),
+        ]:
+            _ok, _color = Gdk.color_parse(color_str)
+            if _ok: btn.modify_fg(state, _color)
         # initialize the model
         self.queue_model = QueueModel()
         # initialize some variables

@@ -191,9 +191,13 @@ class ProcessManager: #dbus.service.Object):
                 if x == "process_text" or config.Prefs.terminal.all_tabs_use_custom_colors:
                     fg, bg, weight = config.Prefs.TAG_DICT['default']
                     font = config.Prefs.terminal.font
-                    if bg: view.modify_base(Gtk.StateType.NORMAL, Gdk.color_parse(bg))
+                    if bg:
+                        _ok, _color = Gdk.color_parse(bg)
+                        if _ok: view.modify_base(Gtk.StateType.NORMAL, _color)
                     else: view.modify_base(Gtk.StateType.NORMAL, default_bg)
-                    if fg: view.modify_text(Gtk.StateType.NORMAL, Gdk.color_parse(fg))
+                    if fg:
+                        _ok, _color = Gdk.color_parse(fg)
+                        if _ok: view.modify_text(Gtk.StateType.NORMAL, _color)
                     else: view.modify_text(Gtk.StateType.NORMAL, default_fg)
                     view.modify_font(Pango.FontDescription.from_string(font or default_font))
                 else:

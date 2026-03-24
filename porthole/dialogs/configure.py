@@ -34,6 +34,13 @@ from porthole.utils import debug
 
 portage_lib = backends.portage_lib
 
+def _parse_color(spec):
+    """Helper to handle _parse_color() returning (success, color) in GTK 3."""
+    result = _parse_color(spec)
+    if isinstance(result, tuple):
+        return result[1] if result[0] else None
+    return result
+
 class ConfigDialog:
     """Class to display a GUI for configuring Porthole"""
 
@@ -207,9 +214,9 @@ class ConfigDialog:
         attributes = Gtk.TextView().get_default_attributes()
         self.default_textview_fg = attributes.fg_color
         self.default_textview_bg = attributes.bg_color
-        if default[0]: default_fg = Gdk.color_parse(default[0])
+        if default[0]: default_fg = _parse_color(default[0])
         else: default_fg = self.default_textview_fg
-        if default[1]: default_bg = Gdk.color_parse(default[1])
+        if default[1]: default_bg = _parse_color(default[1])
         else: default_bg = self.default_textview_bg
 
         for name in self.tagnamelist:
@@ -217,7 +224,7 @@ class ConfigDialog:
             widget = self.wtree.get_object(name + '_fg')
             if widget:
                 if color:
-                    widget.set_color(Gdk.color_parse(color))
+                    widget.set_color(_parse_color(color))
                 else:
                     widget.set_color(default_fg)
                     widget.set_alpha(32767) # to show it's using the default value
@@ -226,7 +233,7 @@ class ConfigDialog:
             widget = self.wtree.get_object(name + '_bg')
             if widget:
                 if color:
-                    widget.set_color(Gdk.color_parse(color))
+                    widget.set_color(_parse_color(color))
                 else:
                     widget.set_color(default_bg)
                     widget.set_alpha(32767) # to show it's using the default value
@@ -245,16 +252,16 @@ class ConfigDialog:
             widget = self.wtree.get_object('fg_' + name)
             if widget:
                 if color:
-                    widget.set_color(Gdk.color_parse(color))
+                    widget.set_color(_parse_color(color))
                 else: # this should never happen, but just in case...
-                    widget.set_color(Gdk.color_parse(name))
+                    widget.set_color(_parse_color(name))
             color = config.Prefs.TAG_DICT['bg_' + name][1]
             widget = self.wtree.get_object('bg_' + name)
             if widget:
                 if color:
-                    widget.set_color(Gdk.color_parse(color))
+                    widget.set_color(_parse_color(color))
                 else: # this should never happen, but just in case...
-                    widget.set_color(Gdk.color_parse(name))
+                    widget.set_color(_parse_color(name))
 
         # View Colours
         for name in self.viewoptions:
@@ -262,7 +269,7 @@ class ConfigDialog:
             widget = self.wtree.get_object(name)
             if widget:
                 if color:
-                    widget.set_color(Gdk.color_parse(color))
+                    widget.set_color(_parse_color(color))
                 else:
                     widget.set_color(default_fg)
 
@@ -368,7 +375,7 @@ class ConfigDialog:
                 if color:
                     config.Prefs.TAG_DICT['bg_' + name][1] = self.get_color_spec(color)
                 else: # this should never happen, but just in case...
-                    widget.set_color(Gdk.color_parse(name))
+                    widget.set_color(_parse_color(name))
 
         # View Colours
         for name in self.viewoptions:
