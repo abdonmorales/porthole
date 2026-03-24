@@ -221,7 +221,7 @@
 	    </packing>
 	  </child>
 
-	  <child>
+	  <child type="tab">
 	    <object class="GtkLabel" id="author_label">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Authors</property>
@@ -240,9 +240,6 @@
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
 	    </object>
-	    <packing>
-	      <property name="type">tab</property>
-	    </packing>
 	  </child>
 
 	  <child>
@@ -280,7 +277,7 @@
 	    </packing>
 	  </child>
 
-	  <child>
+	  <child type="tab">
 	    <object class="GtkLabel" id="license_label">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">License</property>
@@ -298,9 +295,6 @@
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
 	    </object>
-	    <packing>
-	      <property name="type">tab</property>
-	    </packing>
 	  </child>
 	</object>
 	<packing>

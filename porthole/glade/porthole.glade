@@ -12,7 +12,6 @@
     <child>
       <object class="GtkBox" id="vbox1">
       <property name="orientation">vertical</property>
-      <property name="orientation">vertical</property>
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <property name="spacing">1</property>
@@ -423,7 +422,6 @@
         <child>
           <object class="GtkBox" id="hbox4">
       <property name="orientation">horizontal</property>
-      <property name="orientation">horizontal</property>
             <property name="visible">True</property>
             <child>
               <object class="GtkLabel" id="view_label">
@@ -583,14 +581,13 @@
                     </child>
                   </object>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label12">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Summary</property>
                   </object>
                   <packing>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -606,7 +603,7 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label13">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Dependencies</property>
@@ -614,7 +611,6 @@
                   <packing>
                     <property name="position">1</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -640,14 +636,13 @@
                     <property name="position">2</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label14">
                     <property name="label" translatable="yes">Changelog</property>
                   </object>
                   <packing>
                     <property name="position">2</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -673,14 +668,13 @@
                     <property name="position">3</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label1">
                     <property name="label" translatable="yes">Installed files</property>
                   </object>
                   <packing>
                     <property name="position">3</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -706,14 +700,13 @@
                     <property name="position">4</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label_ebuild">
                     <property name="label" translatable="yes">Ebuild</property>
                   </object>
                   <packing>
                     <property name="position">4</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
               </object>
@@ -807,7 +800,6 @@
     <signal name="destroy" handler="on_process_window_destroy"/>
     <child>
       <object class="GtkBox" id="vbox1">
-      <property name="orientation">vertical</property>
       <property name="orientation">vertical</property>
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
@@ -1123,7 +1115,7 @@
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <child type="tab">
                       <object class="GtkBox" id="hbox2">
       <property name="orientation">horizontal</property>
                         <property name="visible">True</property>
@@ -1155,7 +1147,6 @@
                       </object>
                       <packing>
                         <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
                       </packing>
                     </child>
                     <child>
@@ -1180,7 +1171,7 @@
                         <property name="position">1</property>
                       </packing>
                     </child>
-                    <child>
+                    <child type="tab">
                       <object class="GtkBox" id="hbox5">
       <property name="orientation">horizontal</property>
                         <property name="visible">True</property>
@@ -1213,7 +1204,6 @@
                       <packing>
                         <property name="position">1</property>
                         <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
                       </packing>
                     </child>
                     <child>
@@ -1238,9 +1228,8 @@
                         <property name="position">2</property>
                       </packing>
                     </child>
-                    <child>
+                    <child type="tab">
                       <object class="GtkBox" id="hbox4">
-      <property name="orientation">horizontal</property>
       <property name="orientation">horizontal</property>
                         <property name="visible">True</property>
                         <child>
@@ -1272,7 +1261,6 @@
                       <packing>
                         <property name="position">2</property>
                         <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
                       </packing>
                     </child>
                     <child>
@@ -1297,7 +1285,7 @@
                         <property name="position">3</property>
                       </packing>
                     </child>
-                    <child>
+                    <child type="tab">
                       <object class="GtkBox" id="hbox6">
       <property name="orientation">horizontal</property>
                         <property name="visible">True</property>
@@ -1330,7 +1318,6 @@
                       <packing>
                         <property name="position">3</property>
                         <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
                       </packing>
                     </child>
                     <child>
@@ -1350,7 +1337,7 @@
                         <property name="position">4</property>
                       </packing>
                     </child>
-                    <child>
+                    <child type="tab">
                       <object class="GtkBox" id="hbox7">
       <property name="orientation">horizontal</property>
                         <property name="visible">True</property>
@@ -1382,7 +1369,6 @@
                       <packing>
                         <property name="position">4</property>
                         <property name="tab_fill">False</property>
-                        <property name="type">tab</property>
                       </packing>
                     </child>
                   </object>
@@ -1576,7 +1562,9 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxEntry" id="comboboxentry1">
+              <object class="GtkComboBoxText" id="comboboxentry1">
+
+                <property name="has-entry">True</property>
                 <property name="visible">True</property>
                 <signal name="changed" handler="on_comboboxentry1_changed"/>
               </object>

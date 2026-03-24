@@ -358,7 +358,7 @@
                 </child>
               </object>
             </child>
-            <child>
+            <child type="tab">
               <object class="GtkLabel" id="label5">
                 <property name="visible">True</property>
                 <property name="ypad">3</property>
@@ -366,7 +366,6 @@
               </object>
               <packing>
                 <property name="tab_fill">False</property>
-                <property name="type">tab</property>
               </packing>
             </child>
             <child>
@@ -727,7 +726,7 @@
                     <property name="tab_expand">True</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label40">
                     <property name="visible">True</property>
                     <property name="xpad">6</property>
@@ -735,7 +734,6 @@
                   </object>
                   <packing>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -909,7 +907,7 @@
                     <property name="tab_expand">True</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label33">
                     <property name="xpad">6</property>
                     <property name="label" translatable="yes">Category View</property>
@@ -917,7 +915,6 @@
                   <packing>
                     <property name="position">1</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -1105,7 +1102,7 @@
                     <property name="tab_expand">True</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label34">
                     <property name="visible">True</property>
                     <property name="xpad">6</property>
@@ -1114,7 +1111,6 @@
                   <packing>
                     <property name="position">2</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -1320,7 +1316,7 @@
                     <property name="tab_expand">True</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label4">
                     <property name="visible">True</property>
                     <property name="xpad">6</property>
@@ -1329,7 +1325,6 @@
                   <packing>
                     <property name="position">3</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
               </object>
@@ -1337,7 +1332,7 @@
                 <property name="position">1</property>
               </packing>
             </child>
-            <child>
+            <child type="tab">
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="ypad">3</property>
@@ -1346,7 +1341,6 @@
               <packing>
                 <property name="position">1</property>
                 <property name="tab_fill">False</property>
-                <property name="type">tab</property>
               </packing>
             </child>
             <child>
@@ -1796,7 +1790,7 @@ you wish to be pre-typed</property>
                 <property name="position">2</property>
               </packing>
             </child>
-            <child>
+            <child type="tab">
               <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="ypad">3</property>
@@ -1805,7 +1799,6 @@ you wish to be pre-typed</property>
               <packing>
                 <property name="position">2</property>
                 <property name="tab_fill">False</property>
-                <property name="type">tab</property>
               </packing>
             </child>
             <child>
@@ -2370,7 +2363,7 @@ you wish to be pre-typed</property>
                     </child>
                   </object>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label37">
                     <property name="visible">True</property>
                     <property name="xpad">6</property>
@@ -2378,7 +2371,6 @@ you wish to be pre-typed</property>
                   </object>
                   <packing>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -2864,7 +2856,7 @@ you wish to be pre-typed</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label61">
                     <property name="visible">True</property>
                     <property name="xpad">6</property>
@@ -2873,7 +2865,6 @@ you wish to be pre-typed</property>
                   <packing>
                     <property name="position">1</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
                 <child>
@@ -3035,7 +3026,7 @@ you wish to be pre-typed</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
-                <child>
+                <child type="tab">
                   <object class="GtkLabel" id="label38">
                     <property name="visible">True</property>
                     <property name="xpad">6</property>
@@ -3044,7 +3035,6 @@ you wish to be pre-typed</property>
                   <packing>
                     <property name="position">2</property>
                     <property name="tab_fill">False</property>
-                    <property name="type">tab</property>
                   </packing>
                 </child>
               </object>
@@ -3052,7 +3042,7 @@ you wish to be pre-typed</property>
                 <property name="position">3</property>
               </packing>
             </child>
-            <child>
+            <child type="tab">
               <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="ypad">3</property>
@@ -3061,7 +3051,6 @@ you wish to be pre-typed</property>
               <packing>
                 <property name="position">3</property>
                 <property name="tab_fill">False</property>
-                <property name="type">tab</property>
               </packing>
             </child>
           </object>
