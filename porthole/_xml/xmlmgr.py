@@ -7,7 +7,7 @@
 #            load user preferences and application configuration info/from
 #            XML files.
 #  Language: Python 2.3
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 # Legal Information
 """
      Porthole XML Manager Module
@@ -28,7 +28,7 @@
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 # Technical/design Notes:
 #
 # 1. To conserve memory, del the xmlmanager instance as soon as possible.
@@ -48,7 +48,7 @@
 # 8. If you try to retrieve a non-existant node the class will raise an
 #    exception that can be trapped (XMLManagerError).
 #
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 # References:
 #
 # 1. Python XML Module Library Reference
@@ -61,7 +61,7 @@
 import sys
 
 try:
-     from xml.dom.minidom import parse, getDOMImplementation
+     from xml.dom.minidom import getDOMImplementation, parse
 except Exception as e:
      print("*** Error loading xml.dom.minidom. Original exception was: %s" % e, file=sys.stderr)
 
@@ -128,7 +128,7 @@ class XMLManager:
         if self.__dom == None:
             impl = getDOMImplementation()
             self.__dom = impl.createDocument(None, self.name, None)
-            
+
             # Get the root element and set the version attribute
 
             root = self.__dom.documentElement
@@ -168,7 +168,7 @@ class XMLManager:
                         found = True
                         break
                 if found:
-                     level += 1  
+                     level += 1
                      node = x
                 else:
                      raise XMLManagerError("NodeNotFound", path_list)
@@ -192,7 +192,7 @@ class XMLManager:
         # Non-string values must be converted to string
         # to be XML compliant.  The py_type attribute records
         # the original value's Python type
-    
+
         newnode = self.__dom.createElement(nodeName)
         node = pnode.appendChild(newnode)
 
@@ -244,7 +244,7 @@ class XMLManager:
             node.appendChild(text)
 
         # Lists and tuples and dictionaries (oh my!)
-        # Note: this method is called recursively to process 
+        # Note: this method is called recursively to process
         # structures that contain simpler types
 
         elif type(value) == list:
@@ -303,25 +303,21 @@ class XMLManager:
         for node in nodelist:
             attrib = node.getAttribute('py_type')
 
-        # added lstrip() and rstrip() to node text values to 
-        # prevent errors reloading values from a saved file via the minidom 
+        # added lstrip() and rstrip() to node text values to
+        # prevent errors reloading values from a saved file via the minidom
         # built-in writexml().  This eliminates the need for pyxml's PrettyPrint
             if attrib == 'none':
                 temp_list.append(None)
-            elif attrib in ['','str']:
+            elif attrib in ['','str'] or attrib == 'unicode':
                 temp_list.append(str((self.__NodeText(node.childNodes).lstrip()).rstrip()))
-            elif attrib == 'unicode':
-                temp_list.append(str((self.__NodeText(node.childNodes).lstrip()).rstrip()))
-            elif attrib == 'int':
-                temp_list.append(int((self.__NodeText(node.childNodes).lstrip()).rstrip())) 
-            elif attrib == 'long':
+            elif attrib == 'int' or attrib == 'long':
                 temp_list.append(int((self.__NodeText(node.childNodes).lstrip()).rstrip()))
             elif attrib == 'float':
-                temp_list.append(float((self.__NodeText(node.childNodes).lstrip()).rstrip())) 
+                temp_list.append(float((self.__NodeText(node.childNodes).lstrip()).rstrip()))
             elif attrib == 'complex':
                 temp_list.append(complex((self.__NodeText(node.childNodes).lstrip()).rstrip()))
             elif attrib == 'bool':
-                temp_list.append((self.__NodeText(node.childNodes).lstrip()).rstrip()=='True') 
+                temp_list.append((self.__NodeText(node.childNodes).lstrip()).rstrip()=='True')
             elif attrib == 'list':
                 count = int(node.getAttribute('item_count'))
                 y = 1
@@ -345,7 +341,7 @@ class XMLManager:
                     y += 1
             else:
                 print(attrib, "is unknown type")
-                
+
 
         # If multiple values are found, return as a list
         # otherwise, just return the single item
@@ -364,7 +360,7 @@ class XMLManager:
                             dictionary consisting of basic Python types
             Returns: nothing
         """
-        # First check to make sure DOM is initialized 
+        # First check to make sure DOM is initialized
 
         self.__initDOM()
 

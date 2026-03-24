@@ -23,10 +23,16 @@
 """
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
-import sys, os, os.path, codecs, re, datetime
+gi.require_version('Gtk', '3.0')
+import codecs
+import datetime
+import os
+import os.path
+import re
+import sys
+
+from gi.repository import Gtk
 
 try: # >=portage 2.2 modules
     import portage.const as portage_const
@@ -54,7 +60,7 @@ def Header(filename):
         # program version
         # date & time of creation
         # login username"""
-    
+
     header = "#########################################################################\n" + \
             ("# $Header: %s created by Porthole's set_config.py v: %s, %s, %s Exp $\n" \
             %(filename, str(version), datetime.datetime.today().strftime("%Y/%m/%d %H:%M:%S"), os.getlogin()))
@@ -68,7 +74,7 @@ def get_configlines(filename):
         if the file did not exist then it initializes the list with a creation header"""
     if os.access(filename, os.F_OK): # if file exists
         dprint("SET_CONFIG:  get_configlines(); filename -- os.access OK:%s" % filename)
-        configfile = open(filename, 'r')
+        configfile = open(filename)
         configlines = configfile.readlines()
         configfile.close()
     else:
@@ -87,7 +93,7 @@ def chk_permission(filename):
 def group_by_blanklines(configlines):
     """group lines by separation blank lines to keep entries and their comments together
         input: list of text lines
-        returns a tuple of lists""" 
+        returns a tuple of lists"""
     x=0
     groups={}
     groups[x]=[]
@@ -160,7 +166,7 @@ def set_user_config(filename, name='', ebuild='', comment = '', add=[], remove=[
                     line = remove_flag('+' + flag, line)
                     line.append(flag)
                     dprint("SET_CONFIG: added '%s' flag" % flag)
-                
+
             if not line[1:]: # if we've removed everything and added nothing
                 config[config.index(line)] = []
         elif line[0] in remove:
@@ -209,9 +215,9 @@ def set_package_mask(filename, name='', ebuild='', comment='', add=[], remove=[]
     #dprint(" * SET_CONFIG: set_package_mask(): filename = " + filename)
     configlines =  get_configlines(filename)
     groups = group_by_blanklines(configlines)
-    
+
     # do some more stuff
-    
+
     configtext = '\n'.join(configlines)
     configfile = open(filename, 'w')
     configfile.write(configtext)
@@ -244,7 +250,7 @@ def set_make_conf(property, add=[], remove=[], replace=''):
                 values.remove(element)
                 dprint("SET_CONFIG: removed '%s' from %s" % (element, property))
     if add:
-        if not property in makefile.properties:
+        if property not in makefile.properties:
             dprint("SET_CONFIG: set_make_conf(): makefile does not have key '%s'. Creating..." % property)
             makefile.add_string_property(property, "")
         for element in add:
@@ -273,9 +279,9 @@ class MakeConf:
     And then modified and extended for porthole's use by Brian Dolbec
     """
     # define some re's
-    regex = {'USE': re.compile('USE\s*=\s*"([^"]*)"'),
-                    'PORTDIR_OVERLAY': re.compile('PORTDIR_OVERLAY\s*=\s*"([^"]*)"'),
-                    'PORTAGE_NICENESS': re.compile('PORTAGE_NICENESS\s*=\s*([0-9]*)\s*\n')
+    regex = {'USE': re.compile(r'USE\s*=\s*"([^"]*)"'),
+                    'PORTDIR_OVERLAY': re.compile(r'PORTDIR_OVERLAY\s*=\s*"([^"]*)"'),
+                    'PORTAGE_NICENESS': re.compile('PORTAGE_NICENESS\\s*=\\s*([0-9]*)\\s*\n')
     }
 
     def __init__(self, path, config = None, overlays = None):
@@ -295,8 +301,8 @@ class MakeConf:
     def create_re(self, property):
         """creates the property reg expression and saves it to 
         the regex dictionary for use"""
-        if not property in self.regex:
-            self.regex[property] = re.compile(('%s\s*=\s*"([^"]*)"') %property)
+        if property not in self.regex:
+            self.regex[property] = re.compile((r'%s\s*=\s*"([^"]*)"') %property)
 
     def add_overlay(self, overlay):
         '''Add an overlay to make.conf.'''
@@ -477,8 +483,8 @@ if __name__ == "__main__":
 
     DATA_PATH = "/usr/share/porthole/"
 
+    from getopt import GetoptError, getopt
     from sys import argv, exit, stderr
-    from getopt import getopt, GetoptError
 
     try:
         opts, args = getopt(argv[1:], "lvdf:n:e:a:r:p:c:R:P", ["local", "version", "debug"])

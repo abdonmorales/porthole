@@ -25,7 +25,6 @@
 
 from gettext import gettext as _
 
-
 # some constants for the tabs
 TAB_PROCESS = 0
 TAB_WARNING = 1

@@ -23,15 +23,18 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("DEBUG: id initialized to ", id)
 
 import errno
+import os
+import pickle
+import pwd
 import string
+
 #import re
 from sys import stderr
-import pwd, pickle
-import os
 
 
 def __dummy(*args):
@@ -43,10 +46,10 @@ global dprint, dsave, debug, debug_target
 debug = False
 debug_target = "ALL"
 
-    
+
 # initialize to dummy functions
 dprint = __dummy
-dsave = __dummy 
+dsave = __dummy
 
 def set_debug(mode):
     global debug, dprint, dsave
@@ -54,10 +57,10 @@ def set_debug(mode):
         dprint = _dprint
         dsave = _dsave
     else:
-        dprint = __dummy 
+        dprint = __dummy
         dsave = __dummy
     debug = mode
-    
+
 def _dprint(message):
 	"""Print debug message if debug is true."""
 	#print >>stderr, message

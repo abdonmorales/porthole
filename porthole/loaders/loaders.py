@@ -23,15 +23,19 @@
 '''
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
-import os, threading
+gi.require_version('Gtk', '3.0')
+import os
+import threading
+
 #import errno
 from gettext import gettext as _
 
-from porthole.utils import debug
+from gi.repository import Gtk
+
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 from porthole import config
 
@@ -48,7 +52,7 @@ except ImportError:
     #                 'You will not be able to use gnome to open web pages.')
     debug.dprint('LOADERS: Module "gnome" not found. '
            'You will not be able to use gnome to open web pages.')
-    
+
 # get the standard webbrowser module
 try:
     import webbrowser
@@ -65,7 +69,7 @@ def get_textfile(path):
     f = open(path)
     data = f.read(); f.close()
     return data
-    
+
 def decode_text(data = None, mode = None):
     if data == None:
         return ''
@@ -169,7 +173,7 @@ def load_installed_files(window, view, package = None, ebuild = None):
                             "The package may not be installed"))
             return
         d= {"installed_count" : len(installed_files), "ebuild" : ebuild}
-        view.set_text((_("%(installed_count)i installed files for: %(ebuild)s \n\n") % d) 
+        view.set_text((_("%(installed_count)i installed files for: %(ebuild)s \n\n") % d)
                             + "\n".join(installed_files))
 
 

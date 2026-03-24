@@ -23,7 +23,7 @@ def test_python_version():
 
 def test_version_module_has_correct_attributes():
     """porthole.version should have version and copyright."""
-    from porthole.version import version, copyright
+    from porthole.version import copyright, version
 
     assert isinstance(version, str)
     assert len(version.split(".")) == 3

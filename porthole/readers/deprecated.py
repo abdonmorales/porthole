@@ -22,14 +22,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os, time
+import os
+import time
 
-from porthole.utils import debug
 #from porthole.sterminal import SimpleTerminal
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 from porthole.db.package import Package
 from porthole.readers.commonreader import CommonReader
+
 
 class DeprecatedReader(CommonReader):
     """ Read available upgrades and store them in a tuple """
@@ -48,7 +51,7 @@ class DeprecatedReader(CommonReader):
             self.pkg_count[key] = 0
         self.count = 0
         self.pkg_dict_total = 0
- 
+
     def run( self ):
         """fill upgrade tree"""
         debug.dprint("READERS: DeprecatedReader; process id = %d *******************" %os.getpid())

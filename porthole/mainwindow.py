@@ -23,46 +23,50 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk, GLib, GObject
-
 import datetime
+
+from gi.repository import Gdk, GLib, GObject, Gtk
+
 id = datetime.datetime.now().microsecond
 print("MAINWINDOW: id initialized to ", id)
 
 import os
 from gettext import gettext as _
 
-from porthole.utils import utils, debug
-from porthole import config
-from porthole import backends
+from porthole import backends, config
+from porthole.utils import debug, utils
+
 portage_lib = backends.portage_lib
 #World = portage_lib.settings.get_world
-from porthole.utils.dispatcher import Dispatcher
+from porthole import db
+from porthole.advancedemerge.advemerge import AdvancedEmergeDialog
+from porthole.backends.utilities import get_sync_info
+from porthole.backends.version_sort import ver_match
 from porthole.dialogs.about import AboutDialog
 from porthole.dialogs.command import RunDialog
-from porthole.dialogs.simple import SingleButtonDialog, YesNoDialog
 from porthole.dialogs.configure import ConfigDialog
-from porthole.packagebook.notebook import PackageNotebook
+from porthole.dialogs.simple import SingleButtonDialog, YesNoDialog
+from porthole.loaders.loaders import *
 from porthole.packagebook.depends import DependsTree
-from porthole.terminal.terminal import ProcessManager
-from porthole.views.category import CategoryView
-from porthole.views.package import PackageView, PACKAGES, SEARCH, UPGRADABLE, DEPRECATED, SETS, BLANK, TEMP
-from porthole.views.models import MODEL_ITEM as PACKAGE_MODEL_ITEM
-#from porthole.views.depends import DependsView
-from porthole.views.commontreeview import CommonTreeView
-from porthole.advancedemerge.advemerge import AdvancedEmergeDialog
+from porthole.packagebook.notebook import PackageNotebook
 from porthole.plugin import PluginGUI, PluginManager
-from porthole.readers.upgradeables import UpgradableListReader
-from porthole.readers.descriptions import DescriptionReader
 from porthole.readers.deprecated import DeprecatedReader
+from porthole.readers.descriptions import DescriptionReader
 from porthole.readers.search import SearchReader
 from porthole.readers.sets import SetListReader
-from porthole.loaders.loaders import *
-from porthole.backends.version_sort import ver_match
-from porthole.backends.utilities import get_sync_info
-from porthole import db
+from porthole.readers.upgradeables import UpgradableListReader
+from porthole.terminal.terminal import ProcessManager
+from porthole.utils.dispatcher import Dispatcher
+from porthole.views.category import CategoryView
+
+#from porthole.views.depends import DependsView
+from porthole.views.commontreeview import CommonTreeView
+from porthole.views.models import MODEL_ITEM as PACKAGE_MODEL_ITEM
+from porthole.views.package import BLANK, DEPRECATED, PACKAGES, SEARCH, SETS, TEMP, UPGRADABLE, PackageView
+
 #from timeit import Timer
 
 
@@ -371,7 +375,7 @@ class MainWindow:
         #self.re_init_portage()
         portage_lib.settings.reset()
         # self.reload==False is currently broken for init_data when reloading after a sync
-        #self.init_data() 
+        #self.init_data()
         self.new_sync = True
         self.reload_db()
         self.refresh()
@@ -389,7 +393,7 @@ class MainWindow:
         ##else:
         ##    self.synctooltip.set_text(' '.join([self.sync_tip, self.last_sync[:], '']))
         ##self.synctooltip.enable()
-        
+
     def action_callback(self, action = None, arg = None):
         debug.dprint("MAINWINDOW: action_callback(); caller = %s, action = '%s', arg = %s" %(arg['caller'], str(action), str(arg)))
         old_pretend_value = config.Prefs.emerge.pretend
@@ -623,7 +627,7 @@ class MainWindow:
             self.check_for_root() # displays not root dialog
             return False
         return True
-   
+
     def emerge_setting_set(self, widget, option='null'):
         """Set whether or not we are going to use an emerge option"""
         debug.dprint("MAINWINDOW: emerge_setting_set(%s)" %option)
@@ -677,11 +681,11 @@ class MainWindow:
     def plugin_settings_activate( self, widget ):
         """Shows the plugin settings window"""
         plugin_dialog = PluginGUI(self.plugin_manager )
-    
+
     def configure_porthole(self, menuitem_widget):
         """Shows the Configuration GUI"""
         config_dialog = ConfigDialog()
-    
+
     def new_plugin_menuitem( self, label ):
         debug.dprint("MAINWINDOW: Adding new Menu Entry")
         if self.needs_plugin_menu == False:
@@ -748,7 +752,7 @@ class MainWindow:
             config.Prefs.main.maximized = True
         else:
             config.Prefs.main.maximized = False
-    
+
     def on_pane_notify(self, pane, gparamspec):
         if gparamspec.name == "position":
             # bugfix for hpane jump bug. Now why does this happen?
@@ -761,7 +765,7 @@ class MainWindow:
             config.Prefs.main.hpane = hpanepos = self.hpane.get_position()
             config.Prefs.main.vpane = vpanepos = self.vpane.get_position()
             debug.dprint("MAINWINDOW on_pane_notify(): saved hpane %(hpanepos)s, vpane %(vpanepos)s" % locals())
-    
+
     def get_selected_list(self):
         """creates self.packages_list, self.keyorder"""
         debug.dprint("MAINWINDOW: get_selected_list()")
@@ -833,7 +837,7 @@ class MainWindow:
                 self.packages_list[name] = model.get_value(iter, PACKAGE_MODEL_ITEM["package"])
                 #model.get_value(iter, PACKAGE_MODEL_ITEM["world"])
                 # model.get_value(iter, PACKAGE_MODEL_INDEX["package"]), name]
-                self.keyorder = [name] + self.keyorder 
+                self.keyorder = [name] + self.keyorder
         #debug.dprint("MAINWINDOW; tree_node_to_list(): new keyorder list = " + str(self.keyorder))
         return False
 
@@ -909,7 +913,7 @@ class MainWindow:
             self.search_thread = SearchReader(db.db.list, config.Prefs.main.search_desc, tmp_search_term, db.db.descriptions, Dispatcher(self.search_done))
             self.search_thread.start()
         return
-            
+
 
     # start of search callback
     def search_done( self ):
@@ -1013,7 +1017,7 @@ class MainWindow:
             packages = db.db.installed[category]
             self.package_view.populate(packages, self.current_pkg_name["Installed"])
         else:
-            raise Exception("The programmer is stupid. Unknown category_changed() mode");
+            raise Exception("The programmer is stupid. Unknown category_changed() mode")
 
     def clear_package_detail(self):
         self.packagebook.clear_notebook()
@@ -1083,7 +1087,7 @@ class MainWindow:
                 self.loaded[INDEX_TYPES[x]] = True
             else:
                 self.category_view.populate(list(self.pkg_list[INDEX_TYPES[x]].keys()), True, self.pkg_count[INDEX_TYPES[x]])
-            cat_scroll.show();
+            cat_scroll.show()
             debug.dprint("MAIN: Showing search results")
             self.package_view.set_view(SEARCH)
             cat = self.current_search
@@ -1091,7 +1095,7 @@ class MainWindow:
             #self.select_category_package(cat, pack, x)
         elif x in [SHOW_UPGRADE, SHOW_DEPRECATED, SHOW_SETS]:
             debug.dprint("MAINWINDOW: view_filter_changed(); '" + INDEX_TYPES[x] + "' selected")
-            cat_scroll.show();
+            cat_scroll.show()
             sort_categories = True  # all need to be sorted for them to be displayed in the tree correctly
             if x == SHOW_UPGRADE:
                 self.package_view.set_view(UPGRADABLE)
@@ -1133,7 +1137,7 @@ class MainWindow:
         #self.category_view.last_category = None
         #self.current_cat_cursor["All_Installed"] = None
         #self.current_pkg_cursor["All_Installed"] = None
-    
+
     def select_category_package(self, cat, pack, x):
         debug.dprint("MAINWINDOW: select_category_package(): %s/%s, x = %s" % (cat, pack,INDEX_TYPES[x]))
         model = self.category_view.get_model()
@@ -1309,7 +1313,7 @@ class MainWindow:
             if not db.db:
                 debug.dprint("MAINWINDOW: attempt to update status bar with no db assigned")
             else:
-                text = (_("%(pack)d packages in %(cat)d categories") 
+                text = (_("%(pack)d packages in %(cat)d categories")
                         % {'pack':db.db.installed_count, 'cat':len(db.db.installed)})
         elif mode in [SHOW_SEARCH, SHOW_DEPRECATED, SHOW_SETS]:
             text = '' #(_("%d matches found") % self.package_view.search_model.size)
@@ -1338,7 +1342,7 @@ class MainWindow:
         else:
             #debug.dprint("MAINWINDOW: set_package_actions_sensitive() setting unmerge to %d" %(not enabled))
             self.widget["btn_unmerge"].set_sensitive(not enabled)
-            
+
             self.widget["unmerge_package1"].set_sensitive(not enabled)
         self.packagebook.notebook.set_sensitive(enabled)
 
@@ -1399,7 +1403,7 @@ class MainWindow:
         err = _("Confirm: Kill the Running Process in the Terminal")
         dialog = Gtk.MessageDialog(self.mainwindow, Gtk.DialogFlags.MODAL,
                                 Gtk.MessageType.QUESTION,
-                                Gtk.ButtonsType.YES_NO, err);
+                                Gtk.ButtonsType.YES_NO, err)
         result = dialog.run()
         dialog.destroy()
         if result != Gtk.ResponseType.YES:

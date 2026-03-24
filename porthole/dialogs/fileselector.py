@@ -28,12 +28,15 @@
 """
 
 import gi
+
 gi.require_version('Gtk', '3.0')
+import os
+import os.path
+
 from gi.repository import Gtk
 
-import os, os.path
-
 from porthole.utils import debug
+
 
 class FileSel(Gtk.FileSelection):
     def __init__(self, title):
@@ -63,7 +66,7 @@ class FileSel(Gtk.FileSelection):
 
 class FileSelector:
     """Generic file selector dialog for opening or saving files"""
-    
+
     def __init__(self, parent_window, target_path, callback = None, overwrite_confirm = True):
         self.window = parent_window
         self.callback = callback
@@ -80,7 +83,7 @@ class FileSelector:
                 err = _("Ovewrite existing file '%s'?")  % filename
                 dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
                                             Gtk.MessageType.QUESTION,
-                                            Gtk.ButtonsType.YES_NO, err);
+                                            Gtk.ButtonsType.YES_NO, err)
                 result = dialog.run()
                 dialog.destroy()
                 if result != Gtk.ResponseType.YES:
@@ -92,7 +95,7 @@ class FileSelector:
     def save_as(self, title):
         debug.dprint("FILESELECTOR: Entering save_as()")
         return FileSel(title).run(window, self.filename, self._save_as_ok_func)
-        
+
     def get_filename(self, title):
         debug.dprint("FILESELECTOR: Entering get_filename()")
         result = FileSel(title).run(self.window, self.directory, self._save_as_ok_func)

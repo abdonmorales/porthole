@@ -23,6 +23,7 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("CONFIGURATION: id initialized to ", id)
 
@@ -40,13 +41,13 @@ class PortholeConfiguration:
 
     def set_path(self, DATA_PATH):
         self.DATA_PATH = DATA_PATH
-        
+
     def load(self):
         dom = XMLManager(self.DATA_PATH + 'config/configuration.xml')
 
         # Handle all the regular expressions.  They will be compiled
         # within this object for the sake of efficiency.
-        
+
         filterlist = ['info', 'warning', 'error', 'caution', 'needaction', 'badpassword']
         for filter in filterlist:
             patternlist = dom.getitem(''.join(['/re_filters/',filter])) # e.g. '/re_filters/info'
@@ -59,7 +60,7 @@ class PortholeConfiguration:
             setattr(self, attrname, []) # e.g. self.info_re_notlist = []
             for regexp in patternlist:
                 getattr(self, attrname).append(re.compile(regexp))
-        
+
         self.emerge_re = re.compile(dom.getitem('/re_filters/emerge'))
         self.ebuild_re = re.compile(dom.getitem('/re_filters/ebuild'))
         self.merged_re = re.compile(dom.getitem('/re_filters/merged'))

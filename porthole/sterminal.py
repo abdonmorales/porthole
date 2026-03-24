@@ -23,16 +23,22 @@
 
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("STERMINAL: id initialized to ", id)
 
-import signal, os, pty, threading, time
-import errno, string
+import errno
+import os
+import pty
+import signal
+import string
+import threading
+import time
 
-from porthole.utils import utils, debug
-from porthole.utils.dispatcher import Dispatcher
 # next, avoid a circular import and go direct
 from porthole.readers.process_reader import ProcessOutputReader
+from porthole.utils import debug, utils
+from porthole.utils.dispatcher import Dispatcher
 
 
 class SimpleTerminal:
@@ -47,7 +53,7 @@ class SimpleTerminal:
         self.callback = callback
         # start the reader
         self.reader.start()
-    
+
     def _run(self):
         debug.dprint("STERMINAL: run_app(); process id = %d *******************" %os.getpid())
         env = utils.environment()
@@ -62,7 +68,7 @@ class SimpleTerminal:
                     os.close(self.reader.fd)
                 except OSError as e:
                     debug.dprint("STERMINAL: error closing self.reader.fd: %s" % e)
-        
+
         self.pid, self.reader.fd = pty.fork()
         if self.pid == pty.CHILD:  # child
             try:
@@ -78,7 +84,7 @@ class SimpleTerminal:
             self.reader.process_running = True
             debug.dprint("STERMINAL: pty process id: %s ******" % self.pid)
         return
-    
+
     def cleanup(self):
         # reset to None, so next one starts properly
         self.reader.fd = None

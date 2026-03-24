@@ -22,26 +22,29 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import datetime
+
 import gi
 from gi.repository import GLib, GObject
 
-import datetime
 id = datetime.datetime.now().microsecond
 print("DATABASE: id initialized to ", id)
 
-import pwd, pickle, os
+import os
+import pickle
+import pwd
 
-from porthole.db.package import Package
 from porthole import backends
+from porthole.db.package import Package
+
 portage_lib = backends.portage_lib
+from porthole import config
+from porthole.backends.utilities import get_sync_info
+from porthole.db.dbbase import DBBase
 from porthole.db.dbreader import DatabaseReader
 from porthole.readers.descriptions import DescriptionReader
-from porthole.db.dbbase import DBBase
-from porthole.utils.dispatcher import Dispatcher
-from porthole.backends.utilities import get_sync_info
 from porthole.utils import debug
-from porthole import config
-
+from porthole.utils.dispatcher import Dispatcher
 
 NEW = 0
 LOAD = 1
@@ -110,7 +113,7 @@ class Database(DBBase):
             # pickle it baby, yeah!
             pickle.dump(_db, open(self._DBFile, "w"))
             del _db
-        
+
     def load(self, filename = None):
         """restores the db from a file"""
         debug.dprint("DATABASE: load() loading 'db' from file: " + self._DBFile)
@@ -133,7 +136,7 @@ class Database(DBBase):
         debug.dprint("DATABASE: load(); file is loaded, mtime = " + str(self.desc_mtime))
         del _db
         return 1
-        
+
 
     def set_callback(self, callback):
         self.callback = callback
@@ -152,7 +155,7 @@ class Database(DBBase):
             if new_sync:
                 # force a reload
                 self.desc_loaded = False
-        
+
     def db_update(self, args):# extra args for dispatcher callback
         """Update the callback to the number of packages read."""
         #debug.dprint("DB: db_update()")

@@ -21,17 +21,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import re, os
+import os
+import re
 
-from porthole.utils import debug
 from porthole.readers.commonreader import CommonReader
+from porthole.utils import debug
 
 EXCEPTION_LIST = ['.','^','$','*','+','?','(',')','\\','[',']','|','{','}']
 
 
 class SearchReader( CommonReader ):
     """Create a list of matching packages to search term"""
-    
+
     def __init__( self, db_list, search_desc, tmp_search_term, desc_db = None, callback = None ):
         """ Initialize """
         CommonReader.__init__(self)
@@ -46,8 +47,8 @@ class SearchReader( CommonReader ):
         self.pkg_count = 0
         self.count = 0
         self.search_term = ''
-    
-    
+
+
     def run( self ):
             debug.dprint("READERS: SearchReader(); process id = %d *****************" %os.getpid())
             Plus_exeption_count = 0
@@ -56,7 +57,7 @@ class SearchReader( CommonReader ):
                 if char in EXCEPTION_LIST:# =="+":
                     debug.dprint("READERS: SearchReader();  '%s' exception found" %char)
                     char = "\\" + char
-                self.search_term += char 
+                self.search_term += char
             debug.dprint("READERS: SearchReader(); ===> escaped search_term = :%s" %self.search_term)
             re_object = re.compile(self.search_term, re.I)
             # no need to sort self.db_list; it is already sorted

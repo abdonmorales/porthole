@@ -23,13 +23,16 @@
 # Fredrik Arnerup <foo@stacken.kth.se>, 2004-12-19
 # Brian Dolbec<dol-sen@telus.net>,2005-3-30
 
+import _thread
+import os
+import queue
+import threading
+from select import select
+from sys import stderr
+
 import gi
 from gi.repository import GLib, GObject
 
-import os, queue
-from select import select
-from sys import stderr
-import _thread, threading
 
 class Dispatcher:
     """Send signals from a thread to another thread through a pipe

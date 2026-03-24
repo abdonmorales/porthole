@@ -20,15 +20,18 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-import os, types
+import os
+import types
 
-from porthole.utils import debug
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 from porthole import db
 from porthole.db.package import Package
 from porthole.readers.commonreader import CommonReader
 from porthole.utils.utils import get_set_name
+
 
 class SetListReader(CommonReader):
     """ Convert userconfigs sets to a filename (category) & pkg (package) db (tuple) """
@@ -43,7 +46,7 @@ class SetListReader(CommonReader):
         self.count = 0
         self.pkg_dict_total = 0
 
- 
+
     def run( self ):
         """fill SETS tree"""
         debug.dprint("READERS: SetListReader(); process id = %d *******************" %os.getpid())
@@ -78,4 +81,4 @@ class SetListReader(CommonReader):
         return
 
 
-      
+

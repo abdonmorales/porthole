@@ -23,8 +23,9 @@
 
 import os
 
-from porthole.utils import debug
 from porthole.readers.commonreader import CommonReader
+from porthole.utils import debug
+
 
 class DescriptionReader( CommonReader ):
     """ Read and store package descriptions for searching """

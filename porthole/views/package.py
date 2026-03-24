@@ -23,25 +23,24 @@
 '''
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, Gdk, GLib, GObject, Pango
-
 import os
 from gettext import gettext as _
 
+from gi.repository import Gdk, GLib, GObject, Gtk, Pango
 
 from porthole import backends
+
 portage_lib = backends.portage_lib
+from porthole import config, db
 from porthole.backends import utilities
-from porthole import config
-from porthole import db
+from porthole.utils import debug, utils
 from porthole.views.commontreeview import CommonTreeView
-from porthole.utils import utils
-from porthole.utils import debug
 from porthole.views.helpers import *
-from porthole.views.models import PackageModel, MODEL_ITEM
+from porthole.views.models import MODEL_ITEM, PackageModel
 
 PACKAGES = 0
 INSTALLED = 1
@@ -85,17 +84,17 @@ class PackageView(CommonTreeView):
         menuitems["deselect_all"].connect("activate", self.deselect_all)
         menuitems["select_all"] = Gtk.MenuItem(_("Select all"))
         menuitems["select_all"].connect("activate", self.select_all)
-        
+
         for item in list(menuitems.values()):
             menu.append(item)
             item.show()
-        
+
         self.popup_menu = menu
         self.popup_menuitems = menuitems
         self.dopopup = None
         self.event = None
         self.toggle = None
-        
+
         # setup the treecolumn
         self._column = Gtk.TreeViewColumn(_("Packages"))
         self._column.set_resizable(True)
@@ -133,17 +132,17 @@ class PackageView(CommonTreeView):
         self._desc_column.set_resizable(False)
         self._desc_column.set_min_width(10)
         self._desc_column.set_expand(True)
-        
+
         self.clickable_columns = [
             self._column,
             self._installed_column,
             self._latest_column,
             self._size_column,
         ]
-        
+
         # make it easier to read across columns
         self.set_rules_hint(True)
-        
+
         # setup the treemodels
         self.view_model = {}
         for x in MODEL_NAMES[:-1]:
@@ -405,7 +404,7 @@ class PackageView(CommonTreeView):
             self.dopopup = False
             self.event = None
             return True
- 
+
     def populate(self, packages, locate_name = None):
         """ Populate the current view with packages """
         debug.dprint("VIEWS: Populating package view")
@@ -469,7 +468,7 @@ class PackageView(CommonTreeView):
         self.model = self.get_model()
         self.iter = model.get_iter_first()
         GLib.idle_add(self.populate_info)
- 
+
     def populate_info(self):
         """ Populate the current view with package info"""
         if self.infothread_die:
@@ -546,26 +545,26 @@ class PackageView(CommonTreeView):
         if model.get_value(iter,MODEL_ITEM["name"]) != _("None"):
             model.set_value(iter, MODEL_ITEM["checkbox"], selected)
             model.get_value(iter, MODEL_ITEM["package"]).is_checked = selected
-    
+
     def remove_model(self): # used by upgrade reader to speed up adding to the model
         self.view_model["Temp"] = self.get_model()
         self.temp_view = self.current_view
         self.set_model(self.view_model["Blank"])
-    
+
     def restore_model(self):
         if self.temp_view == self.current_view: # otherwise don't worry about it
             self.set_model(self.view_model["Temp"])
-    
+
     def column_clicked(self, column):
         # This seems to be unnecessary - gtk does all the work.
         # It would have been useful if column clicks could be escaped,
         # But gtk seems to just ignore "return True" in this case.
         pass
-    
+
     def disable_column_sort(self):
         for col in self.clickable_columns:
             col.set_clickable(False)
-    
+
     def enable_column_sort(self):
         for col in self.clickable_columns:
             col.set_clickable(True)

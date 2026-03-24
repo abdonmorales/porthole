@@ -23,14 +23,15 @@
 
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
+from porthole import backends, config
+from porthole.loaders.loaders import decode_text, get_textfile, load_web_page
 from porthole.utils import debug
-from porthole.loaders.loaders import load_web_page, decode_text, get_textfile
-from porthole.version import version, copyright
-from porthole import config
-from porthole import backends
+from porthole.version import copyright, version
+
 portage_lib = backends.portage_lib
 
 class AboutDialog:

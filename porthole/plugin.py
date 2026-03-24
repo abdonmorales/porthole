@@ -22,21 +22,25 @@
 '''
 
 import gi
+
 gi.require_version('Gtk', '3.0')
+import datetime
+
 from gi.repository import Gtk
 
-import datetime
 id = datetime.datetime.now().microsecond
 print("PLUGIN: id initialized to ", id)
 
 import os
 from glob import glob
-#import imp
 
-#from porthole.utils import utils
-from porthole.utils import debug
 #from porthole.importer import my_import
 from porthole import config
+
+#import imp
+#from porthole.utils import utils
+from porthole.utils import debug
+
 
 class PluginManager:
     """Handles all of our plugins"""
@@ -178,7 +182,7 @@ class PluginGUI(Gtk.Window):
         self.wtree.set_translation_domain(config.Prefs.APP)
 
         self.wtree.add_objects_from_file(self.gladefile, ["plugin_dialog"])
-        
+
         # Connect Callbacks
         callbacks = {
             "on_okbutton_clicked": self.destroy_cb,
@@ -198,10 +202,10 @@ class PluginGUI(Gtk.Window):
     def create_plugin_list(self):
         """Creates the list-view of the plugins"""
         self.plugin_view = self.wtree.get_object("plugin_view")
-        
+
         self.liststore = Gtk.ListStore(bool, str, bool)
         self.plugin_view.set_model(self.liststore)
-        for i in self.plugin_manager.plugin_list(): 
+        for i in self.plugin_manager.plugin_list():
             debug.dprint("PLUGIN: create_plugin_list(): %s , is_installed = %s" %(i.name, str(i.module.is_installed)))
             if not i.module.is_installed:
                 i.enabled = False
@@ -209,22 +213,22 @@ class PluginGUI(Gtk.Window):
         cb_column = Gtk.TreeViewColumn(_("Enable"))
         text_column = Gtk.TreeViewColumn(_("Plug-in"))
         installed_column = Gtk.TreeViewColumn(_("Installed"))
-        
+
         cell_tg = Gtk.CellRendererToggle()
         cell_tx = Gtk.CellRendererText()
         cell_in = Gtk.CellRendererText()
         cb_column.pack_start(cell_tg)
         text_column.pack_start(cell_tx)
         installed_column.pack_start(cell_in)
-        
+
         self.plugin_view.append_column(cb_column)
         self.plugin_view.append_column(text_column)
         self.plugin_view.append_column(installed_column)
-        
+
         cb_column.add_attribute(cell_tg,"active",0)
         text_column.add_attribute(cell_tx,"text",1)
         installed_column.add_attribute(cell_in,"text",2)
-        
+
         cell_tg.connect("toggled", self.cb_toggled)
         selection = self.plugin_view.get_selection()
         selection.set_mode(Gtk.SelectionMode.SINGLE)

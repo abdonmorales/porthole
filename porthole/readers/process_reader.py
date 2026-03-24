@@ -23,14 +23,21 @@
 '''
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk
+import errno
+import os
+import signal
+import string
+import threading
+import time
 
-import signal, os, threading, time, gtk
-import errno, string
+import gtk
+from gi.repository import Gdk, Gtk
 
 from porthole.utils import debug
+
 #from porthole.utils.dispatcher import Dispatcher
 
 class ProcessOutputReader(threading.Thread):
@@ -82,7 +89,7 @@ class ProcessOutputReader(threading.Thread):
                         char = None
                 elif self.file_input:
                     try:
-                        # keep read(number) small so as to not cripple the 
+                        # keep read(number) small so as to not cripple the
                         # system reading large files.  even 2 can hinder gui response
                         char = self.f.read(1)
                     except OSError as e:

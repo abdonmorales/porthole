@@ -30,14 +30,16 @@
 """
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, Gdk, Pango
+from gi.repository import Gdk, Gtk, Pango
 
+from porthole import config
 from porthole.terminal.constants import *
 from porthole.utils import debug
-from porthole import config
+
 
 class TerminalNotebook:
     """generates a terminal notebook structure containing all needed views,
@@ -97,13 +99,13 @@ class TerminalNotebook:
             window = self.wtree.get_object(x)
             self.scrolled_window += [window]
         del x
-        
+
         # Catch button events on info, caution & warning tabs
         # Following a double click on a line, bring that line
         # in the process window into focus near center screen
         self.view[TAB_INFO].connect("button_press_event", self.button_event)
         self.view[TAB_CAUTION].connect("button_press_event", self.button_event)
-        self.view[TAB_WARNING].connect("button_press_event", self.button_event)        
+        self.view[TAB_WARNING].connect("button_press_event", self.button_event)
         self.view[TAB_INFO].connect("button_release_event", self.button_event)
         self.view[TAB_CAUTION].connect("button_release_event", self.button_event)
         self.view[TAB_WARNING].connect("button_release_event", self.button_event)
@@ -199,7 +201,7 @@ class TerminalNotebook:
         # reset the visible_tablist
         self.get_tab_list()
         debug.dprint("NOTEBOOK: self.visible_tablist %s" % self.visible_tablist)
-        
+
     def hide_tab(self, tab):
         pos = -1
         if tab == TAB_WARNING:
@@ -261,7 +263,7 @@ class TerminalNotebook:
                 # we'll do this inside a try clause in case the user
                 # clicks on a line without a number or anything else
                 # goes wrong!
-                line = int(iStart.get_text(iEnd)[0:6]) - 1 
+                line = int(iStart.get_text(iEnd)[0:6]) - 1
                 # Get the iter based on the line number index
                 iter = self.view_buffer[TAB_PROCESS].get_iter_at_line_index(line,0)
                 # Scroll to the line, try to position mid-screen
@@ -304,7 +306,7 @@ class TerminalNotebook:
             bounds = self.view_buffer[process_tab].get_bounds()
             self.view_buffer[process_tab].remove_all_tags(*bounds)
             for key in config.Prefs.TAG_DICT:
-                text_tag = config.Prefs.TAG_DICT[key] 
+                text_tag = config.Prefs.TAG_DICT[key]
                 argdict = {}
                 if text_tag[0]:
                     argdict["foreground"] = text_tag[0]
@@ -359,7 +361,7 @@ class TerminalNotebook:
             return
         #debug.dprint("Notebook: overwrite() -- num= " + str(num) + "..." + text)
         #debug.dprint(self.current_tab)
-        line_number = self.view_buffer[TAB_PROCESS].get_line_count() 
+        line_number = self.view_buffer[TAB_PROCESS].get_line_count()
         iter = self.view_buffer[num].get_iter_at_line(line_number)
         if iter.get_chars_in_line() >= 7:
             iter.set_line_offset(7)
@@ -384,7 +386,7 @@ class TerminalNotebook:
         """
         #debug.dprint("Notebook: append() -- num= " + str(num) + "..." + text)
         #debug.dprint(self.current_tab)
-        line_number = self.view_buffer[TAB_PROCESS].get_line_count() 
+        line_number = self.view_buffer[TAB_PROCESS].get_line_count()
         iter = self.view_buffer[num].get_end_iter()
         lntext = str(line_number).zfill(6) + ' '
         if self.last_text[num].endswith('\n'):
@@ -464,7 +466,7 @@ class TerminalNotebook:
             # right hand side of patching lines is currently unsupported.
             debug.dprint("Notebook: parse_escape_sequence(): unsupported escape sequence '%s'" % sequence)
             return False
-            
+
     def set_startmark( self ):
         start_iter = self.view_buffer[TAB_PROCESS].get_end_iter()
         if self.command_start:

@@ -25,14 +25,16 @@
 """
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("UTILITIES: id initialized to ", id)
 
 import os
 from gettext import gettext as _
 
-from porthole.utils import debug
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 ## circular import problem
 ##from porthole.db import userconfigs
@@ -48,14 +50,14 @@ def iter_read_bash(bash_source):
         garbage collector."""
     try:
         if isinstance(bash_source, str):
-            bash_source = open(bash_source, 'r')
+            bash_source = open(bash_source)
         for s in bash_source:
             s=s.strip()
             if s.startswith("#") or s == "":
                 continue
             yield s
         bash_source.close()
-    except IOError:
+    except OSError:
         pass
 
 def read_bash(bash_source):
@@ -107,7 +109,7 @@ def get_sync_info():
         else:
             debug.dprint("BACKENDS Utilities: get_sync_info(); No data read")
     #except os.error:
-    except IOError as v:
+    except OSError as v:
         try:
             (code, message) = v
         except:

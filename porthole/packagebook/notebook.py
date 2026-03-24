@@ -23,27 +23,32 @@
 '''
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, GLib, GObject, Pango
-
-import threading, re #, types
-import os, sys
+import os
+import re
+import sys
+import threading  #, types
 from gettext import gettext as _
 
-from porthole.utils import debug
+from gi.repository import GLib, GObject, Gtk, Pango
+
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 #World = portage_lib.settings.get_world()
 from porthole import config
-from porthole.utils.dispatcher import Dispatcher
-from porthole.packagebook.summary import Summary
-from porthole.views.depends import DependsView
-from porthole.views.commontreeview import CommonTreeView
-from porthole.packagebook.depends import DependsTree
-from porthole.plugin import PluginGUI, PluginManager
-from porthole.loaders.loaders import *
 from porthole.backends.version_sort import ver_match
+from porthole.loaders.loaders import *
+from porthole.packagebook.depends import DependsTree
+from porthole.packagebook.summary import Summary
+from porthole.plugin import PluginGUI, PluginManager
+from porthole.utils.dispatcher import Dispatcher
+from porthole.views.commontreeview import CommonTreeView
+from porthole.views.depends import DependsView
+
 #from timeit import Timer
 
 
@@ -64,7 +69,7 @@ class PackageNotebook:
         self.installed_files = self.wtree.get_object("installed_files").get_buffer()
         self.ebuild = self.wtree.get_object("ebuild").get_buffer()
         # summary view
-        scroller = self.wtree.get_object("summary_text_scrolled_window");
+        scroller = self.wtree.get_object("summary_text_scrolled_window")
         self.summary = Summary(Dispatcher(self.callbacks["action_callback"]), self.callbacks["re_init_portage"])
         result = scroller.add(self.summary)
         self.summary.show()
@@ -74,7 +79,7 @@ class PackageNotebook:
         result = self.wtree.get_object("dependencies_scrolled_window").add(self.deps_view)
         self.notebook.connect("switch-page", self.notebook_changed)
         self.reset_tabs()
-        
+
     def set_package(self, package):
         """sets the package for all dispalys"""
         self.package = package
@@ -169,7 +174,7 @@ class PackageNotebook:
             debug.dprint("********** PackageNotebook: new_notebook(); DependsView: do_dep_window() new dep_window{'window', 'notebook', 'depth'}" + \
                                     str(self.dep_window["window"]) +str(self.dep_window["notebook"])) # +str(self.dep_window['depth']))
         return self.dep_window
-        
+
     def close_window(self, *widget):
         # first check for and close any children
         if self.dep_window["window"] != None and self.dep_window["notebook"] != None:

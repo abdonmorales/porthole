@@ -22,12 +22,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('GdkPixbuf', '2.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf, GLib, GObject
-
 import datetime
+
+from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
+
 id = datetime.datetime.now().microsecond
 print("STARTUP: id initialized to ", id)
 
@@ -36,9 +38,11 @@ print("STARTUP: id initialized to ", id)
 # now for the rest
 
 # setup our path so we can load our custom modules
-import sys, os, _thread
+import _thread
+import os
+import sys
 
-# Add path to portage module if 
+# Add path to portage module if
 # missing from path (ref bug # 924100)
 PORTAGE_MOD_PATH = '/usr/lib/portage/pym'
 if PORTAGE_MOD_PATH not in sys.path:
@@ -46,7 +50,7 @@ if PORTAGE_MOD_PATH not in sys.path:
 #~ GENTOOLKIT_PATH = '/usr/lib/gentoolkit/pym'
 #~ if GENTOOLKIT_PATH not in sys.path:
     #~ sys.path.append(GENTOOLKIT_PATH)
-    
+
 #while '' in sys.path: # we don't need the cwd in the path
 #    sys.path.remove('')
 while '/usr/bin' in sys.path: # this gets added when we run /usr/bin/porthole
@@ -63,13 +67,15 @@ RUN_LOCAL = False
 DIR_LIST = [LOG_FILE_DIR, DB_FILE_DIR]
 
 
-import os
 #from thread import *
-import time, pwd
+import pwd
+import time
+
 while '/usr/bin' in sys.path: # and now importing gtk re-adds it! Grrrr, rude
     sys.path.remove('/usr/bin')
-from getopt import getopt, GetoptError
-import locale, gettext
+import gettext
+import locale
+from getopt import GetoptError, getopt
 from gettext import gettext as _
 
 # it is recommended to init threads right after importing gtk just in case
@@ -85,7 +91,7 @@ def create_dir(new_dir):
     except OSError as xxx_todo_changeme:
         (errnum, errmsg) = xxx_todo_changeme.args
         print("Failed to create %s:" % new_dir, errmsg)
-   
+
 
 def import_error(e):
 	print("*** Error loading porthole modules!\n*** If you are running a", \
@@ -130,7 +136,7 @@ def set_backend(arg):
 
 def insert_path():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    print((sys.path))
+    print(sys.path)
 
 
 def main():

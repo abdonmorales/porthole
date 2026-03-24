@@ -21,19 +21,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os, time, _thread, threading
-from sys import stderr
+import _thread
+import os
+import threading
+import time
 from gettext import gettext as _
+from sys import stderr
 
-from porthole.utils import debug
-from porthole.sterminal import SimpleTerminal
 from porthole import backends
+from porthole.sterminal import SimpleTerminal
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 from porthole import db
 from porthole.db.package import Package
 from porthole.readers.commonreader import CommonReader
 from porthole.utils.utils import get_set_name
-
 
 PRIORITIES = {_("System"): 0, _("Sets"):1, _("World"):2, _("Dependencies"):3}
 
@@ -60,9 +63,9 @@ class UpgradableListReader(CommonReader):
         self.count = 0
         self.pkg_dict_total = 0
         # command lifted fom emwrap and emwrap.sh
-        self.system_cmd = "emerge -ep --nocolor --nospinner system | cut -s -f2 -d ']'| cut -f1 -d '[' | sed 's/^[ ]\+//' | sed 's/[ ].*$//'"
+        self.system_cmd = r"emerge -ep --nocolor --nospinner system | cut -s -f2 -d ']'| cut -f1 -d '[' | sed 's/^[ ]\+//' | sed 's/[ ].*$//'"
         #self.start = self.run
- 
+
     def run( self ):
         """fill upgrade tree"""
         debug.dprint("READERS: UpgradableListReader(); process id = %d *******************" %os.getpid())
@@ -134,4 +137,4 @@ class UpgradableListReader(CommonReader):
             sets_list.append(_("Sets")+"-"+name)
         self.cat_order = [_("System")] + sets_list + [_("World"), _("Dependencies")]
         return #sets_lists
-                
+

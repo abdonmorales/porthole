@@ -23,17 +23,21 @@
 '''
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, GLib, GObject, Pango
-
-import threading, os
+import os
+import threading
 from gettext import gettext as _
 
-from porthole.utils import utils
+from gi.repository import GLib, GObject, Gtk, Pango
+
 from porthole.packagebook.depends import DependsTree
+from porthole.utils import utils
+
 #from porthole.utils import debug
 from porthole.views.helpers import *
+
 
 def size_sort_func(treemodel, iter1, iter2):
     """Sorts by download size"""

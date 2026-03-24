@@ -23,9 +23,9 @@
 import os.path
 from gettext import gettext as _
 
-from porthole.utils.utils import is_root
-from porthole.utils import debug
 from porthole.sterminal import SimpleTerminal
+from porthole.utils import debug
+from porthole.utils.utils import is_root
 
 app = None
 manager = None
@@ -37,7 +37,7 @@ command = "/usr/sbin/etc-proposals"
 initialized = False
 enabled = False
 is_installed = os.path.exists(command)
-debug.dprint(plugin_name + " comand: '%s' found = %s." %(command,is_installed)) 
+debug.dprint(plugin_name + " comand: '%s' found = %s." %(command,is_installed))
 
 ## The next variable should be set to False if the porthole preferences are not needed
 #need_prefs = False
@@ -62,12 +62,12 @@ def new_instance(my_manager):
 def destroy_instance( ):
     global manager, initialized
     if initialized == True:
-        disable_plugin()    
+        disable_plugin()
     manager.del_menuitem(menuitem)
     initialized = False
     debug.dprint(plugin_name + " destroy_instance: destroyed")
     return True
-    
+
 def enable_plugin():
     global menuitem1, menuitem2, enabled, initialized
     if initialized == False:

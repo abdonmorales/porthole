@@ -25,11 +25,15 @@
 # Brian Dolbec<dol-sen@telus.net>,2005-3-30
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib, GObject
 
+gi.require_version('Gtk', '3.0')
+import os
+import threading
 from time import sleep
-import threading, gobject, os
+
+import gobject
+from gi.repository import GLib, GObject, Gtk
+
 from .dispatcher import Dispatcher
 
 # ####################################
@@ -50,7 +54,7 @@ class Thread(threading.Thread):
 
     def run(self):
         done = False
-        print(("thread_num = %s; process id = %d ****************" %(self.thread_num,os.getpid())))
+        print("thread_num = %s; process id = %d ****************" %(self.thread_num,os.getpid()))
         pid_func(self.thread_num)
         for num in range(250):
             #print self.thread_num, " num = ",num
@@ -63,7 +67,7 @@ class Thread(threading.Thread):
 
 
 def pid_func(threadnum):
-    print(("pid_func: called from thread_num = %s; process id = %d ****************" %(threadnum,os.getpid())))
+    print("pid_func: called from thread_num = %s; process id = %d ****************" %(threadnum,os.getpid()))
 
 def message_fun(buffer, message):
     #print ("got a message : %s" %(message[0] + str(message[1])))
@@ -100,7 +104,7 @@ def on_window_map_event(event, param):
 
 
 if __name__ == "__main__":
-       
+
     Gtk.threads_init()
     window = Gtk.Window(Gtk.WINDOW_TOPLEVEL)
     textview = Gtk.TextView()

@@ -23,15 +23,18 @@
 '''
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, GLib, GObject, Pango
-
-import threading, os
+import os
+import threading
 from gettext import gettext as _
 
-from porthole.utils import utils
+from gi.repository import GLib, GObject, Gtk, Pango
+
 from porthole import backends
+from porthole.utils import utils
+
 portage_lib = backends.portage_lib
 from porthole.packagebook.depends import DependsTree
 from porthole.utils import debug
@@ -63,7 +66,7 @@ class RMBMenu:
         menuitems["deselect_all"].connect("activate", self.deselect_all)
         menuitems["select_all"] = Gtk.MenuItem(_("Select all"))
         menuitems["select_all"].connect("activate", self.select_all)
-        
+
         for item in list(menuitems.values()):
             menu.append(item)
             item.show()
@@ -130,4 +133,4 @@ class RMBMenu:
             self.dopopup = False
             self.event = None
             return True
- 
+

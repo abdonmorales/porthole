@@ -45,21 +45,23 @@
 
 # import external [system] modules
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, Gdk, GLib, GObject, Pango
+from types import BuiltinFunctionType, BuiltinMethodType, FunctionType, MethodType
 
-from types import FunctionType, MethodType, BuiltinFunctionType, BuiltinMethodType
+from gi.repository import Gdk, GLib, GObject, Gtk, Pango
+
+from porthole.dialogs.simple import SingleButtonDialog
+from porthole.terminal.constants import *
+from porthole.utils import debug
+
 #import signal, os, pty, threading, time, sre, portagelib
 #import datetime, pango, errno
-
 #from porthole.utils import Dispatcher
 #from porthole.readers import ProcessOutputReader
 from porthole.utils.utils import get_treeview_selection
-from porthole.utils import debug
-from porthole.terminal.constants import *
-from porthole.dialogs.simple import SingleButtonDialog
 
 FUNCTIONTYPES = [FunctionType, MethodType, BuiltinFunctionType, BuiltinMethodType]
 
@@ -407,9 +409,9 @@ class TerminalQueue:
             (direction and path < len(self.queue_model)):
             # get the adjacent values
             destination_iter = self.queue_model.get_iter(path + direction)
-            destination_id = self.queue_model.get_value(destination_iter, self.queue_model.column['id']) 
+            destination_id = self.queue_model.get_value(destination_iter, self.queue_model.column['id'])
             destination_icon = self.queue_model.get_value(destination_iter, self.queue_model.column['icon'])
-            sel_id = self.queue_model.get_value(selected_iter, self.queue_model.column['id']) 
+            sel_id = self.queue_model.get_value(selected_iter, self.queue_model.column['id'])
             sel_icon = self.queue_model.get_value(selected_iter, self.queue_model.column['icon'])
             # switch places and make sure the original is still selected
             self.queue_model.swap(selected_iter, destination_iter)
@@ -802,7 +804,7 @@ class TerminalQueue:
         window = self.wtree.get_object("process_window")
         _dialog = Gtk.MessageDialog(window, Gtk.DialogFlags.MODAL,
                                     Gtk.MessageType.QUESTION,
-                                    Gtk.ButtonsType.CANCEL, message);
+                                    Gtk.ButtonsType.CANCEL, message)
         _dialog.add_button(Gtk.STOCK_EXECUTE, Gtk.ResponseType.ACCEPT)
         _dialog.add_button("Resume", Gtk.ResponseType.YES)
         result = _dialog.run()

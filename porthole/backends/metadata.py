@@ -22,18 +22,19 @@
 """
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("METADATA: id initialized to ", id)
 
+from gettext import gettext as _
+from os.path import exists
+from re import compile, sub
 from xml.sax import make_parser
 from xml.sax.handler import *
-from re import compile, sub
-from os.path import exists
-from gettext import gettext as _
 
 # precompile regexps
-re1 = compile("^\s+|\s+$")
-re2 = compile("\s+")
+re1 = compile(r"^\s+|\s+$")
+re2 = compile(r"\s+")
 
 #Define constants for the two states we care about
 ALLOW_CONTENT = 1
@@ -56,7 +57,7 @@ class Metadata:
         self.maintainers = []
 
 class MetadataHandler(ContentHandler):
-    
+
     def __init__(self, target):
         self.target_lang = target
         return
@@ -104,7 +105,7 @@ class MetadataHandler(ContentHandler):
             #dprint( self.texts)
         #else:
             #dprint("METADATA: SUPPRESS_CONTENT")
-        
+
     def endElement(self, name):
         #dprint("METADATA: end element")
         self._state = self._state_stack.pop()
@@ -125,7 +126,7 @@ class MetadataHandler(ContentHandler):
             elif self.path and self.path[-1] == "maintainer":
                 self.result.maintainers[-1][name] = text
         return
-        
+
 # init globals
 parser = make_parser()
 # no validation or any of that; it takes too much time
@@ -153,7 +154,8 @@ if __name__ == '__main__':
         print("Herds:", metadata.herds)
         print("Maintainers:", metadata.maintainers)
 
-    import profile, pstats
+    import profile
+    import pstats
     from sys import stdout
     profile.run("main()", "stats.txt")
 

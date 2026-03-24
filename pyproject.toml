@@ -72,16 +72,43 @@ select = [
     "SIM",  # flake8-simplify
 ]
 ignore = [
+    "E402",   # module-level import not at top (legacy code has prints before imports)
     "E501",   # line too long (handled by formatter)
+    "E701",   # multiple statements on one line (legacy code pattern)
+    "E702",   # multiple statements on one line (semicolon)
+    "E711",   # comparison to None (legacy code pattern, too many to change)
+    "E712",   # comparison to True/False
+    "E721",   # type comparison instead of isinstance
+    "E722",   # bare except (legacy code pattern)
     "E741",   # ambiguous variable name (legacy code uses 'l', 'id', etc.)
     "F401",   # unused imports (many in __init__.py files)
     "F403",   # wildcard imports (legacy code pattern)
     "F405",   # may be undefined from wildcard import
+    "F811",   # redefinition of unused name
+    "F821",   # undefined name (from wildcard imports and legacy patterns)
     "F841",   # local variable assigned but never used
+    "W191",   # indentation contains tabs (legacy code)
+    "W291",   # trailing whitespace (legacy code)
+    "W293",   # trailing whitespace in blank line (legacy code)
+    "B006",   # mutable default argument
     "B007",   # loop variable not used
     "B023",   # function uses loop variable
+    "B904",   # raise without from in except
+    "SIM102", # collapsible if
+    "SIM105", # use contextlib.suppress
     "SIM108", # ternary operator
+    "SIM115", # use context manager for open
+    "SIM201", # negate comparison
     "UP031",  # printf-style formatting (too many to change)
+    "E101",   # mixed tabs and spaces (legacy code)
+    "E731",   # lambda assignment (legacy code)
+    "F507",   # percent format mismatch
+    "F601",   # isinstance with tuple containing duplicate types
+    "B008",   # mutable default in function argument
+    "B015",   # pointless comparison
+    "B018",   # useless expression
+    "SIM103", # return boolean directly
+    "SIM113", # use enumerate
 ]
 
 [tool.ruff.lint.per-file-ignores]

@@ -26,17 +26,23 @@
 ## DEPRICATED MODULE
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
-import threading, re, gtk, os, pickle, time
+gi.require_version('Gtk', '3.0')
+import os
+import pickle
+import re
+import threading
+import time
 from gettext import gettext as _
 
-from views import DependsView, CommonTreeView
-import utils.debug
-from utils.utils import get_icon_for_package, get_icon_for_upgrade_package
-from sterminal import SimpleTerminal
 import backends
+import gtk
+import utils.debug
+from gi.repository import Gtk
+from sterminal import SimpleTerminal
+from utils.utils import get_icon_for_package, get_icon_for_upgrade_package
+from views import CommonTreeView, DependsView
+
 portage_lib = backends.portage_lib
 
 
@@ -99,9 +105,9 @@ class UpgradableListReader(CommonReader):
             self.pkg_count[key] = 0
         self.count = 0
         # command lifted fom emwrap and emwrap.sh
-        self.system_cmd = "emerge -ep --nocolor --nospinner system | cut -s -f2 -d ']'| cut -f1 -d '[' | sed 's/^[ ]\+//' | sed 's/[ ].*$//'"
+        self.system_cmd = r"emerge -ep --nocolor --nospinner system | cut -s -f2 -d ']'| cut -f1 -d '[' | sed 's/^[ ]\+//' | sed 's/[ ].*$//'"
 
- 
+
     def run( self ):
         """fill upgrade tree"""
         utils.debug.dprint("READERS: UpgradableListReader(); process id = %d *******************" %os.getpid())
@@ -155,7 +161,7 @@ class UpgradableListReader(CommonReader):
     def get_sets( self):
         """Get any package lists stored in the /etc/portage/sets directory
            and add them to the categories list"""
-        
+
 
 
 class DescriptionReader( CommonReader ):
@@ -180,7 +186,7 @@ class DescriptionReader( CommonReader ):
 
 class SearchReader( CommonReader ):
     """Create a list of matching packages to searh term"""
-    
+
     def __init__( self, db_list, search_desc, tmp_search_term, desc_db = None, callback = None ):
         """ Initialize """
         CommonReader.__init__(self)
@@ -194,8 +200,8 @@ class SearchReader( CommonReader ):
         self.package_list = {}
         self.pkg_count = 0
         self.count = 0
-    
-    
+
+
     def run( self ):
             utils.debug.dprint("READERS: SearchReader(); process id = %d *****************" %os.getpid())
             self.search_term = ''
@@ -205,7 +211,7 @@ class SearchReader( CommonReader ):
                 if char in EXCEPTION_LIST:# =="+":
                     utils.debug.dprint("READERS: SearchReader();  '%s' exception found" %char)
                     char = "\\" + char
-                self.search_term += char 
+                self.search_term += char
             utils.debug.dprint("READERS: SearchReader(); ===> escaped search_term = :%s" %self.search_term)
             re_object = re.compile(self.search_term, re.I)
             # no need to sort self.db_list; it is already sorted

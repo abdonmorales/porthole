@@ -26,9 +26,10 @@
 
 #from porthole.utils import debug
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk, GLib, GObject
+from gi.repository import Gdk, GLib, GObject, Gtk
 
 from porthole.views.helpers import *
 from porthole.views.sorts import *
