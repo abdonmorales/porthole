@@ -296,7 +296,8 @@ class ProcessManager: #dbus.service.Object):
             # MUST! do this command last, or nothing else will _init__
             # after it until emerge is finished.
             # Also causes runaway recursion.
-            self.window.connect("size_request", self.on_size_request)
+            # size_request signal removed in GTK 3; use configure-event instead
+            self.window.connect("configure-event", self.on_size_request)
 
     #~ @dbus.service.method(CONN_INTERFACE, in_signature='ss', out_signature='', sender_keyword='sender')
     #~ def request_add( self, name, command, sender ):
@@ -817,7 +818,7 @@ class ProcessManager: #dbus.service.Object):
                             transient_for=self.window,
                             flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
         dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
-        dialog.vbox.set_spacing(10)
+        dialog.get_content_area().set_spacing(10)
         #dialog.set_has_separator(False)
         dialog.set_border_width(10)
         command = self.process_queue.get_command()
@@ -842,7 +843,7 @@ class ProcessManager: #dbus.service.Object):
         else:
             label = Gtk.Label(_("Password Required to perform the command:\n'%s'")
                             % command)
-        dialog.vbox.pack_start(label, True, True, 0)
+        dialog.get_content_area().pack_start(label, True, True, 0)
         label.show()
         hbox = Gtk.Box()
         label = Gtk.Label(_("Password: "))
@@ -851,11 +852,9 @@ class ProcessManager: #dbus.service.Object):
         entry.connect("activate", self.get_password_cb, dialog)
         hbox.pack_start(label, False, False, 0)
         hbox.pack_start(entry, True, True, 0)
-        dialog.vbox.pack_start(hbox, True, True, 0)
+        dialog.get_content_area().pack_start(hbox, True, True, 0)
         hbox.show_all()
-        Gdk.threads_enter()
         result = dialog.run()
-        Gdk.threads_leave()
         debug.dprint("TERMINAL: do_password_popup(): result %s" % result)
         dialog.destroy()
         if result == Gtk.ResponseType.CANCEL:

@@ -194,7 +194,7 @@ class PluginGUI(Gtk.Window):
     def add_vbox_widgets(self):
         return_button = Gtk.Button("Return")
         return_button.connect("clicked", self.destroy_cb)
-        self.vbox.pack_end(return_button, TRUE, TRUE, 0)
+        self.vbox.pack_end(return_button, True, True, 0)
         self.textbuffer = Gtk.TextBuffer()
         self.textbox = Gtk.TextView(buffer=self.textbuffer)
         self.vbox.pack_start(self.textbox, True, True, 0)

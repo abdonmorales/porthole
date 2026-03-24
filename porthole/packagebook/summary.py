@@ -214,10 +214,12 @@ class Summary(Gtk.TextView):
 
     def on_mouse_motion(self, widget, event, data = None):
         # we need to call get_pointer, or we won't get any more events
-        pointer = self.window.get_pointer()
-        x, y, spam = self.window.get_pointer()
+        _window, x, y, _mask = self.get_window(Gtk.TextWindowType.TEXT).get_pointer()
         x, y = self.window_to_buffer_coords(Gtk.TextWindowType.TEXT, x, y)
-        tags = self.get_iter_at_location(x, y).get_tags()
+        result = self.get_iter_at_location(x, y)
+        # GTK 3 returns (bool, iter) tuple
+        text_iter = result[1] if isinstance(result, tuple) else result
+        tags = text_iter.get_tags()
         if self.underlined_url:
             self.underlined_url.set_property("underline",Pango.Underline.NONE)
             self.get_window(Gtk.TextWindowType.TEXT).set_cursor(None)
@@ -415,9 +417,9 @@ class Summary(Gtk.TextView):
             box = Gtk.EventBox()
             box.add(label)
             if color:
-                style = box.get_style().copy()
-                style.bg[Gtk.StateType.NORMAL] = Gdk.color_parse(color)
-                box.set_style(style)
+                rgba = Gdk.RGBA()
+                rgba.parse(color)
+                box.override_background_color(Gtk.StateFlags.NORMAL, rgba)
             if ebuild:
                 box.color = color
                 box.ebuild = ebuild
@@ -847,14 +849,14 @@ class Summary(Gtk.TextView):
                 newcolour = ''.join(colourlist)
                 #debug.dprint("old colour = %s" % eventbox.color)
                 #debug.dprint("new colour = %s" % newcolour)
-                style = eventbox.get_style().copy()
-                style.bg[Gtk.StateType.NORMAL] = Gdk.color_parse(newcolour)
-                eventbox.set_style(style)
+                rgba = Gdk.RGBA()
+                rgba.parse(newcolour)
+                eventbox.override_background_color(Gtk.StateFlags.NORMAL, rgba)
         elif event.type == Gdk.EventType.LEAVE_NOTIFY:
             #debug.dprint("SUMMARY: on_table_mouse(): Leave notify")
-            style = eventbox.get_style().copy()
-            style.bg[Gtk.StateType.NORMAL] = Gdk.color_parse(eventbox.color)
-            eventbox.set_style(style)
+            rgba = Gdk.RGBA()
+            rgba.parse(eventbox.color)
+            eventbox.override_background_color(Gtk.StateFlags.NORMAL, rgba)
         return False
 
     def emerge(self, menuitem_widget, pretend=None, sudo=None):

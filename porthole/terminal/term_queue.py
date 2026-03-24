@@ -51,7 +51,8 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Pango', '1.0')
 from types import BuiltinFunctionType, BuiltinMethodType, FunctionType, MethodType
 
-from gi.repository import Gdk, GLib, GObject, Gtk, Pango
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk, Pango
 
 from porthole.dialogs.simple import SingleButtonDialog
 from porthole.terminal.constants import *
@@ -67,7 +68,7 @@ FUNCTIONTYPES = [FunctionType, MethodType, BuiltinFunctionType, BuiltinMethodTyp
 
 class QueueModel(Gtk.ListStore):
     def __init__(self):
-        Gtk.ListStore.__init__(self, Gdk.Pixbuf,            # hold the status icon
+        Gtk.ListStore.__init__(self, GdkPixbuf.Pixbuf,            # hold the status icon
                                         GObject.TYPE_STRING,         # package name/ command name
                                         GObject.TYPE_STRING,         # command
                                         GObject.TYPE_INT,                # entry id

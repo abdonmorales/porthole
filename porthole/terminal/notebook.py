@@ -255,9 +255,11 @@ class TerminalNotebook:
             y = int(event.y)
             bufcoords = widget.window_to_buffer_coords(Gtk.TextWindowType.TEXT,x,y)
             # Set start iter at beginning of line (0)
-            iStart = widget.get_iter_at_location(0,bufcoords[1])
+            result_start = widget.get_iter_at_location(0,bufcoords[1])
+            iStart = result_start[1] if isinstance(result_start, tuple) else result_start
             # Set end iter far enough right to grab number (100)
-            iEnd = widget.get_iter_at_location(100,bufcoords[1])
+            result_end = widget.get_iter_at_location(100,bufcoords[1])
+            iEnd = result_end[1] if isinstance(result_end, tuple) else result_end
             try:
                 # get line number from textbuffer (0 based)
                 # we'll do this inside a try clause in case the user

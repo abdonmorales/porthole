@@ -29,7 +29,8 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gdk, GLib, GObject, Gtk
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import GdkPixbuf, GLib, GObject, Gtk
 
 from porthole.views.helpers import *
 from porthole.views.sorts import *
@@ -53,7 +54,7 @@ def PackageModel():
         GObject.TYPE_STRING,        # 0: package name
         GObject.TYPE_BOOLEAN,     # 1: checkbox value in upgrade view
         GObject.TYPE_PYOBJECT,     # 2: package object
-        Gdk.Pixbuf,                   # 3: room for various icons
+        GdkPixbuf.Pixbuf,                   # 3: room for various icons
         GObject.TYPE_BOOLEAN,     # 4: true if package is in 'world' file
         GObject.TYPE_STRING,        # 5: foreground text colour
         GObject.TYPE_STRING,        # 6: size

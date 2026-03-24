@@ -106,9 +106,10 @@ class AdvancedEmergeDialog:
 
         self.command_textview = self.wtree.get_object("command_textview")
         self.command_buffer = self.command_textview.get_buffer()
-        style = self.keywords_frame.get_style().copy()
-        self.bgcolor = style.bg[Gtk.StateType.NORMAL]
-        self.command_textview.modify_base(Gtk.StateType.NORMAL, self.bgcolor)
+        # Get background color from style context (GTK 3)
+        style_context = self.keywords_frame.get_style_context()
+        self.bgcolor = style_context.get_background_color(Gtk.StateFlags.NORMAL)
+        self.command_textview.override_background_color(Gtk.StateFlags.NORMAL, self.bgcolor)
 
         self.btnMakeConf = self.wtree.get_object("btnMakeConf")
         self.btnPkgUse = self.wtree.get_object("btnPkgUse")
@@ -604,7 +605,7 @@ class AdvancedEmergeDialog:
         # Build table to hold checkboxes
         size = len(use_flags)
         maxcol = 3  # = number of columns - 1 = index of last column
-        maxrow = (size - 1) / (maxcol + 1)  # = number of rows - 1
+        maxrow = (size - 1) // (maxcol + 1)  # = number of rows - 1
         # resize the table if it's taller than it is wide
         table = Gtk.Table(n_rows=int(maxrow+1), n_columns=int(maxcol+1), homogeneous=True)
         if maxrow + 1 >= 6: # perhaps have this number configurable?
@@ -612,7 +613,7 @@ class AdvancedEmergeDialog:
             scrolledwindow = Gtk.ScrolledWindow()
             scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
             UseFlagFrame.add(scrolledwindow)
-            scrolledwindow.add_with_viewport(table)
+            scrolledwindow.add(table)
             scrolledwindow.set_size_request(1, 100) # min height of 100 pixels
             scrolledwindow.show()
         else:
@@ -672,7 +673,7 @@ class AdvancedEmergeDialog:
         # Build table to hold radiobuttons
         size = len(keywords) + 1  # Add one for None button
         maxcol = 5
-        maxrow = size / maxcol - 1
+        maxrow = size // maxcol - 1
         if maxrow < 1:
             maxrow = 1
         table = Gtk.Table(n_rows=int(maxrow), n_columns=int(maxcol-1), homogeneous=True)

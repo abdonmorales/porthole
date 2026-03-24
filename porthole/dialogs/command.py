@@ -86,7 +86,8 @@ class RunDialog:
             # MUST! do this command last, or nothing else will _init__
             # after it until emerge is finished.
             # Also causes runaway recursion.
-            self.window.connect("size_request", self.on_size_request)
+            # size_request signal removed in GTK 3; use configure-event instead
+            self.window.connect("configure-event", self.on_size_request)
 
     def activate(self, widget, command):
         """Adds the command line entry to the queue"""

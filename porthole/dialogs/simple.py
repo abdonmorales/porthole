@@ -42,7 +42,7 @@ class CommonDialog(Gtk.Dialog):
         text = Gtk.Label(message)
         text.set_padding(5, 5)
         text.show()
-        self.vbox.pack_start(text, True, True, 0)
+        self.get_content_area().pack_start(text, True, True, 0)
         # register callback
         if not callback:
             callback = self.__callback
@@ -73,5 +73,5 @@ class SingleButtonDialog(CommonDialog):
             self.progbar = Gtk.ProgressBar()
             self.progbar.set_text(_("Loading"))
             self.progbar.show()
-            self.vbox.add(self.progbar)
+            self.get_content_area().add(self.progbar)
 

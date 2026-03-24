@@ -28,7 +28,8 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gettext import gettext as _
 
-from gi.repository import Gdk, GLib, GObject, Gtk
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import GdkPixbuf, GLib, GObject, Gtk
 
 from porthole import backends
 from porthole.utils import debug
@@ -145,7 +146,7 @@ class DependsTree(Gtk.TreeStore):
     def __init__(self):
         """Initialize the TreeStore object"""
         Gtk.TreeStore.__init__(self, GObject.TYPE_STRING,   # depend name
-                                Gdk.Pixbuf,                      # icon to display
+                                GdkPixbuf.Pixbuf,                      # icon to display
                                 GObject.TYPE_PYOBJECT,   # package object
                                 GObject.TYPE_BOOLEAN,    # is_satisfied
                                 GObject.TYPE_STRING,        # package name

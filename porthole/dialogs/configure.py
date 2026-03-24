@@ -84,7 +84,7 @@ class ConfigDialog:
             self.window.destroy()
         elif response_id == Gtk.ResponseType.APPLY:
             self.apply_widget_values()
-        elif response_id == Gtk.RESPONSE_HELP:
+        elif response_id == Gtk.ResponseType.HELP:
             #Display help file with web browser
             load_web_page('file://' + config.Prefs.DATA_PATH + 'help/customize.html')
         else:
@@ -459,7 +459,7 @@ class ConfigDialog:
         # Build table to hold radiobuttons
         size = len(keywords)
         maxcol = 3
-        maxrow = size / maxcol - 1
+        maxrow = size // maxcol - 1
         if maxrow < 1:
             maxrow = 1
         table = Gtk.Table(n_rows=int(maxrow), n_columns=int(maxcol-1), homogeneous=True)

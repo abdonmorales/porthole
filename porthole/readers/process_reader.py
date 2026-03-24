@@ -33,8 +33,7 @@ import string
 import threading
 import time
 
-import gtk
-from gi.repository import Gdk, Gtk
+from gi.repository import GLib, Gtk
 
 from porthole.utils import debug
 
@@ -123,9 +122,7 @@ class ProcessOutputReader(threading.Thread):
                     if self.file_input:
                         self.file_input = False
                     else:
-                        Gdk.threads_enter()
-                        self.dispatcher()
-                        Gdk.threads_leave()
+                        GLib.idle_add(self.dispatcher)
             else:
                 # sleep for .5 seconds before we check again
                 if time:
