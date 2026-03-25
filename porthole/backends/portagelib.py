@@ -524,7 +524,7 @@ def get_installed_files(ebuild):
     files = []
     try:
         # hoping some clown won't use spaces in filenames ...
-        files = [line.split()[1].decode('ascii')
+        files = [line.split()[1]
                  for line in open(path).readlines()]
     except: pass
     files.sort()
@@ -606,7 +606,7 @@ def get_size(mycpv):
             fetchlist = settings.portdb.getfetchlist(mycpv, mysettings=settings.settings, all=True)[1]
         #debug.dprint( "PORTAGELIB: get_size; mf.getDistfilesSize()")
         mysum[0] = mf.getDistfilesSize(fetchlist)
-        mystr = str(mysum[0]/1024)
+        mystr = str(mysum[0]//1024)
         #debug.dprint( "PORTAGELIB: get_size; mystr = " + mystr)
         mycount=len(mystr)
         while (mycount > 3):

@@ -495,7 +495,7 @@ class MainWindow:
 
         elif args['db_thread_error']:
             # todo: display error dialog instead
-            self.set_statusbar2(args['db_thread_error'].decode('ascii', 'replace'))
+            self.set_statusbar2(str(args['db_thread_error']))
             return False  # disconnect from timeout
         else: # args["done"] == True - db_thread is done
             self.progressbar.set_text("100%")
