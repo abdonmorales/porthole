@@ -13,7 +13,7 @@
       <property name="orientation">vertical</property>
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
-        <child type="label">
+        <child>
           <object class="GtkNotebook" id="notebook1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -186,7 +186,7 @@
                                 </child>
                               </object>
                             </child>
-                            <child>
+                            <child type="label">
                               <object class="GtkLabel" id="label60">
                                 <property name="visible">True</property>
                                 <property name="ypad">6</property>
@@ -205,7 +205,7 @@
                             <property name="y_padding">3</property>
                           </packing>
                         </child>
-                        <child type="label">
+                        <child>
                           <object class="GtkFrame" id="archlist_frame">
                             <property name="visible">True</property>
                             <property name="label_xalign">0</property>
@@ -213,7 +213,7 @@
                             <child>
                               <placeholder/>
                             </child>
-                            <child>
+                            <child type="label">
                               <object class="GtkLabel" id="label6">
                                 <property name="visible">True</property>
                                 <property name="ypad">6</property>
@@ -230,7 +230,7 @@
                             <property name="y_options"></property>
                           </packing>
                         </child>
-                        <child type="label">
+                        <child>
                           <object class="GtkCheckButton" id="globals_enable_archlist">
                             <property name="label" translatable="yes">Enable arch-list</property>
                             <property name="visible">True</property>
@@ -1512,7 +1512,7 @@
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <child type="label">
                       <object class="GtkLabel" id="label43">
                         <property name="visible">True</property>
                         <property name="ypad">6</property>
@@ -1528,7 +1528,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child type="label">
+                <child>
                   <object class="GtkFrame" id="frame3">
                     <property name="visible">True</property>
                     <property name="border_width">5</property>
@@ -1577,7 +1577,7 @@
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <child type="label">
                       <object class="GtkLabel" id="label44">
                         <property name="visible">True</property>
                         <property name="ypad">6</property>
@@ -1593,7 +1593,7 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child type="label">
+                <child>
                   <object class="GtkFrame" id="frame4">
                     <property name="visible">True</property>
                     <property name="border_width">5</property>
@@ -1759,7 +1759,7 @@ you wish to be pre-typed</property>
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <child type="label">
                       <object class="GtkLabel" id="label49">
                         <property name="visible">True</property>
                         <property name="ypad">6</property>

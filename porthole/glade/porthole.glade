@@ -9,7 +9,7 @@
     <property name="default_width">500</property>
     <property name="default_height">650</property>
     <signal name="destroy" handler="on_main_window_destroy"/>
-    <child type="label">
+    <child>
       <object class="GtkBox" id="vbox1">
       <property name="orientation">vertical</property>
         <property name="visible">True</property>
@@ -1676,7 +1676,7 @@
                     </child>
                   </object>
                 </child>
-                <child>
+                <child type="label">
                   <object class="GtkLabel" id="label27">
                     <property name="visible">True</property>
                     <property name="xpad">4</property>
@@ -1692,7 +1692,7 @@
                 <property name="shrink">True</property>
               </packing>
             </child>
-            <child type="label">
+            <child>
               <object class="GtkBox" id="vbox2">
       <property name="orientation">vertical</property>
                 <property name="visible">True</property>
@@ -1721,7 +1721,7 @@
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <child type="label">
                       <object class="GtkLabel" id="label28">
                         <property name="visible">True</property>
                         <property name="xpad">4</property>
@@ -1737,7 +1737,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child type="label">
+                <child>
                   <object class="GtkFrame" id="Options_frame">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
@@ -1752,7 +1752,7 @@
                         </child>
                       </object>
                     </child>
-                    <child>
+                    <child type="label">
                       <object class="GtkLabel" id="label29">
                         <property name="visible">True</property>
                         <property name="xpad">4</property>
