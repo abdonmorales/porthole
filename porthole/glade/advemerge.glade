@@ -30,7 +30,7 @@
 	  <property name="visible">True</property>
 	  <property name="layout_style">end</property>
 
-	  <child type="label">
+	  <child>
 	    <object class="GtkButton" id="helpbutton1">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
@@ -1033,7 +1033,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		</object>
 	      </child>
 
-	      <child>
+	      <child type="label">
 		<object class="GtkLabel" id="grpEmergeOptions">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">&lt;b&gt;Emerge Options&lt;/b&gt;</property>
@@ -1061,7 +1061,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 	    </packing>
 	  </child>
 
-	  <child type="label">
+	  <child>
 	    <object class="GtkFrame" id="framePackageOptions">
 	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
@@ -1167,7 +1167,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 			<placeholder/>
 		      </child>
 
-		      <child>
+		      <child type="label">
 			<object class="GtkLabel" id="lblUseFlags">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Use Flags</property>
@@ -1195,7 +1195,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		    </packing>
 		  </child>
 
-		  <child type="label">
+		  <child>
 		    <object class="GtkFrame" id="frameKeywords">
 		      <property name="border_width">4</property>
 		      <property name="visible">True</property>
@@ -1207,7 +1207,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 			<placeholder/>
 		      </child>
 
-		      <child>
+		      <child type="label">
 			<object class="GtkLabel" id="lblKeywords">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Keyword to accept</property>
@@ -1235,7 +1235,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		    </packing>
 		  </child>
 
-		  <child type="label">
+		  <child>
 		    <object class="GtkBox" id="hbox6">
       <property name="orientation">horizontal</property>
 		      <property name="border_width">4</property>
@@ -1307,7 +1307,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		</object>
 	      </child>
 
-	      <child>
+	      <child type="label">
 		<object class="GtkLabel" id="lblVersionFrame">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">&lt;b&gt;Package Options&lt;/b&gt;</property>
@@ -1335,7 +1335,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 	    </packing>
 	  </child>
 
-	  <child type="label">
+	  <child>
 	    <object class="GtkFrame" id="frameCommand">
 	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
@@ -1377,7 +1377,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		</object>
 	      </child>
 
-	      <child>
+	      <child type="label">
 		<object class="GtkLabel" id="label1">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">&lt;b&gt;Command Preview&lt;/b&gt;</property>
