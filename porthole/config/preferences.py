@@ -332,7 +332,14 @@ class PortholePreferences:
 
         if can_gksu(self.globals.su.split(' ')[0]) == False:
             # If the current su option is not valid, try some others.
-            if can_gksu('gksudo'):
+            # Prefer modern tools (doas, sudo, pkexec) over legacy graphical su helpers
+            if can_gksu('doas'):
+                self.globals.su = 'doas'
+            elif can_gksu('sudo'):
+                self.globals.su = 'sudo'
+            elif can_gksu('pkexec'):
+                self.globals.su = 'pkexec'
+            elif can_gksu('gksudo'):
                 self.globals.su = 'gksudo -g'
             elif can_gksu('gksu'):
                 self.globals.su = 'gksu -g'

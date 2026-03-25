@@ -87,6 +87,8 @@ def read_access():
     return write_access() or (portage in (os.getgroups() + [os.getegid()]))
 
 sudo_x_ok = os.access('/usr/bin/sudo', os.X_OK)
+doas_x_ok = os.access('/usr/bin/doas', os.X_OK)
+pkexec_x_ok = os.access('/usr/bin/pkexec', os.X_OK)
 
 def can_sudo():
     """ return True if /usr/bin/sudo exists and is executable """
@@ -100,7 +102,14 @@ kdesu_x_ok = os.access('/usr/bin/kdesu', os.X_OK)
 
 def can_gksu(specific=None):
     if not specific:
-        return gksudo_x_ok or gksu_x_ok or gnomesu_x_ok or kdesu_x_ok
+        return (doas_x_ok or sudo_x_ok or pkexec_x_ok or
+                gksudo_x_ok or gksu_x_ok or gnomesu_x_ok or kdesu_x_ok)
+    if specific == 'doas':
+        return doas_x_ok
+    if specific == 'sudo':
+        return sudo_x_ok
+    if specific == 'pkexec':
+        return pkexec_x_ok
     if specific == 'gksudo':
         return gksudo_x_ok
     if specific == 'gksu':

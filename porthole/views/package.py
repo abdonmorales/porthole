@@ -434,18 +434,13 @@ class PackageView(CommonTreeView):
             # go through each package
             iter = model.insert_before(None, None)
             model.set_value(iter,MODEL_ITEM["name"], name)
-            upgradable = 0
             if name != _("None"):
                 model.set_value(iter, MODEL_ITEM["package"], packages[name])
                 model.set_value(iter, MODEL_ITEM["checkbox"], (packages[name].is_checked))
                 model.set_value(iter, MODEL_ITEM["world"], (packages[name].in_world))
-                upgradable = packages[name].is_dep_upgradable()
-                if upgradable == MODEL_ITEM["checkbox"]: # portage wants to upgrade
-                    model.set_value(iter, MODEL_ITEM["text_colour"], config.Prefs.views.upgradable_fg)
-                elif upgradable == -1: # portage wants to downgrade
-                    model.set_value(iter, MODEL_ITEM["text_colour"], config.Prefs.views.downgradable_fg)
-                else:
-                    model.set_value(iter, MODEL_ITEM["text_colour"], '')
+                # Defer expensive is_dep_upgradable() to populate_info() via idle_add
+                # to avoid freezing the UI on large categories
+                model.set_value(iter, MODEL_ITEM["text_colour"], '')
                 # get an icon for the package
                 icon = utils.get_icon_for_package(packages[name])
                 model.set_value(iter, MODEL_ITEM["icon"],
@@ -484,6 +479,12 @@ class PackageView(CommonTreeView):
             try:
                 #Gtk.threads_enter()
                 package = model.get_value(iter, MODEL_ITEM["package"])
+                # compute upgrade status (deferred from populate() to avoid freezing)
+                upgradable = package.is_dep_upgradable()
+                if upgradable == MODEL_ITEM["checkbox"]: # portage wants to upgrade
+                    model.set_value(iter, MODEL_ITEM["text_colour"], config.Prefs.views.upgradable_fg)
+                elif upgradable == -1: # portage wants to downgrade
+                    model.set_value(iter, MODEL_ITEM["text_colour"], config.Prefs.views.downgradable_fg)
                 #debug.dprint("VIEWS: populate_info(); getting latest_installed")
                 latest_installed = package.get_latest_installed()
                 #debug.dprint("VIEWS: populate_info(); latest_installed: %s, getting best_ebuild" %str(latest_installed))
