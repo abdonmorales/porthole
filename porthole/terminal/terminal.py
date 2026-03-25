@@ -1319,7 +1319,7 @@ class ProcessManager: #dbus.service.Object):
                 dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
                                            Gtk.MessageType.QUESTION,
                                            Gtk.ButtonsType.YES_NO, msg)
-                dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+                dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
                 result = dialog.run()
                 dialog.destroy()
                 if result == Gtk.ResponseType.YES:
@@ -1337,7 +1337,7 @@ class ProcessManager: #dbus.service.Object):
             dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
                                        Gtk.MessageType.QUESTION,
                                        Gtk.ButtonsType.YES_NO, msg)
-            dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
             result = dialog.run()
             dialog.destroy()
             if result == Gtk.ResponseType.YES:

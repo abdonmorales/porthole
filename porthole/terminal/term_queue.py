@@ -652,15 +652,15 @@ class TerminalQueue:
         debug.dprint("TERM_QUEUE: set_icon(); type = " + str(action_type))
         icon = None
         if action_type == KILLED:
-            icon = Gtk.STOCK_CANCEL
+            icon = "gtk-cancel"
         elif action_type == FAILED:
-            icon = Gtk.STOCK_STOP
+            icon = "gtk-stop"
         elif action_type == COMPLETED:
-            icon = Gtk.STOCK_APPLY
+            icon = "gtk-apply"
         elif action_type == EXECUTE:
-            icon = Gtk.STOCK_EXECUTE
+            icon = "gtk-execute"
         elif action_type == PAUSED:
-            icon = Gtk.STOCK_MEDIA_PAUSE
+            icon = "gtk-media-pause"
         elif action_type == PENDING:
             icon = None
         if icon:
@@ -810,7 +810,7 @@ class TerminalQueue:
         _dialog = Gtk.MessageDialog(window, Gtk.DialogFlags.MODAL,
                                     Gtk.MessageType.QUESTION,
                                     Gtk.ButtonsType.CANCEL, message)
-        _dialog.add_button(Gtk.STOCK_EXECUTE, Gtk.ResponseType.ACCEPT)
+        _dialog.add_button("Execute", Gtk.ResponseType.ACCEPT)
         _dialog.add_button("Resume", Gtk.ResponseType.YES)
         result = _dialog.run()
         _dialog.destroy()

@@ -51,8 +51,8 @@ class FileSel:
             action=Gtk.FileChooserAction.SAVE,
         )
         dialog.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-            Gtk.STOCK_OK, Gtk.ResponseType.OK,
+            "Cancel", Gtk.ResponseType.CANCEL,
+            "OK", Gtk.ResponseType.OK,
         )
         dialog.set_modal(True)
 

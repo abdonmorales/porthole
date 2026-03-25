@@ -212,10 +212,10 @@ class DependsTree(Gtk.TreeStore):
             dep_atomized_list = []
             satisfied = atom.is_satisfied(self.parent_use_flags[self.dep_depth])
             if satisfied:
-                icon = Gtk.STOCK_YES
+                icon = "gtk-yes"
                 add_kids = 0
             else:
-                icon = Gtk.STOCK_NO
+                icon = "gtk-no"
                 add_kids = 1
 
             if add_satisfied or not satisfied: # then add deps to treeview
@@ -223,12 +223,12 @@ class DependsTree(Gtk.TreeStore):
                 iter = self.insert_before(parent_iter, None)
                 if atom.type == 'USING':
                     text = _("Using %s") % atom.useflag
-                    if satisfied == -1: icon = Gtk.STOCK_REMOVE # -1 ==> irrelevant
+                    if satisfied == -1: icon = "gtk-remove" # -1 ==> irrelevant
                     add_kids = -1 # add kids but don't expand unsatisfied deps
                     add_satisfied = 1
                 elif atom.type == 'NOTUSING':
                     text = _("Not Using %s") % atom.useflag
-                    if satisfied == -1: icon = Gtk.STOCK_REMOVE # -1 ==> irrelevant
+                    if satisfied == -1: icon = "gtk-remove" # -1 ==> irrelevant
                     add_kids = -1 # add kids but don't expand unsatisfied deps
                     add_satisfied = 1
                 elif atom.type =='DEP':
@@ -237,7 +237,7 @@ class DependsTree(Gtk.TreeStore):
                         add_kids = 1
                 elif atom.type == 'BLOCKER':
                     text = "!" + atom.get_depname()
-                    if not satisfied: icon = Gtk.STOCK_DIALOG_WARNING
+                    if not satisfied: icon = "gtk-dialog-warning"
                 elif atom.type == 'OPTION':
                     text = _("Any of:")
                     add_kids = -1 # add kids but don't expand unsatisfied deps

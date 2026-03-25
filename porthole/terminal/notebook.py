@@ -172,11 +172,11 @@ class TerminalNotebook:
         icon = Gtk.Image()
         # set the icon, label, tab, and position of the tab
         if tab == TAB_WARNING:
-            icon.set_from_stock(Gtk.STOCK_DIALOG_WARNING, Gtk.IconSize.MENU)
+            icon.set_from_icon_name("dialog-warning", Gtk.IconSize.MENU)
             label, tab, pos = _(TAB_LABELS[TAB_WARNING]), self.warning_tab, 1
             self.tab_showing[TAB_WARNING] = True
         elif tab == TAB_CAUTION:
-            icon.set_from_stock(Gtk.STOCK_DIALOG_WARNING, Gtk.IconSize.MENU)
+            icon.set_from_icon_name("dialog-warning", Gtk.IconSize.MENU)
             label, tab = _(TAB_LABELS[TAB_CAUTION]), self.caution_tab
             # quick hack to make it always show before info & queue tabs
             pos = self.notebook.page_num(self.info_tab)
@@ -186,14 +186,14 @@ class TerminalNotebook:
                     pos = 2
             self.tab_showing[TAB_CAUTION] = True
         elif tab == TAB_INFO:
-            icon.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.MENU)
+            icon.set_from_icon_name("dialog-information", Gtk.IconSize.MENU)
             label, tab = _(TAB_LABELS[TAB_INFO]), self.info_tab
             pos = self.notebook.page_num(self.queue_tab)
             # set to show before queue tab
             if pos == -1: pos = 3
             self.tab_showing[TAB_INFO] = True
         elif tab == TAB_QUEUE:
-            icon.set_from_stock(Gtk.STOCK_INDEX, Gtk.IconSize.MENU)
+            icon.set_from_icon_name("gtk-index", Gtk.IconSize.MENU)
             label, tab, pos = _(TAB_LABELS[TAB_QUEUE]), self.queue_tab, 4
             self.tab_showing[TAB_QUEUE] = True
         # pack the icon and label onto the hbox

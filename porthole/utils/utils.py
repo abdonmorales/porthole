@@ -50,11 +50,10 @@ def get_icon_for_package(package):
     """Return an icon for a package"""
     # if it's installed, find out if it can be upgraded
     if package and package.get_installed():
-        icon = Gtk.STOCK_YES
+        icon = "gtk-yes"
     else:
-        # just put the STOCK_NO icon
-        # switched to blank icon if not installed
-        icon = '' # Gtk.STOCK_NO
+        # just put blank icon if not installed
+        icon = ''
     return icon
 
 def get_icon_for_upgrade_package(package):
@@ -63,10 +62,10 @@ def get_icon_for_upgrade_package(package):
         return '', 'blue'
     #  find out if it can be upgraded
     if package.is_upgradable() == 1:  # 1 for only upgrades (no downgrades)
-        icon = Gtk.STOCK_GO_UP
+        icon = "gtk-go-up"
         color = config.Prefs.views.upgradable_fg
     else: # it's a downgrade
-        icon = Gtk.STOCK_GO_DOWN
+        icon = "gtk-go-down"
         color = config.Prefs.views.downgradable_fg
     return icon, color
 

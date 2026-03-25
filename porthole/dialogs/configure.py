@@ -35,8 +35,8 @@ from porthole.utils import debug
 portage_lib = backends.portage_lib
 
 def _parse_color(spec):
-    """Helper to handle _parse_color() returning (success, color) in GTK 3."""
-    result = _parse_color(spec)
+    """Helper to handle Gdk.color_parse() returning (success, color) in GTK 3."""
+    result = Gdk.color_parse(spec)
     if isinstance(result, tuple):
         return result[1] if result[0] else None
     return result

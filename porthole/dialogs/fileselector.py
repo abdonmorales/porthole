@@ -32,6 +32,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 import os
 import os.path
+from gettext import gettext as _
 
 from gi.repository import Gtk
 
@@ -51,8 +52,8 @@ class FileSel:
             action=Gtk.FileChooserAction.SAVE,
         )
         dialog.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-            Gtk.STOCK_OK, Gtk.ResponseType.OK,
+            "Cancel", Gtk.ResponseType.CANCEL,
+            "OK", Gtk.ResponseType.OK,
         )
         dialog.set_modal(True)
 
