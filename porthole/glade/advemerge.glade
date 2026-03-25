@@ -30,7 +30,7 @@
 	  <property name="visible">True</property>
 	  <property name="layout_style">end</property>
 
-	  <child>
+	  <child type="label">
 	    <object class="GtkButton" id="helpbutton1">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
@@ -1051,9 +1051,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		  <property name="single_line_mode">False</property>
 		  <property name="angle">0</property>
 		</object>
-		<packing>
-		  <property name="type">label_item</property>
-		</packing>
+		
 	      </child>
 	    </object>
 	    <packing>
@@ -1063,7 +1061,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 	    </packing>
 	  </child>
 
-	  <child>
+	  <child type="label">
 	    <object class="GtkFrame" id="framePackageOptions">
 	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
@@ -1187,9 +1185,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 			  <property name="single_line_mode">False</property>
 			  <property name="angle">0</property>
 			</object>
-			<packing>
-			  <property name="type">label_item</property>
-			</packing>
+			
 		      </child>
 		    </object>
 		    <packing>
@@ -1199,7 +1195,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		    </packing>
 		  </child>
 
-		  <child>
+		  <child type="label">
 		    <object class="GtkFrame" id="frameKeywords">
 		      <property name="border_width">4</property>
 		      <property name="visible">True</property>
@@ -1229,9 +1225,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 			  <property name="single_line_mode">False</property>
 			  <property name="angle">0</property>
 			</object>
-			<packing>
-			  <property name="type">label_item</property>
-			</packing>
+			
 		      </child>
 		    </object>
 		    <packing>
@@ -1241,7 +1235,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		    </packing>
 		  </child>
 
-		  <child>
+		  <child type="label">
 		    <object class="GtkBox" id="hbox6">
       <property name="orientation">horizontal</property>
 		      <property name="border_width">4</property>
@@ -1331,9 +1325,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		  <property name="single_line_mode">False</property>
 		  <property name="angle">0</property>
 		</object>
-		<packing>
-		  <property name="type">label_item</property>
-		</packing>
+		
 	      </child>
 	    </object>
 	    <packing>
@@ -1343,7 +1335,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 	    </packing>
 	  </child>
 
-	  <child>
+	  <child type="label">
 	    <object class="GtkFrame" id="frameCommand">
 	      <property name="border_width">3</property>
 	      <property name="visible">True</property>
@@ -1403,9 +1395,7 @@ Shows the dependency tree for the given target by indenting dependencies.  This 
 		  <property name="single_line_mode">False</property>
 		  <property name="angle">0</property>
 		</object>
-		<packing>
-		  <property name="type">label_item</property>
-		</packing>
+		
 	      </child>
 	    </object>
 	    <packing>

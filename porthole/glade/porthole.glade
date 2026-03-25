@@ -9,7 +9,7 @@
     <property name="default_width">500</property>
     <property name="default_height">650</property>
     <signal name="destroy" handler="on_main_window_destroy"/>
-    <child>
+    <child type="label">
       <object class="GtkBox" id="vbox1">
       <property name="orientation">vertical</property>
         <property name="visible">True</property>
@@ -1684,9 +1684,7 @@
                     <property name="label" translatable="yes">&lt;b&gt;Plugin List&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
-                  <packing>
-                    <property name="type">label_item</property>
-                  </packing>
+                  
                 </child>
               </object>
               <packing>
@@ -1694,7 +1692,7 @@
                 <property name="shrink">True</property>
               </packing>
             </child>
-            <child>
+            <child type="label">
               <object class="GtkBox" id="vbox2">
       <property name="orientation">vertical</property>
                 <property name="visible">True</property>
@@ -1731,9 +1729,7 @@
                         <property name="label" translatable="yes">&lt;b&gt;Plugin Description&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
+                      
                     </child>
                   </object>
                   <packing>
@@ -1741,7 +1737,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
+                <child type="label">
                   <object class="GtkFrame" id="Options_frame">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
@@ -1764,9 +1760,7 @@
                         <property name="label" translatable="yes">&lt;b&gt;Plugin Options&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
+                      
                     </child>
                   </object>
                   <packing>

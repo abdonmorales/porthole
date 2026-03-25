@@ -13,7 +13,7 @@
       <property name="orientation">vertical</property>
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
-        <child>
+        <child type="label">
           <object class="GtkNotebook" id="notebook1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -193,9 +193,7 @@
                                 <property name="label" translatable="yes">&lt;b&gt;Web Browser Options&lt;/b&gt;</property>
                                 <property name="use_markup">True</property>
                               </object>
-                              <packing>
-                                <property name="type">label_item</property>
-                              </packing>
+                              
                             </child>
                           </object>
                           <packing>
@@ -207,7 +205,7 @@
                             <property name="y_padding">3</property>
                           </packing>
                         </child>
-                        <child>
+                        <child type="label">
                           <object class="GtkFrame" id="archlist_frame">
                             <property name="visible">True</property>
                             <property name="label_xalign">0</property>
@@ -222,9 +220,7 @@
                                 <property name="label" translatable="yes">&lt;b&gt;Arch List&lt;/b&gt; for display's &amp;amp; options</property>
                                 <property name="use_markup">True</property>
                               </object>
-                              <packing>
-                                <property name="type">label_item</property>
-                              </packing>
+                              
                             </child>
                           </object>
                           <packing>
@@ -234,7 +230,7 @@
                             <property name="y_options"></property>
                           </packing>
                         </child>
-                        <child>
+                        <child type="label">
                           <object class="GtkCheckButton" id="globals_enable_archlist">
                             <property name="label" translatable="yes">Enable arch-list</property>
                             <property name="visible">True</property>
@@ -1523,9 +1519,7 @@
                         <property name="label" translatable="yes">&lt;b&gt;Emerge options&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
+                      
                     </child>
                   </object>
                   <packing>
@@ -1534,7 +1528,7 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-                <child>
+                <child type="label">
                   <object class="GtkFrame" id="frame3">
                     <property name="visible">True</property>
                     <property name="border_width">5</property>
@@ -1590,9 +1584,7 @@
                         <property name="label" translatable="yes">&lt;b&gt;Advanced Emerge dialog options&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
+                      
                     </child>
                   </object>
                   <packing>
@@ -1601,7 +1593,7 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
+                <child type="label">
                   <object class="GtkFrame" id="frame4">
                     <property name="visible">True</property>
                     <property name="border_width">5</property>
@@ -1774,9 +1766,7 @@ you wish to be pre-typed</property>
                         <property name="label" translatable="yes">&lt;b&gt;Run Custom Command options&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
+                      
                     </child>
                   </object>
                   <packing>

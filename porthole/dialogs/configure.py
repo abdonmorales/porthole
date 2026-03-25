@@ -160,7 +160,7 @@ class ConfigDialog:
         for name in hidelist:
             widget = self.wtree.get_object(name)
             if widget:
-                widget.hide_all()
+                widget.hide()
         # hide unimplemented notebook tabs
         removelist = [ # [notebook, tab to remove]
             ['terminal_notebook', 'filter_tab'],
