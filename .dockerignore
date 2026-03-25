@@ -1,0 +1,9 @@
+.git
+.github
+.claude
+.ruff_cache
+__pycache__
+*.pyc
+dist/
+build/
+*.egg-info
