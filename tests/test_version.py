@@ -11,10 +11,10 @@ def test_version_format():
 
 
 def test_version_value():
-    """Current version should be 0.7.0."""
+    """Current version should be 0.7.1."""
     from porthole.version import version
 
-    assert version == "0.7.0"
+    assert version == "0.7.1"
 
 
 def test_copyright_exists():
