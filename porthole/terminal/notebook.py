@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -28,12 +28,18 @@
     
         from notebook import TerminalNotebook
 """
-import pygtk; pygtk.require('2.0')
-import gtk, pango
 
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('Pango', '1.0')
+from gi.repository import Gdk, Gtk, Pango
+
+from porthole import config
 from porthole.terminal.constants import *
 from porthole.utils import debug
-from porthole import config
+
 
 class TerminalNotebook:
     """generates a terminal notebook structure containing all needed views,
@@ -75,31 +81,35 @@ class TerminalNotebook:
         # get the buffer & view widgets and assign them to their arrays
         widget_labels = ["process_text", "warnings_text", "cautions_text", "info_text"]
         for x in widget_labels:
-            buff = self.wtree.get_widget(x).get_buffer()
+            buff = self.wtree.get_object(x).get_buffer()
             self.view_buffer += [buff]
-            view = self.wtree.get_widget(x)
+            view = self.wtree.get_object(x)
             self.view += [view]
             self.last_text += ['\n']
             #if x == "process_text" or config.Prefs.terminal.all_tabs_use_custom_colors:
             fg, bg, weight = config.Prefs.TAG_DICT['default']
             font = config.Prefs.terminal.font
-            if bg: view.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse(bg))
-            if fg: view.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse(fg))
-            if font: view.modify_font(pango.FontDescription(font))
+            if bg:
+                _ok, _color = Gdk.color_parse(bg)
+                if _ok: view.modify_base(Gtk.StateType.NORMAL, _color)
+            if fg:
+                _ok, _color = Gdk.color_parse(fg)
+                if _ok: view.modify_text(Gtk.StateType.NORMAL, _color)
+            if font: view.modify_font(Pango.FontDescription.from_string(font))
         del buff
         widget_labels = ["scrolledwindow2", "scrolledwindow8", "scrolledwindow7",
                          "scrolledwindow5", "scrolledwindow4"]
         for x in widget_labels:
-            window = self.wtree.get_widget(x)
+            window = self.wtree.get_object(x)
             self.scrolled_window += [window]
         del x
-        
+
         # Catch button events on info, caution & warning tabs
         # Following a double click on a line, bring that line
         # in the process window into focus near center screen
         self.view[TAB_INFO].connect("button_press_event", self.button_event)
         self.view[TAB_CAUTION].connect("button_press_event", self.button_event)
-        self.view[TAB_WARNING].connect("button_press_event", self.button_event)        
+        self.view[TAB_WARNING].connect("button_press_event", self.button_event)
         self.view[TAB_INFO].connect("button_release_event", self.button_event)
         self.view[TAB_CAUTION].connect("button_release_event", self.button_event)
         self.view[TAB_WARNING].connect("button_release_event", self.button_event)
@@ -158,15 +168,15 @@ class TerminalNotebook:
         if self.tab_showing[tab]:
             return
         # this hbox will hold the icon and label
-        hbox = gtk.HBox()
-        icon = gtk.Image()
+        hbox = Gtk.Box()
+        icon = Gtk.Image()
         # set the icon, label, tab, and position of the tab
         if tab == TAB_WARNING:
-            icon.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
+            icon.set_from_icon_name("dialog-warning", Gtk.IconSize.MENU)
             label, tab, pos = _(TAB_LABELS[TAB_WARNING]), self.warning_tab, 1
             self.tab_showing[TAB_WARNING] = True
         elif tab == TAB_CAUTION:
-            icon.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
+            icon.set_from_icon_name("dialog-warning", Gtk.IconSize.MENU)
             label, tab = _(TAB_LABELS[TAB_CAUTION]), self.caution_tab
             # quick hack to make it always show before info & queue tabs
             pos = self.notebook.page_num(self.info_tab)
@@ -176,26 +186,26 @@ class TerminalNotebook:
                     pos = 2
             self.tab_showing[TAB_CAUTION] = True
         elif tab == TAB_INFO:
-            icon.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_MENU)
+            icon.set_from_icon_name("dialog-information", Gtk.IconSize.MENU)
             label, tab = _(TAB_LABELS[TAB_INFO]), self.info_tab
             pos = self.notebook.page_num(self.queue_tab)
             # set to show before queue tab
             if pos == -1: pos = 3
             self.tab_showing[TAB_INFO] = True
         elif tab == TAB_QUEUE:
-            icon.set_from_stock(gtk.STOCK_INDEX, gtk.ICON_SIZE_MENU)
+            icon.set_from_icon_name("gtk-index", Gtk.IconSize.MENU)
             label, tab, pos = _(TAB_LABELS[TAB_QUEUE]), self.queue_tab, 4
             self.tab_showing[TAB_QUEUE] = True
         # pack the icon and label onto the hbox
-        hbox.pack_start(icon)
-        hbox.pack_start(gtk.Label(label))
+        hbox.pack_start(icon, False, False, 0)
+        hbox.pack_start(Gtk.Label(label), False, False, 0)
         hbox.show_all()
         # insert the tab
         self.notebook.insert_page(tab, hbox, pos)
         # reset the visible_tablist
         self.get_tab_list()
         debug.dprint("NOTEBOOK: self.visible_tablist %s" % self.visible_tablist)
-        
+
     def hide_tab(self, tab):
         pos = -1
         if tab == TAB_WARNING:
@@ -206,7 +216,7 @@ class TerminalNotebook:
             pos = self.notebook.page_num(self.info_tab)
         elif tab == TAB_QUEUE:
             pos = self.notebook.page_num(self.queue_tab)
-        if pos is not -1:
+        if pos != -1:
             debug.dprint("NOTEBOOK: hiding tab %s, pos %s." % (tab, pos))
             self.notebook.remove_page(pos)
             self.tab_showing[tab] = False
@@ -233,12 +243,12 @@ class TerminalNotebook:
             widget occurs, move to the process window and jump to the line
             number clicked on.
         """
-        if event.type == gtk.gdk._2BUTTON_PRESS:
+        if event.type == Gdk.EventType._2BUTTON_PRESS:
             # Capture the source of the dbl-click event
             # but do nothing else
             self.event_src = widget
 
-        elif event.type == gtk.gdk.BUTTON_RELEASE and \
+        elif event.type == Gdk.EventType.BUTTON_RELEASE and \
             self.event_src == widget:
             # clear the event source to prevent false restarts
             self.event_src = None
@@ -247,17 +257,19 @@ class TerminalNotebook:
             # Convert x,y window coords to buffer coords and get line text
             x = int(event.x)
             y = int(event.y)
-            bufcoords = widget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,x,y)
+            bufcoords = widget.window_to_buffer_coords(Gtk.TextWindowType.TEXT,x,y)
             # Set start iter at beginning of line (0)
-            iStart = widget.get_iter_at_location(0,bufcoords[1])
+            result_start = widget.get_iter_at_location(0,bufcoords[1])
+            iStart = result_start[1] if isinstance(result_start, tuple) else result_start
             # Set end iter far enough right to grab number (100)
-            iEnd = widget.get_iter_at_location(100,bufcoords[1])
+            result_end = widget.get_iter_at_location(100,bufcoords[1])
+            iEnd = result_end[1] if isinstance(result_end, tuple) else result_end
             try:
                 # get line number from textbuffer (0 based)
                 # we'll do this inside a try clause in case the user
                 # clicks on a line without a number or anything else
                 # goes wrong!
-                line = int(iStart.get_text(iEnd)[0:6]) - 1 
+                line = int(iStart.get_text(iEnd)[0:6]) - 1
                 # Get the iter based on the line number index
                 iter = self.view_buffer[TAB_PROCESS].get_iter_at_line_index(line,0)
                 # Scroll to the line, try to position mid-screen
@@ -300,7 +312,7 @@ class TerminalNotebook:
             bounds = self.view_buffer[process_tab].get_bounds()
             self.view_buffer[process_tab].remove_all_tags(*bounds)
             for key in config.Prefs.TAG_DICT:
-                text_tag = config.Prefs.TAG_DICT[key] 
+                text_tag = config.Prefs.TAG_DICT[key]
                 argdict = {}
                 if text_tag[0]:
                     argdict["foreground"] = text_tag[0]
@@ -355,7 +367,7 @@ class TerminalNotebook:
             return
         #debug.dprint("Notebook: overwrite() -- num= " + str(num) + "..." + text)
         #debug.dprint(self.current_tab)
-        line_number = self.view_buffer[TAB_PROCESS].get_line_count() 
+        line_number = self.view_buffer[TAB_PROCESS].get_line_count()
         iter = self.view_buffer[num].get_iter_at_line(line_number)
         if iter.get_chars_in_line() >= 7:
             iter.set_line_offset(7)
@@ -380,7 +392,7 @@ class TerminalNotebook:
         """
         #debug.dprint("Notebook: append() -- num= " + str(num) + "..." + text)
         #debug.dprint(self.current_tab)
-        line_number = self.view_buffer[TAB_PROCESS].get_line_count() 
+        line_number = self.view_buffer[TAB_PROCESS].get_line_count()
         iter = self.view_buffer[num].get_end_iter()
         lntext = str(line_number).zfill(6) + ' '
         if self.last_text[num].endswith('\n'):
@@ -460,7 +472,7 @@ class TerminalNotebook:
             # right hand side of patching lines is currently unsupported.
             debug.dprint("Notebook: parse_escape_sequence(): unsupported escape sequence '%s'" % sequence)
             return False
-            
+
     def set_startmark( self ):
         start_iter = self.view_buffer[TAB_PROCESS].get_end_iter()
         if self.command_start:

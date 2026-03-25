@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Utils Module
@@ -23,33 +23,38 @@
 '''
 
 
-import os, threading
-import errno
-import string
-import re
-import datetime
-from sys import stderr
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk
-import grp
-import pwd, pickle
-from gettext import gettext as _
+import gi
 
-from porthole.version import version
-from porthole._xml.xmlmgr import XMLManager, XMLManagerError
+gi.require_version('Gtk', '3.0')
+import datetime
+import errno
+import grp
+import os
+import pickle
+import pwd
+import re
+import string
+import threading
+from gettext import gettext as _
+from sys import stderr
+
+from gi.repository import Gtk
+
 from porthole import config
+from porthole._xml.xmlmgr import XMLManager, XMLManagerError
 from porthole.utils import debug
+from porthole.version import version
+
 
 def get_icon_for_package(package):
     """Return an icon for a package"""
     # if it's installed, find out if it can be upgraded
     if package and package.get_installed():
-        icon = gtk.STOCK_YES
+        icon = "gtk-yes"
     else:
-        # just put the STOCK_NO icon
-        # switched to blank icon if not installed
-        icon = '' # gtk.STOCK_NO
-    return icon       
+        # just put blank icon if not installed
+        icon = ''
+    return icon
 
 def get_icon_for_upgrade_package(package):
     """Return an icon and foreground text color for a package"""
@@ -57,17 +62,17 @@ def get_icon_for_upgrade_package(package):
         return '', 'blue'
     #  find out if it can be upgraded
     if package.is_upgradable() == 1:  # 1 for only upgrades (no downgrades)
-        icon = gtk.STOCK_GO_UP
+        icon = "gtk-go-up"
         color = config.Prefs.views.upgradable_fg
     else: # it's a downgrade
-        icon = gtk.STOCK_GO_DOWN
+        icon = "gtk-go-down"
         color = config.Prefs.views.downgradable_fg
-    return icon, color      
+    return icon, color
 
 def is_root():
     """Returns true if process runs as root."""
     return os.geteuid() == 0
-    
+
 write_access = is_root()
 
 def read_access():
@@ -81,6 +86,8 @@ def read_access():
     return write_access() or (portage in (os.getgroups() + [os.getegid()]))
 
 sudo_x_ok = os.access('/usr/bin/sudo', os.X_OK)
+doas_x_ok = os.access('/usr/bin/doas', os.X_OK)
+pkexec_x_ok = os.access('/usr/bin/pkexec', os.X_OK)
 
 def can_sudo():
     """ return True if /usr/bin/sudo exists and is executable """
@@ -94,7 +101,14 @@ kdesu_x_ok = os.access('/usr/bin/kdesu', os.X_OK)
 
 def can_gksu(specific=None):
     if not specific:
-        return gksudo_x_ok or gksu_x_ok or gnomesu_x_ok or kdesu_x_ok
+        return (doas_x_ok or sudo_x_ok or pkexec_x_ok or
+                gksudo_x_ok or gksu_x_ok or gnomesu_x_ok or kdesu_x_ok)
+    if specific == 'doas':
+        return doas_x_ok
+    if specific == 'sudo':
+        return sudo_x_ok
+    if specific == 'pkexec':
+        return pkexec_x_ok
     if specific == 'gksudo':
         return gksudo_x_ok
     if specific == 'gksu':
@@ -155,8 +169,8 @@ def estimate(package_name, log_file_name="/var/log/emerge.log"):
         end_time = 0.0
         total_time = datetime.timedelta()
         emerge_count = 0
-        log_file = open(log_file_name)       
-        package_name_escaped = ""      
+        log_file = open(log_file_name)
+        package_name_escaped = ""
         # Let's excape characters like + before we try to compile the regular
         #expression
         for i in range(0, len(package_name)):
@@ -168,21 +182,21 @@ def estimate(package_name, log_file_name="/var/log/emerge.log"):
         start_pattern = re.compile("^[0-9]+:  >>> emerge.*%s*." %
                                                            package_name_escaped)
         end_pattern = re.compile("^[0-9]+:  ::: completed emerge.*%s*." %
-                                                           package_name_escaped)      
+                                                           package_name_escaped)
         lines = log_file.readlines()
         for i in range(1, len(lines)):
             if start_pattern.match(lines[i]):
                 tokens = lines[i].split()
-                #start_time = string.atof((tokens[0])[0:-1])               
-                start_time = float((tokens[0])[0:-1])               
+                #start_time = string.atof((tokens[0])[0:-1])
+                start_time = float((tokens[0])[0:-1])
                 for j in range(i+1, len(lines)):
                     if start_pattern.match(lines[j]):
-                        # We found another start pattern before finding an 
+                        # We found another start pattern before finding an
                         # end pattern.  That probably means emerge died before
                         # finishing what it was doing.
-                        # We'll ignore it and continue searching. 
+                        # We'll ignore it and continue searching.
                         break
-                    if end_pattern.match(lines[j]):                 
+                    if end_pattern.match(lines[j]):
                         # Looks like we found a matching end statement.
                         tokens = lines[j].split()
                         #end_time = string.atof((tokens[0])[0:-1])
@@ -195,7 +209,7 @@ def estimate(package_name, log_file_name="/var/log/emerge.log"):
         if emerge_count > 0:
             return total_time / emerge_count
         else:
-            return None          
+            return None
     except:
         raise BadLogFile(_("Error reading emerge log file.  Check file permissions, or check for corrupt log file."))
 
@@ -207,7 +221,7 @@ def pretend_check(command_string):
         for x in tmpcmdline:
             if x[0:1]=="-"and x[1:2]!="-":
                 for y in x[1:]:
-                    #debug.dprint(y)    
+                    #debug.dprint(y)
                     if y == "p":
                         #debug.dprint("found it")
                         isPretend = True

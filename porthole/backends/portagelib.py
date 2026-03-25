@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     PortageLib
@@ -25,30 +25,40 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import gi
+
+gi.require_version('Gtk', '3.0')
 import datetime
 import importlib
+
+from gi.repository import Gtk
+
 id = datetime.datetime.now().microsecond
 print("PORTAGELIB: id initialized to ", id)
 
-from sys import exit, stderr
-import os, _thread
+import _thread
+import os
 from gettext import gettext as _
+from sys import exit, stderr
 
-from porthole.utils import debug
-from porthole.utils.utils import  is_root
-from porthole.utils.dispatcher import Dispatcher, Dispatch_wait
-from porthole.sterminal import SimpleTerminal
-from porthole.backends import version_sort
-from porthole.backends.properties import Properties
 from porthole import config
+from porthole.backends import version_sort
 from porthole.backends.metadata import parse_metadata
+from porthole.backends.properties import Properties
+from porthole.sterminal import SimpleTerminal
+from porthole.utils import debug
+from porthole.utils.dispatcher import Dispatch_wait, Dispatcher
+from porthole.utils.utils import is_root
 
 try: # >=portage 2.2 modules
     import portage
+
     #print "PORTAGELIB: imported portage-2.2"
     import portage.const as portage_const
+
     #print "PORTAGELIB: imported portage.const module"
     import portage.manifest as manifest
+
     #print "PORTAGELIB: imported portage-2.2 manifest"
     from _emerge.actions import load_emerge_config as _load_emerge_config
     PORTAGE22 = True
@@ -98,7 +108,7 @@ def get_user_config(file, name=None, ebuild=None):
     if not os.access(filename, os.R_OK):
         debug.dprint(" * PORTAGELIB: get_user_config(): no read access on '%s'?" % file)
         return {}
-    configfile = open(filename, 'r')
+    configfile = open(filename)
     configlines = configfile.readlines()
     configfile.close()
     config = [line.split() for line in configlines]
@@ -202,7 +212,7 @@ def get_make_conf(want_linelist=False, savecopy=False):
     If savecopy is true, a copy of make.conf is saved in make.conf.bak.
     """
     debug.dprint("PORTAGELIB: get_make_conf()")
-    file = open(portage_const.MAKE_CONF_FILE, 'r')
+    file = open(portage_const.MAKE_CONF_FILE)
     if savecopy:
         file2 = open(portage_const.MAKE_CONF_FILE + '.bak', 'w')
         file2.write(file.read())
@@ -286,7 +296,7 @@ def set_make_conf(property, add='', remove='', replace='', callback=None):
 
 def get_virtuals():
     return settings.settings.virtuals
-    
+
 def reload_portage():
     debug.dprint('PORTAGELIB: reloading portage')
     debug.dprint("PORTAGELIB: old portage version = " + portage.VERSION)
@@ -365,10 +375,10 @@ def get_use_flag_dict(portdir):
             debug.dprint(data[0].strip())
             debug.dprint(item[index:])
     return dict
-    
+
 def get_portage_environ(var):
     """Returns environment variable from portage if possible, else None"""
-    try: 
+    try:
         #temp = portage.config(clone=portage.settings).environ()[var]
         temp = settings.settings.environ()[var]
     except: temp = None
@@ -441,9 +451,15 @@ def xmatch(*args, **kwargs):
        control-center                       ebuilds for gnome-base/control-center
        >=gnome-base/control-center-2.8.2    only ebuilds with version >= 2.8.2
     """
-    #print >>stderr, "PORTAGELIB: xmatch(); thread ident ", thread.get_ident()
+    # portage 3.x removed 'match-list' from xmatch; use match_from_list instead
+    if args and args[0] == 'match-list':
+        atom = args[1] if len(args) > 1 else kwargs.get('origdep', '')
+        mylist = kwargs.get('mylist', [])
+        try:
+            return portage.match_from_list(atom, mylist)
+        except Exception:
+            return []
     results  =  settings.portdb.xmatch(*args, **kwargs)[:] # make a copy.  needed for <portage-svn-r5382
-    #print >>stderr, type(results), str(results)
     return results
 
 def get_version(ebuild):
@@ -467,20 +483,27 @@ def get_versions(full_name, include_masked = True):
 def get_hard_masked(full_name):
     full_name = str(full_name)
     hardmasked = []
+    # portage 3.x renamed portdb.mysettings to portdb.settings
+    # and pmaskdict/punmaskdict may be accessed differently
+    _psettings = getattr(settings.portdb, 'settings', None) or getattr(settings.portdb, 'mysettings', None)
+    if _psettings is None:
+        return [], []
     try:
-        for x in settings.portdb.mysettings.pmaskdict[full_name]:
+        _pmaskdict = getattr(_psettings, 'pmaskdict', None) or {}
+        for x in _pmaskdict.get(full_name, []):
             m = xmatch("match-all",x)
             for n in m:
                 if n not in hardmasked: hardmasked.append(n)
-    except KeyError:
+    except (KeyError, AttributeError):
         pass
     hard_masked_nocheck = hardmasked[:]
     try:
-        for x in settings.portdb.mysettings.punmaskdict[full_name]:
+        _punmaskdict = getattr(_psettings, 'punmaskdict', None) or {}
+        for x in _punmaskdict.get(full_name, []):
             m = xmatch("match-all",x)
             for n in m:
                 while n in hardmasked: hardmasked.remove(n)
-    except KeyError:
+    except (KeyError, AttributeError):
         pass
     return hard_masked_nocheck, hardmasked
 
@@ -501,8 +524,8 @@ def get_installed_files(ebuild):
     files = []
     try:
         # hoping some clown won't use spaces in filenames ...
-        files = [line.split()[1].decode('ascii')
-                 for line in open(path, "r").readlines()]
+        files = [line.split()[1]
+                 for line in open(path).readlines()]
     except: pass
     files.sort()
     return files
@@ -577,13 +600,13 @@ def get_size(mycpv):
     #debug.dprint( "PORTAGELIB: get_size; Attempting to get fetchlist")
     try:
         if portage.VERSION >= '2.1.6':# newer portage
-            fetchlist = settings.portdb.getFetchMap(mycpv) 
+            fetchlist = settings.portdb.getFetchMap(mycpv)
         else:
             debug.dprint( "PORTAGELIB: get_size; Trying old fetchlist call")
             fetchlist = settings.portdb.getfetchlist(mycpv, mysettings=settings.settings, all=True)[1]
         #debug.dprint( "PORTAGELIB: get_size; mf.getDistfilesSize()")
         mysum[0] = mf.getDistfilesSize(fetchlist)
-        mystr = str(mysum[0]/1024)
+        mystr = str(mysum[0]//1024)
         #debug.dprint( "PORTAGELIB: get_size; mystr = " + mystr)
         mycount=len(mystr)
         while (mycount > 3):
@@ -604,7 +627,7 @@ def get_digest(ebuild): ## depricated
     digest_file = []
     if mydigest != "":
         try:
-            myfile = open(mydigest,"r")
+            myfile = open(mydigest)
             for line in myfile.readlines():
                 digest_file.append(line.split(" "))
             myfile.close()
@@ -620,7 +643,7 @@ def get_properties(ebuild):
     if settings.portdb.cpv_exists(ebuild): # if in portage tree
         try:
             return Properties(dict(list(zip(settings.keys, settings.portdb.aux_get(ebuild, portage.auxdbkeys)))))
-        except IOError as e: # Sync being performed may delete files
+        except OSError as e: # Sync being performed may delete files
             debug.dprint(" * PORTAGELIB: get_properties(): IOError: %s" % str(e))
             return Properties()
         except Exception as e:
@@ -677,7 +700,7 @@ def get_path(cpv):
     except:
         dir = ''
     return dir
-    
+
 def get_metadata(package):
     """Get the metadata for a package"""
     # we could check the overlay as well,
@@ -708,7 +731,7 @@ def find_best_match(search_key): # lifted from gentoolkit and updated
     # FIXME: How should we handle versioned virtuals??
     #cat,pkg,ver,rev = split_package_name(search_key)
     full_name = split_atom_pkg(search_key)[0]
-    if "virtual" == get_category(full_name):
+    if get_category(full_name) == "virtual":
         #t= get_virtual_dep(search_key)
         t = settings.trees[settings.settings["ROOT"]]["vartree"].dep_bestmatch(full_name)
     else:
@@ -737,7 +760,7 @@ def split_package_name(name): # lifted from gentoolkit, handles vituals for find
 
 def get_allnodes():
     return settings.trees[settings.settings["ROOT"]]['porttree'].getallnodes()[:] # copy
-        
+
 def get_installed_list():
     return settings.trees[settings.settings["ROOT"]]["vartree"].getallnodes()[:] # try copying...
 
@@ -820,14 +843,14 @@ class PortageSettings:
         debug.dprint("PORTAGELIB: reset_world();")
         world = []
         try:
-            file = open(os.path.join('/', portage.WORLD_FILE), "r") #"/var/lib/portage/world", "r")
+            file = open(os.path.join('/', portage.WORLD_FILE)) #"/var/lib/portage/world", "r")
             world = file.read().split()
             file.close()
         except:
             debug.dprint("PORTAGELIB: get_world(); Failure to locate file: '%s'" %portage.WORLD_FILE)
             debug.dprint("PORTAGELIB: get_world(); Trying '/var/cache/edb/world'")
             try:
-                file = open("/var/cache/edb/world", "r")
+                file = open("/var/cache/edb/world")
                 world = file.read().split()
                 file.close()
                 debug.dprint("PORTAGELIB: get_world(); OK")

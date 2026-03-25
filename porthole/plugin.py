@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Plugin Interface
@@ -21,19 +21,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+import gi
+
+gi.require_version('Gtk', '3.0')
 import datetime
+
+from gi.repository import Gtk
+
 id = datetime.datetime.now().microsecond
 print("PLUGIN: id initialized to ", id)
 
 import os
 from glob import glob
-import gtk
-#import imp
 
-#from porthole.utils import utils
-from porthole.utils import debug
 #from porthole.importer import my_import
 from porthole import config
+
+#import imp
+#from porthole.utils import utils
+from porthole.utils import debug
+
 
 class PluginManager:
     """Handles all of our plugins"""
@@ -162,7 +169,7 @@ class Plugin:
         return a
         #return self.event_table[event](*args)
 
-class PluginGUI(gtk.Window):
+class PluginGUI(Gtk.Window):
     """Class to implement plugin architecture."""
 
     def __init__(self, plugin_manager):
@@ -170,57 +177,61 @@ class PluginGUI(gtk.Window):
         # Preserve passed parameters and manager
         self.plugin_manager = plugin_manager
         self.gladefile = config.Prefs.DATA_PATH + "glade/porthole.glade"
-        self.wtree = gtk.glade.XML(self.gladefile, "plugin_dialog", config.Prefs.APP)
-        
+        self.wtree = Gtk.Builder()
+
+        self.wtree.set_translation_domain(config.Prefs.APP)
+
+        self.wtree.add_objects_from_file(self.gladefile, ["plugin_dialog"])
+
         # Connect Callbacks
         callbacks = {
             "on_okbutton_clicked": self.destroy_cb,
             "on_plugin_dialog_destroy": self.destroy_cb
         }
-        self.wtree.signal_autoconnect(callbacks)
+        self.wtree.connect_signals(callbacks)
         self.create_plugin_list()
 
     def add_vbox_widgets(self):
-        return_button = gtk.Button("Return")
+        return_button = Gtk.Button("Return")
         return_button.connect("clicked", self.destroy_cb)
-        self.vbox.pack_end(return_button, TRUE, TRUE, 0)
-        self.textbuffer = gtk.TextBuffer()
-        self.textbox = gtk.TextView(self.textbuffer)
-        self.vbox.pack_start(self.textbox)
+        self.vbox.pack_end(return_button, True, True, 0)
+        self.textbuffer = Gtk.TextBuffer()
+        self.textbox = Gtk.TextView(buffer=self.textbuffer)
+        self.vbox.pack_start(self.textbox, True, True, 0)
 
     def create_plugin_list(self):
         """Creates the list-view of the plugins"""
-        self.plugin_view = self.wtree.get_widget("plugin_view")
-        
-        self.liststore = gtk.ListStore(bool, str, bool)
+        self.plugin_view = self.wtree.get_object("plugin_view")
+
+        self.liststore = Gtk.ListStore(bool, str, bool)
         self.plugin_view.set_model(self.liststore)
-        for i in self.plugin_manager.plugin_list(): 
+        for i in self.plugin_manager.plugin_list():
             debug.dprint("PLUGIN: create_plugin_list(): %s , is_installed = %s" %(i.name, str(i.module.is_installed)))
             if not i.module.is_installed:
                 i.enabled = False
             self.liststore.append([i.enabled, i.name, i.module.is_installed])
-        cb_column = gtk.TreeViewColumn(_("Enable"))
-        text_column = gtk.TreeViewColumn(_("Plug-in"))
-        installed_column = gtk.TreeViewColumn(_("Installed"))
-        
-        cell_tg = gtk.CellRendererToggle()
-        cell_tx = gtk.CellRendererText()
-        cell_in = gtk.CellRendererText()
-        cb_column.pack_start(cell_tg)
-        text_column.pack_start(cell_tx)
-        installed_column.pack_start(cell_in)
-        
+        cb_column = Gtk.TreeViewColumn(_("Enable"))
+        text_column = Gtk.TreeViewColumn(_("Plug-in"))
+        installed_column = Gtk.TreeViewColumn(_("Installed"))
+
+        cell_tg = Gtk.CellRendererToggle()
+        cell_tx = Gtk.CellRendererText()
+        cell_in = Gtk.CellRendererText()
+        cb_column.pack_start(cell_tg, True)
+        text_column.pack_start(cell_tx, True)
+        installed_column.pack_start(cell_in, True)
+
         self.plugin_view.append_column(cb_column)
         self.plugin_view.append_column(text_column)
         self.plugin_view.append_column(installed_column)
-        
+
         cb_column.add_attribute(cell_tg,"active",0)
         text_column.add_attribute(cell_tx,"text",1)
         installed_column.add_attribute(cell_in,"text",2)
-        
+
         cell_tg.connect("toggled", self.cb_toggled)
         selection = self.plugin_view.get_selection()
-        selection.set_mode(gtk.SELECTION_SINGLE)
+        selection.set_mode(Gtk.SelectionMode.SINGLE)
         selection.connect("changed", self.sel_changed)
         selection.select_iter(self.liststore.get_iter_first())
         selection.emit("changed")
@@ -250,13 +261,13 @@ class PluginGUI(gtk.Window):
         if not row:
             return
         changed_plugin = self.plugin_manager.get_plugin(*changed_plugin_name)
-        plugin_desc = self.wtree.get_widget("plugin_desc")
-        text_buffer = gtk.TextBuffer()
+        plugin_desc = self.wtree.get_object("plugin_desc")
+        text_buffer = Gtk.TextBuffer()
         text_buffer.set_text(changed_plugin.desc)
         plugin_desc.set_buffer(text_buffer)
         #Load a plugin's option screen here
 
     def destroy_cb(self, *args):
-        window = self.wtree.get_widget("plugin_dialog")
+        window = self.wtree.get_object("plugin_dialog")
         if window:
             window.destroy()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Reader Class: CommonReader
@@ -22,8 +22,10 @@
 '''
 
 #import dummy_threading as _threading
-import threading, _thread
+import _thread
+import threading
 from sys import stderr
+
 
 class CommonReader(threading.Thread):
     """ Common data reading class that works in a seperate thread """

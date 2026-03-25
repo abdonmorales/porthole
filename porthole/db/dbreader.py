@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     Dbreader, class for reading the portage tree and building a porthole database
@@ -22,15 +22,18 @@
 """
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("DBREADER: import id initialized to ", id)
 
-import threading, os
+import os
+import threading
 
-from porthole.utils import debug
-from porthole.db.package import Package
-from porthole.db.dbbase import DBBase
 from porthole import backends
+from porthole.db.dbbase import DBBase
+from porthole.db.package import Package
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 
 #~ # establish a semaphore for the Database
@@ -76,7 +79,7 @@ class DatabaseReader(threading.Thread):
     def read_db(self):
         """Read portage's database and store it nicely"""
         debug.dprint("DBREADER: read_db(); process id = %d *****************" %(os.getpid()))
-        
+
         self.get_installed()
         try:
             debug.dprint("DBREADER: read_db(); getting allnodes package list")
@@ -164,7 +167,7 @@ class DatabaseReader(threading.Thread):
         debug.dprint("DBREADER: get_installed();")
         self.installed_list = portage_lib.get_installed_list()
         self.installed_count = len(self.installed_list)
-        
+
     def run(self):
         """The thread function."""
         self.read_db()
@@ -176,7 +179,7 @@ class DatabaseReader(threading.Thread):
         """sort in alphabetic instead of ASCIIbetic order"""
         debug.dprint("DBREADER: DatabaseReader.sort()")
         spam = [(x[0].upper(), x) for x in list]
-        spam.sort()
+        spam.sort(key=lambda item: item[0])
         debug.dprint("DBREADER: sort(); finished")
         return [x[1] for x in spam]
 

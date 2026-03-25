@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Reader Class: ToolChain
@@ -21,8 +21,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from porthole.utils import debug
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 
 

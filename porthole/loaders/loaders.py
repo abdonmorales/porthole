@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole loader functions
@@ -22,13 +22,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os, threading
+import gi
+
+gi.require_version('Gtk', '3.0')
+import os
+import threading
+
 #import errno
-import gtk
 from gettext import gettext as _
 
-from porthole.utils import debug
+from gi.repository import Gtk
+
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 from porthole import config
 
@@ -45,7 +52,7 @@ except ImportError:
     #                 'You will not be able to use gnome to open web pages.')
     debug.dprint('LOADERS: Module "gnome" not found. '
            'You will not be able to use gnome to open web pages.')
-    
+
 # get the standard webbrowser module
 try:
     import webbrowser
@@ -59,27 +66,28 @@ Textfile_type = {"changelog": "/ChangeLog", "best_ebuild": ".ebuild", "version_e
 
 def get_textfile(path):
     debug.dprint("LOADERS: get_textfile(): loading from: " + path)
-    f = open(path)
+    f = open(path, encoding='utf-8', errors='replace')
     data = f.read(); f.close()
     return data
-    
+
 def decode_text(data = None, mode = None):
-    if data == None:
+    if data is None:
         return ''
-    text = ''
-    try:
-        debug.dprint("LOADERS: decode_text(); trying utf_8 encoding")
-        text = str(data).decode('utf_8').encode("utf_8",'replace')
-    except:
+    # Python 3: if data is already a str, return it directly
+    if isinstance(data, str):
+        return data
+    # If data is bytes, decode it
+    if isinstance(data, bytes):
         try:
-            debug.dprint("LOADERS: decode_text(); trying iso-8859-1 encoding")
-            text = str(data).decode('iso-8859-1').encode('utf_8', 'replace')
-        except:
-            debug.dprint("LOADERS: decode_text(); Failure = unknown encoding")
-            text = _( "This %s has an encoding method unknown to porthole.\n"
-                            "Please report this to bugs.gentoo.org and porthole's bugtracker"
-                                ) % Textfile_type[mode][1:]
-    return text
+            return data.decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                return data.decode('iso-8859-1')
+            except UnicodeDecodeError:
+                return _( "This %s has an encoding method unknown to porthole.\n"
+                                "Please report this to bugs.gentoo.org and porthole's bugtracker"
+                                    ) % Textfile_type[mode][1:]
+    return str(data)
 
 def load_textfile(view, package, mode, version = None):
         """ Load and display a text file associated with a package """
@@ -114,10 +122,10 @@ def load_textfile(view, package, mode, version = None):
                 debug.dprint("loaders:load_textfile(); try opening & reading the file")
                 if mode == "changelog":
                     try:
-                        f = open(portage_lib.settings.portdir + package_file)
+                        f = open(portage_lib.settings.portdir + package_file, encoding='utf-8', errors='replace')
                     except:
                         # need to add multiple overlay support
-                        f = open(portage_lib.settings.portdir_overlay + package_file)
+                        f = open(portage_lib.settings.portdir_overlay + package_file, encoding='utf-8', errors='replace')
                 #~ elif portage_lib.is_overlay(ebuild):
                     #~ debug.dprint("LOADERS: load_textfile(); loading from an overlay")
                     #~ f = open(portage_lib.settings.portdir_overlay + package_file)
@@ -125,10 +133,10 @@ def load_textfile(view, package, mode, version = None):
                     #debug.dprint("LOADERS: load_textfile(): version_ebiuld, getting path for: " + ebuild)
                     path = portage_lib.get_path(version)
                     debug.dprint("LOADERS: load_textfile(): loading from: " + path)
-                    f = open(path)
+                    f = open(path, encoding='utf-8', errors='replace')
                 else:
                     debug.dprint("LOADERS: load_textfile(): loading from the portage tree")
-                    f = open(portage_lib.settings.portdir + package_file)
+                    f = open(portage_lib.settings.portdir + package_file, encoding='utf-8', errors='replace')
                 data = f.read(); f.close()
 
                 if data != None:
@@ -166,7 +174,7 @@ def load_installed_files(window, view, package = None, ebuild = None):
                             "The package may not be installed"))
             return
         d= {"installed_count" : len(installed_files), "ebuild" : ebuild}
-        view.set_text((_("%(installed_count)i installed files for: %(ebuild)s \n\n") % d) 
+        view.set_text((_("%(installed_count)i installed files for: %(ebuild)s \n\n") % d)
                             + "\n".join(installed_files))
 
 

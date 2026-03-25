@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Depends TreeModel
@@ -22,15 +22,23 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import gtk, gobject, string
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
 from gettext import gettext as _
 
-from porthole.utils import debug
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import GdkPixbuf, GLib, GObject, Gtk
+
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
+from porthole import db
 from porthole.backends.utilities import get_reduced_flags, slot_split, use_required_split
 from porthole.db.package import Package
-from porthole import db
+
 
 class DependAtom:
     """Dependency Atom Class.
@@ -45,15 +53,15 @@ class DependAtom:
         self.slot = ''
         self.required_use = ''
         self.complete = False
-    
+
     def __repr__(self): # called by the "print" function
         """Returns a human-readable string representation of the DependAtom
         (used by the "print" statement)."""
         #debug.dprint("DependAtom: __repr__(); "  + self.get_depname() + self.get_required_use())
-        if self.type == 'DEP': 
+        if self.type == 'DEP':
             #debug.dprint("DependAtom: __repr__(); type = DEP, "  + self.get_depname() + self.get_required_use())
             return self.get_depname() + self.get_required_use()
-        elif self.type == 'BLOCKER': 
+        elif self.type == 'BLOCKER':
             #debug.dprint("DependAtom: __repr__(); type = BLOCKER, "  + self.get_depname() + self.get_required_use())
             return '!' + self.get_depname() + self.get_required_use()
         elif self.type == 'OPTION': prefix = '||'
@@ -69,7 +77,7 @@ class DependAtom:
             return ''.join([prefix,'[',bulk,']'])
         elif prefix: return ''.join([prefix,'[]'])
         else: return ''
-    
+
     def __eq__(self, test_atom): # "atomA == atomB" <==> "atomA.__eq__(atomB)"
         """Returns True if the test_atom is equivalent to self
         (used by the statement "atomA == atomB")"""
@@ -82,7 +90,7 @@ class DependAtom:
                 or self.children != test_atom.children): # children will recurse
             return False
         else: return True
-    
+
     def is_satisfied(self, use_flags):
         """Currently returns an object of variable type, indicating whether
         this dependency is satisfied.
@@ -133,19 +141,19 @@ class DependAtom:
             #debug.dprint("DependAtom: get_required_use(); required_use = " + self.required_use)
             return "[" + self.required_use +"]"
 
-class DependsTree(gtk.TreeStore):
+class DependsTree(Gtk.TreeStore):
     """Calculate and display dependencies in a treeview"""
     def __init__(self):
         """Initialize the TreeStore object"""
-        gtk.TreeStore.__init__(self, gobject.TYPE_STRING,   # depend name
-                                gtk.gdk.Pixbuf,                      # icon to display
-                                gobject.TYPE_PYOBJECT,   # package object
-                                gobject.TYPE_BOOLEAN,    # is_satisfied
-                                gobject.TYPE_STRING,        # package name
-                                gobject.TYPE_STRING,        # installed version
-                                gobject.TYPE_STRING,        # latest recommended version
-                                gobject.TYPE_STRING,       # keyword
-                                gobject.TYPE_STRING)        # use flags required to be enabled
+        Gtk.TreeStore.__init__(self, GObject.TYPE_STRING,   # depend name
+                                GdkPixbuf.Pixbuf,                      # icon to display
+                                GObject.TYPE_PYOBJECT,   # package object
+                                GObject.TYPE_BOOLEAN,    # is_satisfied
+                                GObject.TYPE_STRING,        # package name
+                                GObject.TYPE_STRING,        # installed version
+                                GObject.TYPE_STRING,        # latest recommended version
+                                GObject.TYPE_STRING,       # keyword
+                                GObject.TYPE_STRING)        # use flags required to be enabled
         self.column = {
             "depend" : 0,
             "icon" : 1,
@@ -159,7 +167,7 @@ class DependsTree(gtk.TreeStore):
         }
         self.dep_depth = 0
         self.parent_use_flags = {}
-        
+
     def parse_depends_list(self, depends_list, parent = None):
         """Read through the depends list and order it nicely
            Returns a list of (parent, dep, satisfied) for each dep"""
@@ -188,7 +196,7 @@ class DependsTree(gtk.TreeStore):
                     using_list = False
                     parent = None
         return new_list + use_list
-                    
+
 
     def add_atomized_depends_to_tree(self, atomized_depends_list, depends_view,
                                      parent_iter=None, add_satisfied=1, ebuild = None, is_new_child = False):
@@ -204,23 +212,23 @@ class DependsTree(gtk.TreeStore):
             dep_atomized_list = []
             satisfied = atom.is_satisfied(self.parent_use_flags[self.dep_depth])
             if satisfied:
-                icon = gtk.STOCK_YES
+                icon = "gtk-yes"
                 add_kids = 0
             else:
-                icon = gtk.STOCK_NO
+                icon = "gtk-no"
                 add_kids = 1
-            
+
             if add_satisfied or not satisfied: # then add deps to treeview
                 #debug.dprint("DependsTree: atom '%s', type '%s', satisfied '%s'" % (atom.get_depname(), atom.type, satisfied))
                 iter = self.insert_before(parent_iter, None)
                 if atom.type == 'USING':
                     text = _("Using %s") % atom.useflag
-                    if satisfied == -1: icon = gtk.STOCK_REMOVE # -1 ==> irrelevant
+                    if satisfied == -1: icon = "gtk-remove" # -1 ==> irrelevant
                     add_kids = -1 # add kids but don't expand unsatisfied deps
                     add_satisfied = 1
                 elif atom.type == 'NOTUSING':
                     text = _("Not Using %s") % atom.useflag
-                    if satisfied == -1: icon = gtk.STOCK_REMOVE # -1 ==> irrelevant
+                    if satisfied == -1: icon = "gtk-remove" # -1 ==> irrelevant
                     add_kids = -1 # add kids but don't expand unsatisfied deps
                     add_satisfied = 1
                 elif atom.type =='DEP':
@@ -229,7 +237,7 @@ class DependsTree(gtk.TreeStore):
                         add_kids = 1
                 elif atom.type == 'BLOCKER':
                     text = "!" + atom.get_depname()
-                    if not satisfied: icon = gtk.STOCK_DIALOG_WARNING
+                    if not satisfied: icon = "gtk-dialog-warning"
                 elif atom.type == 'OPTION':
                     text = _("Any of:")
                     add_kids = -1 # add kids but don't expand unsatisfied deps
@@ -242,10 +250,10 @@ class DependsTree(gtk.TreeStore):
                     text = '~' + atom.get_depname()
                     if not satisfied and self.dep_depth < 4:
                         add_kids = 1
-                
+
                 if icon:
                     self.set_value(iter, self.column["icon"], depends_view.render_icon(icon,
-                                      size = gtk.ICON_SIZE_MENU, detail = None))
+                                      size = Gtk.IconSize.MENU, detail = None))
                 self.set_value(iter, self.column["depend"], text)
                 self.set_value(iter, self.column["satisfied"], bool(satisfied))
                 self.set_value(iter, self.column["required_use"], atom.get_required_use())
@@ -387,10 +395,10 @@ def atomize_depends_list(depends_list, parent = None):
                 depends_list[0] = item[1:]
             else:
                 depends_list.pop(0)
-                #debug.dprint("DependsTree: atomize_depends_list();380 finished recursion level, returning atomized list") 
+                #debug.dprint("DependsTree: atomize_depends_list();380 finished recursion level, returning atomized list")
             return atomized_list
         else: # hopefully a nicely formatted dependency
-            if [a for a in ['(', '|', ')'] if a in item]:  # , '?']): remove '?' from the list due to required USE flags that may have it. 
+            if [a for a in ['(', '|', ')'] if a in item]:  # , '?']): remove '?' from the list due to required USE flags that may have it.
                 debug.dprint(" *** DEPENDS: atomize_depends_list: ILLEGAL ITEM!!! " + \
                     "Please report this to the authorities. (item = %s)" % item)
             temp_atom = DependAtom(parent)
@@ -420,7 +428,7 @@ def atomize_depends_list(depends_list, parent = None):
             depends_list.pop(0)
     #debug.dprint("DependsTree: atomize_depends_list();411 finished recursion level, returning atomized list")
     return atomized_list
-    
+
 def split_group(dep_list):
     """separate out the ( ) grouped dependencies"""
     #debug.dprint("DependsTree: split_group(); starting")

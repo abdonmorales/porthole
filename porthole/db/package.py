@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Package class
@@ -23,14 +23,16 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("PACKAGE: id initialized to ", id)
 
 ## circular import problem
 ##from porthole.db import userconfigs
+from porthole import backends
 from porthole.backends.version_sort import ver_sort
 from porthole.utils import debug
-from porthole import backends
+
 portage_lib = backends.portage_lib
 
 REFRESH = True
@@ -75,7 +77,7 @@ class Package:
             # insert routine for checking if the package is in the specified list
             return self.full_name in list
         return False
-            
+
 
     def update_info(self):
         """Update the package info"""
@@ -91,7 +93,7 @@ class Package:
         if self.installed_ebuilds == None or refresh:
             self.installed_ebuilds = portage_lib.get_installed(self.full_name)
         return self.installed_ebuilds
-    
+
     def get_name(self):
         """Return name portion of a package"""
         if self.full_name == _("None"):
@@ -117,12 +119,12 @@ class Package:
         if self.full_name == _("None"):
             return ''
         vers = self.get_versions()[:] # make a copy in case it is a pointer
-        #debug.dprint("PACKAGE: get_latest_ebuild(); versions: " + str(vers)) 
+        #debug.dprint("PACKAGE: get_latest_ebuild(); versions: " + str(vers))
         if include_masked:
-            #debug.dprint("PACKAGE: get_latest_ebuild(); trying portage_lib.best() of versions: " + str(vers)) 
+            #debug.dprint("PACKAGE: get_latest_ebuild(); trying portage_lib.best() of versions: " + str(vers))
             return portage_lib.best(vers)
         if self.latest_ebuild == None:
-            #debug.dprint("PACKAGE: get_latest_ebuild(); checking hard masked vers = " + str(vers)) 
+            #debug.dprint("PACKAGE: get_latest_ebuild(); checking hard masked vers = " + str(vers))
             for m in self.get_hard_masked(check_unmask = True):
                 while m in vers:
                     vers.remove(m)
@@ -136,7 +138,7 @@ class Package:
             return ''
         if self.best_ebuild == None or refresh:
             self.best_ebuild = portage_lib.get_best_ebuild(self.full_name)
-            #debug.dprint("PACKAGE: get_best_ebuild();  = " + str(self.best_ebuild)) 
+            #debug.dprint("PACKAGE: get_best_ebuild();  = " + str(self.best_ebuild))
         return self.best_ebuild
 
     def get_best_dep_ebuild(self, refresh = False):
@@ -148,7 +150,7 @@ class Package:
         if self.best_ebuild == None or refresh:
             best, keyworded, hardmasked = portage_lib.get_dep_ebuild(dep)
             self.best_ebuild = best
-            #debug.dprint("PACKAGE: get_best_ebuild();  = " + str(self.best_ebuild)) 
+            #debug.dprint("PACKAGE: get_best_ebuild();  = " + str(self.best_ebuild))
         return self.best_ebuild
 
     def get_default_ebuild(self):
@@ -165,9 +167,9 @@ class Package:
         if ebuild or self.size == None or self.size == '':
             if not ebuild:
                 ebuild = self.get_default_ebuild()
-                if ebuild: 
+                if ebuild:
                     self.size = portage_lib.get_size(ebuild)
-                else: 
+                else:
                     self.size = ''
                 #debug.dprint("PACKAGE: get_size(); returning self.size")
                 return self.size
@@ -175,7 +177,7 @@ class Package:
                 #debug.dprint("PACKAGE: get_size(); returning portage_lib.get_size(ebuild)")
                 self.size = portage_lib.get_size(ebuild)
         return self.size
-        
+
     def get_digest(self):
         if self.full_name == _("None"):
             return ''
@@ -221,7 +223,7 @@ class Package:
         else:
             #debug.dprint("PACKAGE: get_properties(); Using specific ebuild")
             ebuild = specific_ebuild
-        if not ebuild in self.properties:
+        if ebuild not in self.properties:
             #debug.dprint("PACKAGE: geting properties for '%s'" % str(ebuild))
             self.properties[ebuild] = portage_lib.get_properties(ebuild)
         return self.properties[ebuild]
@@ -246,7 +248,7 @@ class Package:
             self.hard_masked_nocheck, self.hard_masked = portage_lib.get_hard_masked(self.full_name)
         if check_unmask: return self.hard_masked
         else: return self.hard_masked_nocheck
-        
+
 
     def is_upgradable(self, refresh = False):
         """Indicates whether an unmasked upgrade/downgrade is available.

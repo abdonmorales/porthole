@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Views
@@ -22,16 +22,23 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, gobject, pango
-import threading, os
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Pango', '1.0')
+import os
+import threading
 from gettext import gettext as _
 
+from gi.repository import GLib, GObject, Gtk, Pango
+
 from porthole.packagebook.depends import DependsTree
-from porthole.views.commontreeview import CommonTreeView
 from porthole.utils import debug
+from porthole.views.commontreeview import CommonTreeView
 from porthole.views.helpers import *
+
 from .models import C_ITEM, CategoryModel
+
 
 class CategoryView(CommonTreeView):
     """ Self contained treeview to hold categories """
@@ -40,14 +47,14 @@ class CategoryView(CommonTreeView):
         # initialize the treeview
         CommonTreeView.__init__(self)
         # setup the column
-        self.cat_column = gtk.TreeViewColumn(_("Categories"),
-                                    gtk.CellRendererText(),
+        self.cat_column = Gtk.TreeViewColumn(_("Categories"),
+                                    Gtk.CellRendererText(),
                                     markup = C_ITEM["short_name"])
         self.append_column(self.cat_column)
         self.cat_column.set_visible(True)
         self.cat_column.set_expand(True)
-        self.count_column = gtk.TreeViewColumn(_("# pkgs"),
-                                    gtk.CellRendererText(),
+        self.count_column = Gtk.TreeViewColumn(_("# pkgs"),
+                                    Gtk.CellRendererText(),
                                     markup = C_ITEM["count"])
         self.append_column(self.count_column)
         self.count_column.set_visible(True)
@@ -89,7 +96,7 @@ class CategoryView(CommonTreeView):
                 self._category_changed(category)
         # save current selection as last selected
         self.last_category = category
-        
+
     def populate(self, categories, _sort = True, counts = None):
         """Fill the category tree."""
         self.clear()
@@ -114,7 +121,7 @@ class CategoryView(CommonTreeView):
                     full_name = '-'.join(cat_split[:i+1] or cat_split[0])
                     if i < max_level:
                         # add parent/subparent row
-                        len_full_names = len(last_full_names) 
+                        len_full_names = len(last_full_names)
                         #debug.dprint(" VIEWS: CategoryView.populate():i<max_level 117 i = " +str(i) +" new full_name = " + full_name +' >> ' + str(last_full_names) + str(len_full_names))
                         if len_full_names > i  and last_full_names[i] == full_name:
                             #debug.dprint(" VIEWS: CategoryView.populate():i<max_level 119 matching full_name...continuing")
@@ -157,7 +164,7 @@ class CategoryView(CommonTreeView):
                             #debug.dprint("VIEWS: Counts: %s = %s" %(cat, str(counts[cat])))
                             self.model.set_value( parent_iter[i+1], C_ITEM["count"], str(counts[cat]) )
                             path = self.model.get_path( parent_iter[i+1])
-                            p = i 
+                            p = i
                             while p > 0:
                                 path = path[:p]
                                 #debug.dprint(" VIEWS: CategoryView.populate(): 178 update parent counts path = "+str(path))

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Config Package
@@ -23,11 +23,11 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("CONFIG: id initialized to ", id)
 
 from porthole.config.configuration import PortholeConfiguration
-
 
 Prefs = None # initialize, then create the real one from the porthole startup script PortholePreferences()
 Config = PortholeConfiguration()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     Backends Utilities
@@ -25,14 +25,16 @@
 """
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("UTILITIES: id initialized to ", id)
 
 import os
 from gettext import gettext as _
 
-from porthole.utils import debug
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 ## circular import problem
 ##from porthole.db import userconfigs
@@ -48,14 +50,14 @@ def iter_read_bash(bash_source):
         garbage collector."""
     try:
         if isinstance(bash_source, str):
-            bash_source = open(bash_source, 'r')
+            bash_source = open(bash_source)
         for s in bash_source:
             s=s.strip()
             if s.startswith("#") or s == "":
                 continue
             yield s
         bash_source.close()
-    except IOError:
+    except OSError:
         pass
 
 def read_bash(bash_source):
@@ -67,7 +69,7 @@ def sort(list):
     debug.dprint("BACKENDS Utilities: sort()")
     try:
         spam = [(x[0].upper(), x) for x in list]
-        spam.sort()
+        spam.sort(key=lambda item: item[0])
         #debug.dprint("BACKENDS Utilities: sort(); finished")
         return [x[1] for x in spam]
     except:
@@ -85,7 +87,7 @@ def get_sync_info():
     try:
         #debug.dprint("BACKENDS Utilities: get_sync_info(); timestamp path = " \
         #    + portage_lib.settings.portdir + "/metadata/timestamp")
-        f = open(portage_lib.settings.portdir + "/metadata/timestamp")
+        f = open(portage_lib.settings.portdir + "/metadata/timestamp", encoding='utf-8', errors='replace')
         #debug.dprint("BACKENDS Utilities: get_sync_info(); file open")
         data = f.read()
         #debug.dprint("BACKENDS Utilities: get_sync_info(); file read")
@@ -93,21 +95,12 @@ def get_sync_info():
         #debug.dprint("BACKENDS Utilities: get_sync_info(); file closed")
         #debug.dprint("BACKENDS Utilities: get_sync_info(); data = " + data)
         if data:
-            try:
-                #debug.dprint("BACKENDS Utilities: get_sync_info(); trying utf_8 encoding")
-                last_sync = (str(data).decode('utf_8').encode("utf_8",'replace'))
-                valid_sync = True
-            except:
-                try:
-                    #debug.dprint("BACKENDS Utilities: get_sync_info(); trying iso-8859-1 encoding")
-                    last_sync = (str(data).decode('iso-8859-1').encode('utf_8', 'replace'))
-                    valid_sync = True
-                except:
-                    debug.dprint("BACKENDS Utilities: get_sync_info(); Failure = unknown encoding")
+            last_sync = data
+            valid_sync = True
         else:
             debug.dprint("BACKENDS Utilities: get_sync_info(); No data read")
     #except os.error:
-    except IOError as v:
+    except OSError as v:
         try:
             (code, message) = v
         except:

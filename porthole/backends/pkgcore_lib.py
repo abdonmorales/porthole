@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     Pkgcore_Lib
@@ -22,12 +22,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from sys import exit
+import gi
+
+gi.require_version('Gtk', '3.0')
+import importlib
 import os
 from gettext import gettext as _
-
+from sys import exit
 from timeit import Timer
-import importlib
+
+from gi.repository import Gtk
 
 try:
     import pkgcore
@@ -57,11 +61,13 @@ except ImportError:
     exit(_('Could not find portage module.\n'
          'Are you sure this is a Gentoo system?'))
 
-from utils import dprint, dsave, is_root
-from sterminal import SimpleTerminal
-from dispatcher import Dispatcher
-from . import version_sort
 import threading
+
+from dispatcher import Dispatcher
+from sterminal import SimpleTerminal
+from utils import dprint, dsave, is_root
+
+from . import version_sort
 
 if is_root: # then import some modules and run it directly
     from . import set_config
@@ -73,7 +79,7 @@ Lib = "Pkgcore"
 
 thread_id = os.getpid()
 
-CONFIG = pkgcore.config.load_config() 
+CONFIG = pkgcore.config.load_config()
 VDB = CONFIG.repo['vdb']   # installed packages list
 # <bharring> grab the raw_repo from the domain repo.
 # <bharring> domain_repo_instances.raw_repo == configured_repo
@@ -88,14 +94,14 @@ RAW_TREE = CONFIG.repo["rsync repo"] # since raw_repo.raw_repo is broken
 def get_world():
         world = []
         try:
-            file = open(pkgcore.const.WORLD_FILE, "r")
+            file = open(pkgcore.const.WORLD_FILE)
             world = file.read().split()
             file.close()
         except:
             dprint("PKGCORE_LIB: get_world(); Failure to locate file: " + pkgcore.const.WORLD_FILE)
             dprint("PKGCORE_LIB: get_world(); Trying '/var/cache/edb/world'")
             try:
-                file = open("/var/cache/edb/world", "r")
+                file = open("/var/cache/edb/world")
                 world = file.read().split()
                 file.close()
                 dprint("PKGCORE_LIB: get_world(); OK")
@@ -191,7 +197,7 @@ UseFlagDict = get_use_flag_dict()
 #polibkeys.sort()
 #for polibkey in polibkeys:
 #    print polibkey, ':', UseFlagDict[polibkey]
-    
+
 def get_portage_environ(var):
     """Returns environment variable from portage if possible, else None"""
     try: temp = portage.config(clone=portage.settings).environ()[var]
@@ -304,7 +310,7 @@ def get_user_config(file, name=None, ebuild=None):
         if not os.access(filename, os.R_OK):
             dprint(" * PKGCORE_LIB: get_user_config(): no read access on '%s'?" % file)
             return None
-    configfile = open(filename, 'r')
+    configfile = open(filename)
     configlines = configfile.readlines()
     configfile.close()
     config = [line.split() for line in configlines]
@@ -405,7 +411,7 @@ def get_make_conf(want_linelist=False, savecopy=False):
     If savecopy is true, a copy of make.conf is saved in make.conf.bak.
     """
     dprint("PKGCORE_LIB: get_make_conf()")
-    file = open(portage_const.MAKE_CONF_FILE, 'r')
+    file = open(portage_const.MAKE_CONF_FILE)
     if savecopy:
         file2 = open(portage_const.MAKE_CONF_FILE + '.bak', 'w')
         file2.write(file.read())
@@ -513,8 +519,8 @@ def get_installed_files(ebuild):
     files = []
     try:
         # hoping some clown won't use spaces in filenames ...
-        files = [line.split()[1].decode('ascii')
-                 for line in open(path, "r").readlines()]
+        files = [line.split()[1]
+                 for line in open(path).readlines()]
     except: pass
     files.sort()
     return files
@@ -535,7 +541,7 @@ def best(versions):
     """returns the best version in the list"""
     dprint("PKGCORE_LIB: best(); versions: " + str(versions))
     return portage.best(versions)
-    
+
 
 def get_archlist():
     """lists the architectures accepted by portage as valid keywords"""
@@ -557,11 +563,11 @@ class Properties:
     """Contains all variables in an ebuild."""
     def __init__(self, dict = None):
         self.__dict = dict
-        
+
     def __getattr__(self, name):
         try: return self.__dict[name]
         except: return ''
-        
+
     def get_slot(self):
         """Return ebuild slot"""
         return self.slot
@@ -584,7 +590,7 @@ def get_size(ebuild):
     mydigest = portage.db['/']['porttree'].dbapi.finddigest(ebuild)
     mysum = 0
     try:
-        myfile = open(mydigest,"r")
+        myfile = open(mydigest)
         for line in myfile.readlines():
             mysum += int(line.split(" ")[3])
         myfile.close()
@@ -608,7 +614,7 @@ def get_digest(ebuild):
     mydigest = portage.db['/']['porttree'].dbapi.finddigest(ebuild)
     digest_file = []
     try:
-        myfile = open(mydigest,"r")
+        myfile = open(mydigest)
         for line in myfile.readlines():
             digest_file.append(line.split(" "))
         myfile.close()
@@ -624,7 +630,7 @@ def get_properties(ebuild):
     if portage.portdb.cpv_exists(ebuild): # if in portage tree
         try:
             return Properties(dict(list(zip(keys, portage.portdb.aux_get(ebuild, portage.auxdbkeys)))))
-        except IOError as e: # Sync being performed may delete files
+        except OSError as e: # Sync being performed may delete files
             dprint(" * PKGCORE_LIB: get_properties(): IOError: " + e)
             return Properties()
     else:
@@ -632,7 +638,7 @@ def get_properties(ebuild):
         if vartree.dbapi.cpv_exists(ebuild): # elif in installed pkg tree
             return Properties(dict(list(zip(keys, vartree.dbapi.aux_get(ebuild, portage.auxdbkeys)))))
         else: return Properties()
-    
+
 def get_metadata(package):
     """Get the metadata for a package"""
     # we could check the overlay as well,
@@ -661,7 +667,7 @@ class Package:
         self.in_world = full_name in World
         self.is_checked = False
         self.pkgcore_pkg = None
-        
+
     def get_pkgcore_pkg( self , version):
         self.pkgcore_pkg = TREE[self.full_name + '-' + version]
 
@@ -681,7 +687,7 @@ class Package:
             # insert routine for checking the if the package is in the specified list
             return self.full_name in list
         return False
-            
+
 
     def update_info(self):
         """Update the package info"""
@@ -700,7 +706,7 @@ class Package:
         if self.installed_ebuilds == None:
             self.installed_ebuilds = get_installed(self.full_name)
         return self.installed_ebuilds
-    
+
     def get_name(self):
         """Return name portion of a package"""
         if self.full_name == "None":
@@ -735,7 +741,7 @@ class Package:
             return portage.best(self.get_versions())
         if self.latest_ebuild == None:
             vers = self.get_versions()
-            #dprint("PKGCORE_LIB: get_latest_ebuild; vers = " + str(vers)) 
+            #dprint("PKGCORE_LIB: get_latest_ebuild; vers = " + str(vers))
             for m in self.get_hard_masked(check_unmask = True):
                 while m in vers:
                     vers.remove(m)
@@ -809,7 +815,7 @@ class Package:
         else:
             #dprint("PKGCORE_LIB get_properties(): Using specific ebuild")
             ebuild = specific_ebuild
-        if not ebuild in self.properties:
+        if ebuild not in self.properties:
             #dprint("PKGCORE_LIB: geting properties for '%s'" % str(ebuild))
             self.properties[ebuild] = get_properties(ebuild)
         return self.properties[ebuild]
@@ -849,7 +855,7 @@ class Package:
             self.hard_masked = hardmasked
         if check_unmask: return self.hard_masked
         else: return self.hard_masked_nocheck
-        
+
 
     def is_upgradable(self):
         """Indicates whether an unmasked upgrade/downgrade is available.
@@ -896,7 +902,7 @@ class Database:
         # the next 2 tuples hold pkg counts for each category
         self.pkg_count = {}
         self.installed_pkg_count = {}
-        
+
     def get_package(self, full_name):
         """Get a Package object based on full name."""
         try:
@@ -982,7 +988,7 @@ class DatabaseReader(threading.Thread):
                         self.db.categories[category] = {}
                         self.db.pkg_count[category] = 0
                         #dprint("added category %s" % str(category))
-                    self.db.categories[category][name] = data;
+                    self.db.categories[category][name] = data
                     self.db.pkg_count[category] += 1
                     if entry in self.installed_list:
                         if category not in self.db.installed:
@@ -1027,7 +1033,8 @@ if __name__ == "__main__":
         debug = True
 ##         print (read_access() and "Read access" or "No read access")
 ##         print (write_access() and "Write access" or "No write access")
-        import time, sys
+        import sys
+        import time
         db_thread = DatabaseReader(); db_thread.run(); db_thread.done = True
         while not db_thread.done:
             print(db_thread.count, end=' ', file=sys.stderr)
@@ -1057,7 +1064,8 @@ if __name__ == "__main__":
                        get_version(package.get_latest_ebuild(0))))
 
 ##    main()
-    import profile, pstats
+    import profile
+    import pstats
     profile.run("main()", "stats.txt")
 
     stats = pstats.Stats("stats.txt")

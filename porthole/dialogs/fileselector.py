@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
     | File Save |
     -----------------------------------------------------------
-    Copyright (C) 2003 - 2008 Fredrik Arnerup, Brian Dolbec, 
+    Copyright (C) 2003 - 2008 Fredrik Arnerup, Brian Dolbec,
     Daniel G. Taylor, Wm. F. Wheeler, Tommy Iorns
 
     This program is free software; you can redistribute it and/or modify
@@ -23,46 +23,65 @@
 
     -------------------------------------------------------------------------
     To use this program as a module:
-    
+
         from fileselector import FileSelector
 """
 
-import pygtk; pygtk.require('2.0')
-import gtk
-import os, os.path
+import gi
+
+gi.require_version('Gtk', '3.0')
+import os
+import os.path
+from gettext import gettext as _
+
+from gi.repository import Gtk
 
 from porthole.utils import debug
 
-class FileSel(gtk.FileSelection):
+
+class FileSel:
+    """File selection dialog using Gtk.FileChooserDialog (replaces removed Gtk.FileSelection)."""
     def __init__(self, title):
-        gtk.FileSelection.__init__(self, title)
+        self.title = title
         self.result = False
 
-    def ok_cb(self, button):
-        self.hide()
-        if self.ok_func(self.get_filename()):
-            self.destroy()
-            self.result = True
-        else:
-            self.show()
-
     def run(self, parent, start_file, func):
-        if start_file:
-            self.set_filename(start_file)
+        dialog = Gtk.FileChooserDialog(
+            title=self.title,
+            parent=parent,
+            action=Gtk.FileChooserAction.SAVE,
+        )
+        dialog.add_buttons(
+            "Cancel", Gtk.ResponseType.CANCEL,
+            "OK", Gtk.ResponseType.OK,
+        )
+        dialog.set_modal(True)
 
-        self.ok_func = func
-        self.ok_button.connect("clicked", self.ok_cb)
-        self.cancel_button.connect("clicked", lambda x: self.destroy())
-        self.connect("destroy", lambda x: gtk.main_quit())
-        self.set_modal(True)
-        self.show()
-        gtk.main()
+        if start_file:
+            if os.path.isdir(start_file):
+                dialog.set_current_folder(start_file)
+            else:
+                folder = os.path.dirname(start_file)
+                if folder:
+                    dialog.set_current_folder(folder)
+                dialog.set_current_name(os.path.basename(start_file))
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+            dialog.destroy()
+            if func(filename):
+                self.result = True
+        else:
+            dialog.destroy()
+
         return self.result
+
 
 class FileSelector:
     """Generic file selector dialog for opening or saving files"""
-    
-    def __init__(self, parent_window, target_path, callback = None, overwrite_confirm = True):
+
+    def __init__(self, parent_window, target_path, callback=None, overwrite_confirm=True):
         self.window = parent_window
         self.callback = callback
         self.overwrite_confirm = overwrite_confirm
@@ -72,16 +91,15 @@ class FileSelector:
     def _save_as_ok_func(self, filename):
         """file selector callback function"""
         debug.dprint("FILESELECTOR: Entering _save_as_ok_func")
-        old_filename = self.filename
         if self.overwrite_confirm and (not self.filename or filename != self.filename):
             if os.path.exists(filename):
-                err = _("Ovewrite existing file '%s'?")  % filename
-                dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                            gtk.MESSAGE_QUESTION,
-                                            gtk.BUTTONS_YES_NO, err);
+                err = _("Ovewrite existing file '%s'?") % filename
+                dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                            Gtk.MessageType.QUESTION,
+                                            Gtk.ButtonsType.YES_NO, err)
                 result = dialog.run()
                 dialog.destroy()
-                if result != gtk.RESPONSE_YES:
+                if result != Gtk.ResponseType.YES:
                     return False
 
         self.filename = filename
@@ -89,8 +107,8 @@ class FileSelector:
 
     def save_as(self, title):
         debug.dprint("FILESELECTOR: Entering save_as()")
-        return FileSel(title).run(window, self.filename, self._save_as_ok_func)
-        
+        return FileSel(title).run(self.window, self.filename, self._save_as_ok_func)
+
     def get_filename(self, title):
         debug.dprint("FILESELECTOR: Entering get_filename()")
         result = FileSel(title).run(self.window, self.directory, self._save_as_ok_func)

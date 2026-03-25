@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole's Version string list sorting functions that follows portages
@@ -24,22 +24,23 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("VERSION_SORT: id initialized to ", id)
 
 if __name__ == "__main__":
-    
+
     # setup our path so we can load our custom modules
     from sys import path
     path.append('/home/brian/porthole')
+    from getopt import GetoptError, getopt
     from sys import argv, exit, stderr
-    from getopt import getopt, GetoptError
 
 import re
 
-
-from porthole.utils.debug import dprint
 from porthole import config
+from porthole.utils.debug import dprint
+
 #~ from porthole.importer import my_import
 #~ comps = config.Prefs.PORTAGE.split('.')
 #~ print comps
@@ -47,7 +48,7 @@ from porthole import config
    #~ comps = comps[1:]
 #~ print comps
 #~ name = '.'.join(comps)
-    
+
 #~ portage_lib = my_import(name)
 
 ## circular import problem
@@ -83,7 +84,7 @@ def pad_ver(vlist):
 
     val_cache = []
 
-    #dprint("VERSION_SORT: pad_ver(); checking maximum length value of version pattern") 
+    #dprint("VERSION_SORT: pad_ver(); checking maximum length value of version pattern")
     for x in vlist:
         #dprint(x)
         max_length = max(max_length, x.count('.'))
@@ -137,7 +138,7 @@ def pad_ver(vlist):
                 #dprint("VERSION_SORT: pad_ver(); s1")
                 #dprint(s1)
                 list1 += [s1]
-                
+
         # the suffix part is done, so finally the revision
         #dprint("VERSION_SORT: pad_ver(); revision part")
         r1 = None
@@ -186,7 +187,7 @@ def ver_sort(versions):
     keylist = pad_ver(get_versions_only(versions))
     if not keylist: # there was an error
         dprint("VERSION_SORT: ver_sort(); keylist[] creation error")
-        return (versions + ["error_in_sort"]) 
+        return (versions + ["error_in_sort"])
     sorted = two_list_sort(keylist, versions)
     #dprint("VERSION_SORT: ver_sort(); complete!")
     return sorted
@@ -228,7 +229,7 @@ def ver_match(versions, range1, range2 = None):
     return match1, match2
 
 if __name__ == "__main__":
- 
+
     versions = ['net-mail/some_package-1.1','net-mail/some_package-1.0',
                 'net-mail/some_package-1.21','net-mail/some_package-1.21.1',
                 'net-mail/some_package-1.1-r1','net-mail/some_package-1.0_pre1',
@@ -243,4 +244,4 @@ if __name__ == "__main__":
 
 
 
-    
+

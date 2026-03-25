@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole backend module
@@ -23,6 +23,7 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("BACKENDS: id initialized to ", id)
 

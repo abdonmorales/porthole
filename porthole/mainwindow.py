@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Main Window
@@ -22,44 +22,51 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
 import datetime
+
+from gi.repository import Gdk, GLib, GObject, Gtk
+
 id = datetime.datetime.now().microsecond
 print("MAINWINDOW: id initialized to ", id)
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, gtk.glade, gobject
 import os
 from gettext import gettext as _
 
-from porthole.utils import utils, debug
-from porthole import config
-from porthole import backends
+from porthole import backends, config
+from porthole.utils import debug, utils
+
 portage_lib = backends.portage_lib
 #World = portage_lib.settings.get_world
-from porthole.utils.dispatcher import Dispatcher
+from porthole import db
+from porthole.advancedemerge.advemerge import AdvancedEmergeDialog
+from porthole.backends.utilities import get_sync_info
+from porthole.backends.version_sort import ver_match
 from porthole.dialogs.about import AboutDialog
 from porthole.dialogs.command import RunDialog
-from porthole.dialogs.simple import SingleButtonDialog, YesNoDialog
 from porthole.dialogs.configure import ConfigDialog
-from porthole.packagebook.notebook import PackageNotebook
+from porthole.dialogs.simple import SingleButtonDialog, YesNoDialog
+from porthole.loaders.loaders import *
 from porthole.packagebook.depends import DependsTree
-from porthole.terminal.terminal import ProcessManager
-from porthole.views.category import CategoryView
-from porthole.views.package import PackageView, PACKAGES, SEARCH, UPGRADABLE, DEPRECATED, SETS, BLANK, TEMP
-from porthole.views.models import MODEL_ITEM as PACKAGE_MODEL_ITEM
-#from porthole.views.depends import DependsView
-from porthole.views.commontreeview import CommonTreeView
-from porthole.advancedemerge.advemerge import AdvancedEmergeDialog
+from porthole.packagebook.notebook import PackageNotebook
 from porthole.plugin import PluginGUI, PluginManager
-from porthole.readers.upgradeables import UpgradableListReader
-from porthole.readers.descriptions import DescriptionReader
 from porthole.readers.deprecated import DeprecatedReader
+from porthole.readers.descriptions import DescriptionReader
 from porthole.readers.search import SearchReader
 from porthole.readers.sets import SetListReader
-from porthole.loaders.loaders import *
-from porthole.backends.version_sort import ver_match
-from porthole.backends.utilities import get_sync_info
-from porthole import db
+from porthole.readers.upgradeables import UpgradableListReader
+from porthole.terminal.terminal import ProcessManager
+from porthole.utils.dispatcher import Dispatcher
+from porthole.views.category import CategoryView
+
+#from porthole.views.depends import DependsView
+from porthole.views.commontreeview import CommonTreeView
+from porthole.views.models import MODEL_ITEM as PACKAGE_MODEL_ITEM
+from porthole.views.package import BLANK, DEPRECATED, PACKAGES, SEARCH, SETS, TEMP, UPGRADABLE, PackageView
+
 #from timeit import Timer
 
 
@@ -111,9 +118,13 @@ class MainWindow:
         #self.config = configs
         # setup glade
         self.gladefile = config.Prefs.DATA_PATH + config.Prefs.use_gladefile
-        self.wtree = gtk.glade.XML(self.gladefile, "main_window", config.Prefs.APP)
+        self.wtree = Gtk.Builder()
+
+        self.wtree.set_translation_domain(config.Prefs.APP)
+
+        self.wtree.add_objects_from_file(self.gladefile, ["main_window"])
         option = 'empty'
-        # register callbacks  note: gtk.mainquit deprecated
+        # register callbacks  note: Gtk.mainquit deprecated
         callbacks = {
             "on_main_window_destroy" : self.goodbye,
             "on_quit1_activate" : self.quit,
@@ -139,10 +150,10 @@ class MainWindow:
             "on_root_warning_clicked" : self.check_for_root,
             "on_configure_porthole" : self.configure_porthole,
         }
-        self.wtree.signal_autoconnect(callbacks)
+        self.wtree.connect_signals(callbacks)
         self.set_statusbar2("Starting")
         # aliases for convenience
-        self.mainwindow = self.wtree.get_widget("main_window")
+        self.mainwindow = self.wtree.get_object("main_window")
         # save the mainwindow widget to Config for use by other modules as a parent window
         config.Mainwindow = self.mainwindow
         callbacks = {
@@ -155,22 +166,22 @@ class MainWindow:
         # create the primary package notebook
         self.packagebook = PackageNotebook(self.wtree, callbacks, self.plugin_package_tabs)
         # set unfinished items to not be sensitive
-        #self.wtree.get_widget("contents2").set_sensitive(False)
-        # self.wtree.get_widget("btn_help").set_sensitive(False)
+        #self.wtree.get_object("contents2").set_sensitive(False)
+        # self.wtree.get_object("btn_help").set_sensitive(False)
         # setup the category view
         self.category_view = CategoryView()
         self.category_view.register_callback(self.category_changed)
-        result = self.wtree.get_widget("category_scrolled_window").add(self.category_view)
+        result = self.wtree.get_object("category_scrolled_window").add(self.category_view)
         # setup the package treeview
         self.package_view = PackageView()
         #self.package_view.register_callbacks(self.package_changed, None, self.pkg_path_callback)
         #self.package_view.register_callbacks(self.packageview_callback)
         self.package_view.register_callbacks(self.action_callback)
-        result = self.wtree.get_widget("package_scrolled_window").add(self.package_view)
+        result = self.wtree.get_object("package_scrolled_window").add(self.package_view)
         # how should we setup our saved menus?
         settings = ["pretend", "fetch", "update", "verbose", "noreplace", "oneshot"] # "search_descriptions1"]
         for option in settings:
-            widget = self.wtree.get_widget(option)
+            widget = self.wtree.get_object(option)
             state = getattr(config.Prefs.emerge, option) or False
             debug.dprint("MAINWINDOW: __init__(); option = %s, state = %s" %(option, str(state)))
             widget.set_active(state)
@@ -180,11 +191,11 @@ class MainWindow:
                      "btn_adv_emerge","btn_unmerge", "btn_sync", "view_refresh", "view_filter"]
         self.widget = {}
         for x in self.tool_widgets:
-            self.widget[x] = self.wtree.get_widget(x)
+            self.widget[x] = self.wtree.get_object(x)
             if not self.widget[x]:
                 debug.dprint("MAINWINDOW: __init__(); Failure to obtain widget '%s'" %x)
         # get an empty tooltip
-        ##self.synctooltip = gtk.Tooltips()
+        ##self.synctooltip = Gtk.Tooltips()
         self.sync_tip = _(" Synchronise Package Database \n The last sync was done:\n")
         # set the sync label to the saved one set in the options
         self.widget["btn_sync"].set_label(config.Prefs.globals.Sync_label)
@@ -201,10 +212,10 @@ class MainWindow:
         self.mainwindow.connect("window-state-event", self.on_window_state_event)
         # move horizontal and vertical panes
         #debug.dprint("MAINWINDOW: __init__() before hpane; %d, vpane; %d" %(config.Prefs.main.hpane, config.Prefs.main.vpane))
-        self.hpane = self.wtree.get_widget("hpane")
+        self.hpane = self.wtree.get_object("hpane")
         self.hpane.set_position(config.Prefs.main.hpane)
         self.hpane.connect("notify", self.on_pane_notify)
-        self.vpane = self.wtree.get_widget("vpane")
+        self.vpane = self.wtree.get_object("vpane")
         self.vpane.set_position(config.Prefs.main.vpane)
         self.vpane.connect("notify", self.on_pane_notify)
         # Intercept the window delete event signal
@@ -223,13 +234,13 @@ class MainWindow:
         if config.Prefs.main.show_nag_dialog:
             # let the user know if he can emerge or not
             self.check_for_root()
-        self.toolbar_expander = self.wtree.get_widget("toolbar_expander")
+        self.toolbar_expander = self.wtree.get_object("toolbar_expander")
         # This should be set in the glade file, but doesn't seem to work ?
         self.toolbar_expander.set_expand(True)
         # create and start our process manager
         self.process_manager = ProcessManager(utils.environment(), False)
         # populate the view_filter menu
-        self.widget["view_filter_list"] = gtk.ListStore(str)
+        self.widget["view_filter_list"] = Gtk.ListStore(str)
         for i in [_("All Packages"), _("Installed Packages"), _("Search Results"), _("Upgradable Packages"),
                     _("Deprecated Packages"), _("Sets")]:
             self.widget["view_filter_list"].append([i])
@@ -238,20 +249,23 @@ class MainWindow:
         self.setup_plugins()
         debug.dprint("MAINWINDOW: Showing main window")
         self.mainwindow.show_all()
-        if self.is_root:
-            # hide warning toolbar widget
+        # hide plugin menu if no plugins are active (show_all overrides prior hide)
+        if not self.needs_plugin_menu:
+            self.plugin_root_menu.hide()
+        if self.is_root or utils.can_gksu():
+            # hide warning toolbar widget if we have root or can escalate
             debug.dprint("MAINWINDOW: __init__(); hiding btn_root_warning")
-            self.wtree.get_widget("btn_root_warning").hide()
+            self.wtree.get_object("btn_root_warning").hide()
 
     def setup_plugins(self):
         #Plugin-related statements
         self.needs_plugin_menu = False
         #debug.dprint("MAIN; setup_plugins(): path_list %s" % config.Prefs.plugins.path_list)
         debug.dprint("MAIN: setup_plugins: plugin path: %s" % config.Prefs.PLUGIN_DIR)
-        self.plugin_root_menu = gtk.MenuItem(_("Active Plugins"))
-        self.plugin_menu = gtk.Menu()
+        self.plugin_root_menu = Gtk.MenuItem(_("Active Plugins"))
+        self.plugin_menu = Gtk.Menu()
         self.plugin_root_menu.set_submenu(self.plugin_menu)
-        self.wtree.get_widget("menubar").append(self.plugin_root_menu)
+        self.wtree.get_object("menubar").append(self.plugin_root_menu)
         self.plugin_manager = PluginManager(self)
         self.plugin_package_tabs = {}
 
@@ -263,7 +277,7 @@ class MainWindow:
         #self.set_statusbar(_("Obtaining package list "))
         self.status_root = _("Loading database")
         self.set_statusbar2(_("Initializing database. Please wait..."))
-        self.progressbar = self.wtree.get_widget("progressbar1")
+        self.progressbar = self.wtree.get_object("progressbar1")
         self.set_cancel_btn(OFF)
         db.db.set_callback(self.update_db_read)
         # init some dictionaries
@@ -305,7 +319,7 @@ class MainWindow:
         #debug.dprint("MAINWINDOW: init_db(); starting db.db.db_thread")
         self.reload = False
         self.upgrade_view = False
-        #self.db_timeout = gobject.timeout_add(100, self.update_db_read)
+        #self.db_timeout = GLib.timeout_add(100, self.update_db_read)
         self.last_sync = _("Unknown")
         self.valid_sync = False
         self.get_sync_time()
@@ -364,7 +378,7 @@ class MainWindow:
         #self.re_init_portage()
         portage_lib.settings.reset()
         # self.reload==False is currently broken for init_data when reloading after a sync
-        #self.init_data() 
+        #self.init_data()
         self.new_sync = True
         self.reload_db()
         self.refresh()
@@ -382,7 +396,7 @@ class MainWindow:
         ##else:
         ##    self.synctooltip.set_text(' '.join([self.sync_tip, self.last_sync[:], '']))
         ##self.synctooltip.enable()
-        
+
     def action_callback(self, action = None, arg = None):
         debug.dprint("MAINWINDOW: action_callback(); caller = %s, action = '%s', arg = %s" %(arg['caller'], str(action), str(arg)))
         old_pretend_value = config.Prefs.emerge.pretend
@@ -438,11 +452,12 @@ class MainWindow:
 
     def check_for_root(self, *args):
         """figure out if the user can emerge or not..."""
-        if not self.is_root:
+        if not self.is_root and not utils.can_gksu():
             self.no_root_dialog = SingleButtonDialog(_("No root privileges"),
                             self.mainwindow,
-                            _("In order to access all the features of Porthole,\n"
-                            "please run it with root privileges."),
+                            _("No privilege escalation tool found.\n"
+                            "Please install doas, sudo, or pkexec to use\n"
+                            "all features of Porthole."),
                             self.remove_nag_dialog,
                             _("_Ok"))
 
@@ -454,7 +469,7 @@ class MainWindow:
     def set_statusbar2(self, to_string):
         """Update the statusbar without having to use push and pop."""
         #debug.dprint("MAINWINDOW: set_statusbar2(); " + string)
-        statusbar2 = self.wtree.get_widget("statusbar2")
+        statusbar2 = self.wtree.get_object("statusbar2")
         statusbar2.pop(0)
         statusbar2.push(0, to_string)
 
@@ -480,7 +495,7 @@ class MainWindow:
 
         elif args['db_thread_error']:
             # todo: display error dialog instead
-            self.set_statusbar2(args['db_thread_error'].decode('ascii', 'replace'))
+            self.set_statusbar2(str(args['db_thread_error']))
             return False  # disconnect from timeout
         else: # args["done"] == True - db_thread is done
             self.progressbar.set_text("100%")
@@ -489,9 +504,9 @@ class MainWindow:
             self.update_statusbar(SHOW_ALL)
             debug.dprint("MAINWINDOW: setting menubar,toolbar,etc to sensitive...")
             for x in ["menubar","toolbar","view_filter","search_entry","btn_search","view_refresh"]:
-                self.wtree.get_widget(x).set_sensitive(True)
+                self.wtree.get_object(x).set_sensitive(True)
             if self.plugin_manager and not self.plugin_manager.plugins: # no plugins
-                self.wtree.get_widget("plugin_settings").set_sensitive(False)
+                self.wtree.get_object("plugin_settings").set_sensitive(False)
             # make sure we search again if we reloaded!
             mode = self.widget["view_filter"].get_active()
             debug.dprint("MAINWINDOW: update_db_read() mode = " + str(mode) + ' type = ' + str(type(mode)))
@@ -543,7 +558,7 @@ class MainWindow:
                 else:
                     debug.dprint("MAINWINDOW: db_thread is done, reload_view()")
                     # need to wait until all other events are done for it to show when the window first opens
-                    gobject.idle_add(self.reload_view)
+                    GLib.idle_add(self.reload_view)
             debug.dprint("MAINWINDOW: Made it thru a reload, returning...")
             self.progress_done(False)
             #if not self.reload:
@@ -616,7 +631,7 @@ class MainWindow:
             self.check_for_root() # displays not root dialog
             return False
         return True
-   
+
     def emerge_setting_set(self, widget, option='null'):
         """Set whether or not we are going to use an emerge option"""
         debug.dprint("MAINWINDOW: emerge_setting_set(%s)" %option)
@@ -657,7 +672,7 @@ class MainWindow:
 
     def new_plugin_package_tab( self, name, callback, widget ):
         notebook = self.packagebook.notebook
-        label = gtk.Label(name)
+        label = Gtk.Label(name)
         notebook.append_page(widget, label)
         page_num = notebook.page_num(widget)
         self.plugin_package_tabs[name] = [callback, label, page_num]
@@ -670,11 +685,11 @@ class MainWindow:
     def plugin_settings_activate( self, widget ):
         """Shows the plugin settings window"""
         plugin_dialog = PluginGUI(self.plugin_manager )
-    
+
     def configure_porthole(self, menuitem_widget):
         """Shows the Configuration GUI"""
         config_dialog = ConfigDialog()
-    
+
     def new_plugin_menuitem( self, label ):
         debug.dprint("MAINWINDOW: Adding new Menu Entry")
         if self.needs_plugin_menu == False:
@@ -682,7 +697,7 @@ class MainWindow:
             debug.dprint("MAINWINDOW: Enabling Plugin Menu")
             self.plugin_root_menu.show()
             self.needs_plugin_menu = True
-        new_item = gtk.MenuItem( label )
+        new_item = Gtk.MenuItem( label )
         new_item.show()
         self.plugin_menu.append( new_item )
         return new_item
@@ -737,11 +752,11 @@ class MainWindow:
         Just checks if the window is maximized or not"""
         if widget is not self.mainwindow: return False
         debug.dprint("MAINWINDOW: on_window_state_event(); event detected")
-        if gtk.gdk.WINDOW_STATE_MAXIMIZED & event.new_window_state:
+        if Gdk.WindowState.MAXIMIZED & event.new_window_state:
             config.Prefs.main.maximized = True
         else:
             config.Prefs.main.maximized = False
-    
+
     def on_pane_notify(self, pane, gparamspec):
         if gparamspec.name == "position":
             # bugfix for hpane jump bug. Now why does this happen?
@@ -754,7 +769,7 @@ class MainWindow:
             config.Prefs.main.hpane = hpanepos = self.hpane.get_position()
             config.Prefs.main.vpane = vpanepos = self.vpane.get_position()
             debug.dprint("MAINWINDOW on_pane_notify(): saved hpane %(hpanepos)s, vpane %(vpanepos)s" % locals())
-    
+
     def get_selected_list(self):
         """creates self.packages_list, self.keyorder"""
         debug.dprint("MAINWINDOW: get_selected_list()")
@@ -816,7 +831,7 @@ class MainWindow:
                      self.upgrades_loaded_dialog_response)
 
     def tree_node_to_list(self, model, path, iter):
-        """callback function from gtk.TreeModel.foreach(),
+        """callback function from Gtk.TreeModel.foreach(),
            used to add packages to the self.packages_list, self.keyorder lists"""
         #debug.dprint("MAINWINDOW; tree_node_to_list(): begin building list")
         if model.get_value(iter, PACKAGE_MODEL_ITEM["checkbox"]):
@@ -826,7 +841,7 @@ class MainWindow:
                 self.packages_list[name] = model.get_value(iter, PACKAGE_MODEL_ITEM["package"])
                 #model.get_value(iter, PACKAGE_MODEL_ITEM["world"])
                 # model.get_value(iter, PACKAGE_MODEL_INDEX["package"]), name]
-                self.keyorder = [name] + self.keyorder 
+                self.keyorder = [name] + self.keyorder
         #debug.dprint("MAINWINDOW; tree_node_to_list(): new keyorder list = " + str(self.keyorder))
         return False
 
@@ -887,7 +902,7 @@ class MainWindow:
         if not db.db.desc_loaded and config.Prefs.main.search_desc:
             self.load_descriptions_list()
             return
-        tmp_search_term = self.wtree.get_widget("search_entry").get_text()
+        tmp_search_term = self.wtree.get_object("search_entry").get_text()
         #debug.dprint(tmp_search_term)
         if tmp_search_term:
             # change view and statusbar so user knows it's searching.
@@ -902,7 +917,7 @@ class MainWindow:
             self.search_thread = SearchReader(db.db.list, config.Prefs.main.search_desc, tmp_search_term, db.db.descriptions, Dispatcher(self.search_done))
             self.search_thread.start()
         return
-            
+
 
     # start of search callback
     def search_done( self ):
@@ -1006,7 +1021,7 @@ class MainWindow:
             packages = db.db.installed[category]
             self.package_view.populate(packages, self.current_pkg_name["Installed"])
         else:
-            raise Exception("The programmer is stupid. Unknown category_changed() mode");
+            raise Exception("The programmer is stupid. Unknown category_changed() mode")
 
     def clear_package_detail(self):
         self.packagebook.clear_notebook()
@@ -1041,7 +1056,7 @@ class MainWindow:
         x = widget.get_active()
         debug.dprint("MAINWINDOW: view_filter_changed(); x = %d" %x)
         self.update_statusbar(x)
-        cat_scroll = self.wtree.get_widget("category_scrolled_window")
+        cat_scroll = self.wtree.get_object("category_scrolled_window")
         self.category_view.set_search(False)
         self.clear_package_detail()
         cat = None #self.current_cat_name["All_Installed"]
@@ -1076,7 +1091,7 @@ class MainWindow:
                 self.loaded[INDEX_TYPES[x]] = True
             else:
                 self.category_view.populate(list(self.pkg_list[INDEX_TYPES[x]].keys()), True, self.pkg_count[INDEX_TYPES[x]])
-            cat_scroll.show();
+            cat_scroll.show()
             debug.dprint("MAIN: Showing search results")
             self.package_view.set_view(SEARCH)
             cat = self.current_search
@@ -1084,7 +1099,7 @@ class MainWindow:
             #self.select_category_package(cat, pack, x)
         elif x in [SHOW_UPGRADE, SHOW_DEPRECATED, SHOW_SETS]:
             debug.dprint("MAINWINDOW: view_filter_changed(); '" + INDEX_TYPES[x] + "' selected")
-            cat_scroll.show();
+            cat_scroll.show()
             sort_categories = True  # all need to be sorted for them to be displayed in the tree correctly
             if x == SHOW_UPGRADE:
                 self.package_view.set_view(UPGRADABLE)
@@ -1126,7 +1141,7 @@ class MainWindow:
         #self.category_view.last_category = None
         #self.current_cat_cursor["All_Installed"] = None
         #self.current_pkg_cursor["All_Installed"] = None
-    
+
     def select_category_package(self, cat, pack, x):
         debug.dprint("MAINWINDOW: select_category_package(): %s/%s, x = %s" % (cat, pack,INDEX_TYPES[x]))
         model = self.category_view.get_model()
@@ -1202,7 +1217,7 @@ class MainWindow:
         debug.dprint("MAINWINDOW: load_reader_list(); reader_running set to True")
         self.build_deps = False
         # add a timeout to check if thread is done
-        gobject.timeout_add(200, self.update_reader_thread)
+        GLib.timeout_add(200, self.update_reader_thread)
         self.set_cancel_btn(ON)
 
 
@@ -1240,11 +1255,11 @@ class MainWindow:
                     if self.last_view_setting == SHOW_UPGRADE:
                         self.package_view.set_view(UPGRADABLE)
                         self.packagebook.summary.update_package_info(None)
-                        #self.wtree.get_widget("category_scrolled_window").hide()
+                        #self.wtree.get_object("category_scrolled_window").hide()
                     elif self.last_view_setting == SHOW_DEPRECATED:
                         self.package_view.set_view(DEPRECATED)
                         self.packagebook.summary.update_package_info(None)
-                        #self.wtree.get_widget("category_scrolled_window").hide()
+                        #self.wtree.get_object("category_scrolled_window").hide()
                     elif self.last_view_setting == SHOW_SETS:
                         self.package_view.set_view(SETS)
                         self.packagebook.summary.update_package_info(None)
@@ -1287,7 +1302,7 @@ class MainWindow:
         self.set_statusbar2(self.status_root)
 
     def set_cancel_btn(self, state):
-            self.wtree.get_widget("btn_cancel").set_sensitive(state)
+            self.wtree.get_object("btn_cancel").set_sensitive(state)
 
     def update_statusbar(self, mode):
         """Update the statusbar for the selected filter"""
@@ -1302,7 +1317,7 @@ class MainWindow:
             if not db.db:
                 debug.dprint("MAINWINDOW: attempt to update status bar with no db assigned")
             else:
-                text = (_("%(pack)d packages in %(cat)d categories") 
+                text = (_("%(pack)d packages in %(cat)d categories")
                         % {'pack':db.db.installed_count, 'cat':len(db.db.installed)})
         elif mode in [SHOW_SEARCH, SHOW_DEPRECATED, SHOW_SETS]:
             text = '' #(_("%d matches found") % self.package_view.search_model.size)
@@ -1331,7 +1346,7 @@ class MainWindow:
         else:
             #debug.dprint("MAINWINDOW: set_package_actions_sensitive() setting unmerge to %d" %(not enabled))
             self.widget["btn_unmerge"].set_sensitive(not enabled)
-            
+
             self.widget["unmerge_package1"].set_sensitive(not enabled)
         self.packagebook.notebook.set_sensitive(enabled)
 
@@ -1378,11 +1393,11 @@ class MainWindow:
         """Main window quit function"""
         debug.dprint("MAINWINDOW: goodbye(); quiting now")
         try: # for >=pygtk-2.3.94
-            debug.dprint("MAINWINDOW: gtk.main_quit()")
-            gtk.main_quit()
+            debug.dprint("MAINWINDOW: Gtk.main_quit()")
+            Gtk.main_quit()
         except: # use the depricated function
-            debug.dprint("MAINWINDOW: gtk.mainquit()")
-            gtk.mainquit
+            debug.dprint("MAINWINDOW: Gtk.mainquit()")
+            Gtk.mainquit
 
     def confirm_delete(self, widget = None, *event):
         """Check that there are no running processes & confirm the kill before doing it"""
@@ -1390,12 +1405,12 @@ class MainWindow:
             self.process_manager.allow_delete = True
             return False
         err = _("Confirm: Kill the Running Process in the Terminal")
-        dialog = gtk.MessageDialog(self.mainwindow, gtk.DIALOG_MODAL,
-                                gtk.MESSAGE_QUESTION,
-                                gtk.BUTTONS_YES_NO, err);
+        dialog = Gtk.MessageDialog(self.mainwindow, Gtk.DialogFlags.MODAL,
+                                Gtk.MessageType.QUESTION,
+                                Gtk.ButtonsType.YES_NO, err)
         result = dialog.run()
         dialog.destroy()
-        if result != gtk.RESPONSE_YES:
+        if result != Gtk.ResponseType.YES:
             debug.dprint("TERMINAL: kill(); not killing")
             return True
         #self.process_manager.confirm = False

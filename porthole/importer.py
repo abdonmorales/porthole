@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     
@@ -34,4 +34,4 @@ def my_import(name):
         mod = getattr(mod, comp)
         print("IMPORTER: mod = ", mod)
     return mod
-    
+

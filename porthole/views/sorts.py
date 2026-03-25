@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Views sorts.py
@@ -22,15 +22,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, gobject, pango
-import threading, os
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Pango', '1.0')
+import os
+import threading
 from gettext import gettext as _
 
-from porthole.utils import utils
+from gi.repository import GLib, GObject, Gtk, Pango
+
 from porthole.packagebook.depends import DependsTree
+from porthole.utils import utils
+
 #from porthole.utils import debug
 from porthole.views.helpers import *
+
 
 def size_sort_func(treemodel, iter1, iter2):
     """Sorts by download size"""

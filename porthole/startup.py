@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole
@@ -21,28 +21,28 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('GdkPixbuf', '2.0')
 import datetime
+
+from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk
+
 id = datetime.datetime.now().microsecond
 print("STARTUP: id initialized to ", id)
 
-# Initialize GTK compatibility layer first so imports below work on GTK2 or GTK3
-from porthole import gtkcompat
-gtk = gtkcompat.gtk
-gobject = gtkcompat.gobject
-pango = gtkcompat.pango
-
 # proper way to enable threading.  Do this first before any other code
-gobject.threads_init()
+# GObject.threads_init() not needed in GTK3
 # now for the rest
 
 # setup our path so we can load our custom modules
-import sys, os
-try:
-    import _thread
-except ImportError:  # Python 2 name
-    import thread as _thread
+import _thread
+import os
+import sys
 
-# Add path to portage module if 
+# Add path to portage module if
 # missing from path (ref bug # 924100)
 PORTAGE_MOD_PATH = '/usr/lib/portage/pym'
 if PORTAGE_MOD_PATH not in sys.path:
@@ -50,7 +50,7 @@ if PORTAGE_MOD_PATH not in sys.path:
 #~ GENTOOLKIT_PATH = '/usr/lib/gentoolkit/pym'
 #~ if GENTOOLKIT_PATH not in sys.path:
     #~ sys.path.append(GENTOOLKIT_PATH)
-    
+
 #while '' in sys.path: # we don't need the cwd in the path
 #    sys.path.remove('')
 while '/usr/bin' in sys.path: # this gets added when we run /usr/bin/porthole
@@ -67,19 +67,20 @@ RUN_LOCAL = False
 DIR_LIST = [LOG_FILE_DIR, DB_FILE_DIR]
 
 
-import os
 #from thread import *
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, time, pwd
+import pwd
+import time
+
 while '/usr/bin' in sys.path: # and now importing gtk re-adds it! Grrrr, rude
     sys.path.remove('/usr/bin')
-from getopt import getopt, GetoptError
-import locale, gettext
+import gettext
+import locale
+from getopt import GetoptError, getopt
 from gettext import gettext as _
 
 # it is recommended to init threads right after importing gtk just in case
-#gtk.threads_init()
-#gtk.gdk.threads_init()
+#Gtk.threads_init()
+#Gdk.threads_init()
 
 
 def create_dir(new_dir):
@@ -90,7 +91,7 @@ def create_dir(new_dir):
     except OSError as xxx_todo_changeme:
         (errnum, errmsg) = xxx_todo_changeme.args
         print("Failed to create %s:" % new_dir, errmsg)
-   
+
 
 def import_error(e):
 	print("*** Error loading porthole modules!\n*** If you are running a", \
@@ -135,7 +136,7 @@ def set_backend(arg):
 
 def insert_path():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    print((sys.path))
+    print(sys.path)
 
 
 def main():
@@ -172,17 +173,15 @@ def main():
     gettext.bindtextdomain (APP, i18n_DIR)
     gettext.textdomain (APP)
     gettext.install(APP, i18n_DIR)
-    gtk.glade.bindtextdomain (APP, i18n_DIR)
-    gtk.glade.textdomain (APP)
 
     # make sure gtk lets threads run
     #os.putenv("PYGTK_USE_GIL_STATE_API", "True")
-    gtk.gdk.threads_init()
+    Gdk.threads_init()
 
     debug.dprint("PORTHOLE: process id = %d ****************" %os.getpid())
     # setup our app icon
-    myicon = gtk.gdk.pixbuf_new_from_file(DATA_PATH + "pixmaps/porthole-icon.png")
-    gtk.window_set_default_icon_list(myicon)
+    myicon = GdkPixbuf.Pixbuf.new_from_file(DATA_PATH + "pixmaps/porthole-icon.png")
+    Gtk.Window.set_default_icon_list([myicon])
     # load config info
     config.Config.set_path(DATA_PATH)
     config.Config.load()
@@ -190,7 +189,7 @@ def main():
     # create the main window
     myapp = MainWindow() #config.Prefs, config.Config)
     # start the program loop
-    gtk.main()
+    Gtk.main()
     # save the prefs to disk for next time
     config.Prefs.save()
 

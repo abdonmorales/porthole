@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Main Window
@@ -22,25 +22,33 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import threading, re #, types
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk, gtk.glade, gobject, pango
-import os, sys
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Pango', '1.0')
+import os
+import re
+import sys
+import threading  #, types
 from gettext import gettext as _
 
-from porthole.utils import debug
+from gi.repository import GLib, GObject, Gtk, Pango
+
 from porthole import backends
+from porthole.utils import debug
+
 portage_lib = backends.portage_lib
 #World = portage_lib.settings.get_world()
 from porthole import config
-from porthole.utils.dispatcher import Dispatcher
-from porthole.packagebook.summary import Summary
-from porthole.views.depends import DependsView
-from porthole.views.commontreeview import CommonTreeView
-from porthole.packagebook.depends import DependsTree
-from porthole.plugin import PluginGUI, PluginManager
-from porthole.loaders.loaders import *
 from porthole.backends.version_sort import ver_match
+from porthole.loaders.loaders import *
+from porthole.packagebook.depends import DependsTree
+from porthole.packagebook.summary import Summary
+from porthole.plugin import PluginGUI, PluginManager
+from porthole.utils.dispatcher import Dispatcher
+from porthole.views.commontreeview import CommonTreeView
+from porthole.views.depends import DependsView
+
 #from timeit import Timer
 
 
@@ -55,23 +63,23 @@ class PackageNotebook:
         self.wtree = wtree
         self.callbacks = callbacks
         self.plugin_package_tabs = plugin_package_tabs
-        self.notebook = self.wtree.get_widget("notebook")
-        self.installed_window = self.wtree.get_widget("installed_files_scrolled_window")
-        self.changelog = self.wtree.get_widget("changelog").get_buffer()
-        self.installed_files = self.wtree.get_widget("installed_files").get_buffer()
-        self.ebuild = self.wtree.get_widget("ebuild").get_buffer()
+        self.notebook = self.wtree.get_object("notebook")
+        self.installed_window = self.wtree.get_object("installed_files_scrolled_window")
+        self.changelog = self.wtree.get_object("changelog").get_buffer()
+        self.installed_files = self.wtree.get_object("installed_files").get_buffer()
+        self.ebuild = self.wtree.get_object("ebuild").get_buffer()
         # summary view
-        scroller = self.wtree.get_widget("summary_text_scrolled_window");
+        scroller = self.wtree.get_object("summary_text_scrolled_window")
         self.summary = Summary(Dispatcher(self.callbacks["action_callback"]), self.callbacks["re_init_portage"])
         result = scroller.add(self.summary)
         self.summary.show()
         # setup the dependency treeview
         self.deps_view = DependsView(self.new_notebook, parent_name, parent_tree, Dispatcher(self.callbacks["action_callback"]))
         self.dep_window = {'window': None, 'notebook': None, 'callback': None, 'label': None, 'tooltip': None, 'tree': '', 'depth': 0}
-        result = self.wtree.get_widget("dependencies_scrolled_window").add(self.deps_view)
+        result = self.wtree.get_object("dependencies_scrolled_window").add(self.deps_view)
         self.notebook.connect("switch-page", self.notebook_changed)
         self.reset_tabs()
-        
+
     def set_package(self, package):
         """sets the package for all dispalys"""
         self.package = package
@@ -138,21 +146,25 @@ class PackageNotebook:
         self.dep_window["tree"] = parent_tree
         self.dep_window['name'] = parent_name
         if not self.dep_window["window"]:
-            self.dep_window['window'] = gtk.Window(gtk.WINDOW_TOPLEVEL)
+            self.dep_window['window'] = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
             #self.dep_window['depth'] += 1 # increase the depth number since it is a new window
-            v_box = gtk.VBox()
-            h_box = gtk.HBox()
-            label1 = gtk.Label(_("Viewing Dependency of: "))
+            v_box = Gtk.Box()
+            h_box = Gtk.Box()
+            label1 = Gtk.Label(_("Viewing Dependency of: "))
             h_box.pack_start(label1, False, False, 0)
-            self.dep_window['label'] = gtk.Label()
+            self.dep_window['label'] = Gtk.Label()
             h_box.pack_start(self.dep_window['label'], expand=False, fill=False)
-            label2 = gtk.Label('')
+            label2 = Gtk.Label('')
             h_box.pack_start(label2, expand=True, fill=True)
             v_box.pack_start(h_box, False, False,3)
             self.dep_window['label'].set_has_tooltip(True)
             self.dep_window['label'].set_tooltip_text('')
             gladefile = config.Prefs.DATA_PATH + config.Prefs.use_gladefile
-            self.deptree = gtk.glade.XML(gladefile, "notebook", config.Prefs.APP)
+            self.deptree = Gtk.Builder()
+
+            self.deptree.set_translation_domain(config.Prefs.APP)
+
+            self.deptree.add_objects_from_file(gladefile, ["notebook"])
             self.dep_window["notebook"] = PackageNotebook(self.deptree, self.callbacks, self.plugin_package_tabs, parent_name, parent_tree[:])
             v_box.pack_start(self.dep_window["notebook"].notebook)
             self.dep_window["window"].add(v_box)
@@ -162,7 +174,7 @@ class PackageNotebook:
             debug.dprint("********** PackageNotebook: new_notebook(); DependsView: do_dep_window() new dep_window{'window', 'notebook', 'depth'}" + \
                                     str(self.dep_window["window"]) +str(self.dep_window["notebook"])) # +str(self.dep_window['depth']))
         return self.dep_window
-        
+
     def close_window(self, *widget):
         # first check for and close any children
         if self.dep_window["window"] != None and self.dep_window["notebook"] != None:

@@ -4,7 +4,6 @@ MANIFEST
 NEWS
 README
 TODO
-pyproject.toml
 setup.cfg
 setup.py
 porthole.desktop
@@ -48,11 +47,6 @@ porthole/glade/about.glade
 porthole/glade/advemerge.glade
 porthole/glade/config.glade
 porthole/glade/porthole.glade
-porthole/glade3/about.ui
-porthole/glade3/advemerge.ui
-porthole/glade3/config.ui
-porthole/glade3/porthole.ui
-porthole/gtkcompat.py
 porthole/loaders/__init__.py
 porthole/loaders/loaders.py
 porthole/packagebook/__init__.py

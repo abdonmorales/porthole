@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Properties class
@@ -23,6 +23,7 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("PROPERTIES: id initialized to ", id)
 
@@ -33,11 +34,11 @@ class Properties:
         self.__dict = dict
         #dprint("PORTAGELIB: Properties=")
         #dprint(dict)
-        
+
     def __getattr__(self, name):
         try: return self.__dict[name]
         except: return ''
-        
+
     def get_slot(self):
         """Return ebuild slot"""
         return self.slot

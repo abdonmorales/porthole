@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -50,48 +50,57 @@
 """
 
 # import external [system] modules
-import pygtk; pygtk.require('2.0')
-import gtk, gtk.glade, gobject
-import pango
-import signal, os, pty, threading, time #, re
-import datetime, pango, errno
-from base64 import b64encode, b64decode
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('GdkPixbuf', '2.0')
+gi.require_version('Pango', '1.0')
+import datetime
+import errno
+import os
+import pty
+import signal  #, re
+import threading
+import time
+from base64 import b64decode, b64encode
 
 #import dbus
 #import dbus.service
 #from dbus.mainloop.glib import DBusGMainLoop
 #DBusGMainLoop(set_as_default=True)
-
 #CONN_INTERFACE = 'Porthole.Terminal'
-
 from gettext import gettext as _
 
-#~ if __name__ == "__main__":
-    #~ # setup our path so we can load our custom modules
-    #~ from sys import path
-    #~ path.append("/usr/lib/porthole")
+from gi.repository import Gdk, GdkPixbuf, GLib, GObject, Gtk, Pango
 
+#~ if __name__ == "__main__":
+#~ # setup our path so we can load our custom modules
+#~ from sys import path
+#~ path.append("/usr/lib/porthole")
 # import custom modules
 from porthole import backends
+
 portage_lib = backends.portage_lib
+from porthole import config
 from porthole.dialogs.simple import SingleButtonDialog, YesNoDialog
 from porthole.readers.process_reader import ProcessOutputReader
-from porthole.utils.dispatcher import Dispatcher
-from porthole.utils import debug
-from porthole.utils.utils import get_user_home_dir, get_treeview_selection, estimate, pretend_check
-from porthole.version import version
-from porthole.terminal.term_queue import TerminalQueue
 from porthole.terminal.constants import *
-from porthole.terminal.notebook import TerminalNotebook
 from porthole.terminal.fileselector import FileSel
-from porthole import config
+from porthole.terminal.notebook import TerminalNotebook
+from porthole.terminal.term_queue import TerminalQueue
+from porthole.utils import debug
+from porthole.utils.dispatcher import Dispatcher
+from porthole.utils.utils import estimate, get_treeview_selection, get_user_home_dir, pretend_check
+from porthole.version import version
+
 
 class ProcessManager: #dbus.service.Object):
     """ Manages queued and running processes """
     def __init__(self, env = {}, log_mode = False):
         """ Initialize """
         debug.dprint("TERMINAL: ProcessManager; process id = %d ****************" %os.getpid())
-        
+
         #self.sysbus = dbus.SystemBus()
         #self.sesbus = dbus.SessionBus()
         #bus_name = dbus.service.BusName(CONN_INTERFACE)
@@ -101,7 +110,7 @@ class ProcessManager: #dbus.service.Object):
         #self.dbus_obj = self.sesbus.get_object(CONN_INTERFACE, object_path)
         #self.dbus_if = dbus.Interface(self.dbus_obj, CONN_INTERFACE)
         #services = dbus_if.ListNames()
-        
+
         if log_mode:
             self.title = "Porthole Log Viewer"
         else:
@@ -128,7 +137,7 @@ class ProcessManager: #dbus.service.Object):
         self.filename = None
         self.untitled_serial = -1
         self.allow_delete = False
-        self.clipboard = gtk.Clipboard()
+        self.clipboard = Gtk.Clipboard()
         # create the process reader
         self.reader = ProcessOutputReader(Dispatcher(self.process_done))
         # Added a Line Feed check in order to bypass code if LF's are not used ==> CR only
@@ -137,7 +146,7 @@ class ProcessManager: #dbus.service.Object):
         self.line_num = 0
         self.badpassword_check = False
         self.badpassword_linenum = 0
- 
+
 
     def reset_buffer_update(self):
         # clear process output buffer
@@ -156,9 +165,9 @@ class ProcessManager: #dbus.service.Object):
 
     def show_window(self):
         """ Show the process window """
-        
+
         self.reset_buffer_update()
-        
+
         if hasattr(self, 'window'):
             debug.dprint("TERMINAL: show_window(): window attribute already set... attempting show")
             # clear text buffer and emerge queue, hide tabs
@@ -169,7 +178,7 @@ class ProcessManager: #dbus.service.Object):
             for tab in [TAB_WARNING, TAB_CAUTION, TAB_INFO]: #, TAB_QUEUE]:
                 self.term.hide_tab(tab)
             # re-set base values for textviews
-            attributes = gtk.TextView().get_default_attributes()
+            attributes = Gtk.TextView().get_default_attributes()
             default_fg = attributes.fg_color
             default_bg = attributes.bg_color
             default_weight = attributes.font.get_weight()
@@ -178,19 +187,23 @@ class ProcessManager: #dbus.service.Object):
             widget_labels = ["process_text", "warnings_text", "cautions_text", "info_text"]
             for x in widget_labels:
                 self.term.last_text.append('\n')
-                view = self.wtree.get_widget(x)
+                view = self.wtree.get_object(x)
                 if x == "process_text" or config.Prefs.terminal.all_tabs_use_custom_colors:
                     fg, bg, weight = config.Prefs.TAG_DICT['default']
                     font = config.Prefs.terminal.font
-                    if bg: view.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse(bg))
-                    else: view.modify_base(gtk.STATE_NORMAL, default_bg)
-                    if fg: view.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse(fg))
-                    else: view.modify_text(gtk.STATE_NORMAL, default_fg)
-                    view.modify_font(pango.FontDescription(font or default_font))
+                    if bg:
+                        _ok, _color = Gdk.color_parse(bg)
+                        if _ok: view.modify_base(Gtk.StateType.NORMAL, _color)
+                    else: view.modify_base(Gtk.StateType.NORMAL, default_bg)
+                    if fg:
+                        _ok, _color = Gdk.color_parse(fg)
+                        if _ok: view.modify_text(Gtk.StateType.NORMAL, _color)
+                    else: view.modify_text(Gtk.StateType.NORMAL, default_fg)
+                    view.modify_font(Pango.FontDescription.from_string(font or default_font))
                 else:
-                    view.modify_base(gtk.STATE_NORMAL, default_bg)
-                    view.modify_text(gtk.STATE_NORMAL, default_fg)
-                    view.modify_font(pango.FontDescription(default_font))
+                    view.modify_base(Gtk.StateType.NORMAL, default_bg)
+                    view.modify_text(Gtk.StateType.NORMAL, default_fg)
+                    view.modify_font(Pango.FontDescription.from_string(default_font))
             # re-set misc. stuff
             self.term.command_start = None
             # re-set text tags
@@ -198,29 +211,32 @@ class ProcessManager: #dbus.service.Object):
             # show window
             self.window.show()
             self.window_visible = True
-            #gobject.timeout_add(100, self.update)
+            #GLib.timeout_add(100, self.update)
             debug.dprint("TERMINAL: show_window(): returning")
             return True
         # load the glade file
-        self.wtree = gtk.glade.XML(config.Prefs.DATA_PATH + config.Prefs.use_gladefile,
-                                   "process_window", config.Prefs.APP)
+        self.wtree = Gtk.Builder()
+
+        self.wtree.set_translation_domain(config.Prefs.APP)
+
+        self.wtree.add_objects_from_file(config.Prefs.DATA_PATH + config.Prefs.use_gladefile, ["process_window"])
         # these need to be before the callbacks
         # setup some aliases for easier access
-        self.window = self.wtree.get_widget("process_window")
-        self.notebook = self.wtree.get_widget("notebook1")
-        self.statusbar = self.wtree.get_widget("statusbar")
-        self.resume_menu = self.wtree.get_widget("resume")
-        self.skip_first_menu = self.wtree.get_widget("skip_first1")
-        self.save_menu = self.wtree.get_widget("save1")
-        self.save_as_menu = self.wtree.get_widget("save_as")
-        self.open_menu = self.wtree.get_widget("open")
+        self.window = self.wtree.get_object("process_window")
+        self.notebook = self.wtree.get_object("notebook1")
+        self.statusbar = self.wtree.get_object("statusbar")
+        self.resume_menu = self.wtree.get_object("resume")
+        self.skip_first_menu = self.wtree.get_object("skip_first1")
+        self.save_menu = self.wtree.get_object("save1")
+        self.save_as_menu = self.wtree.get_object("save_as")
+        self.open_menu = self.wtree.get_object("open")
         # Initialize event widget source
         self.event_src = None
         # get a mostly blank structure to hold a number of widgets & settings
         self.term = TerminalNotebook(self.notebook, self.wtree, self.set_statusbar)
         # queue init
         self.process_queue = TerminalQueue(self._run, self.reader, self.wtree, self.term, self.set_resume)
-        
+
         # setup the callbacks
         callbacks = {"on_process_window_destroy" : self.on_process_window_destroy,
                      "on_kill" : self.kill_process,
@@ -247,7 +263,7 @@ class ProcessManager: #dbus.service.Object):
                      "on_pause_button_clicked" : self.process_queue.pause,
                      "on_pause_activate" : self.process_queue.pause
                      }
-        self.wtree.signal_autoconnect(callbacks)
+        self.wtree.connect_signals(callbacks)
 
         # initialize to None
         self.pid = None
@@ -264,27 +280,28 @@ class ProcessManager: #dbus.service.Object):
         self.window.connect('delete-event', self.confirm_delete)
 
         # set keyboard focus to process tab
-        self.wtree.get_widget("process_text").grab_focus()
+        self.wtree.get_object("process_text").grab_focus()
         # set the custom timer icon
-        #self.wtree.get_widget('timer_button_img').set_from_file(config.Prefs.DATA_PATH + "pixmaps/porthole-clock-20x20.png")
-        self.timer_btn = self.wtree.get_widget('timer_button')
+        #self.wtree.get_object('timer_button_img').set_from_file(config.Prefs.DATA_PATH + "pixmaps/porthole-clock-20x20.png")
+        self.timer_btn = self.wtree.get_object('timer_button')
         self.timer_btn.set_sensitive(False)
-        #self.wtree.get_widget('timer_image').set_from_file(config.Prefs.DATA_PATH + "pixmaps/porthole-clock-20x20.png")
-        self.timer_menuitem = self.wtree.get_widget('timer')
+        #self.wtree.get_object('timer_image').set_from_file(config.Prefs.DATA_PATH + "pixmaps/porthole-clock-20x20.png")
+        self.timer_menuitem = self.wtree.get_object('timer')
         self.timer_menuitem.set_sensitive(False)
         # start the reader
         self.reader.start()
-        gobject.timeout_add(100, self.update)
+        GLib.timeout_add(100, self.update)
 
         if config.Prefs:
             self.window.resize((config.Prefs.emerge.verbose and
                                 config.Prefs.terminal.width_verbose or
-                                config.Prefs.terminal.width), 
+                                config.Prefs.terminal.width),
                                 config.Prefs.terminal.height)
             # MUST! do this command last, or nothing else will _init__
             # after it until emerge is finished.
             # Also causes runaway recursion.
-            self.window.connect("size_request", self.on_size_request)
+            # size_request signal removed in GTK 3; use configure-event instead
+            self.window.connect("configure-event", self.on_size_request)
 
     #~ @dbus.service.method(CONN_INTERFACE, in_signature='ss', out_signature='', sender_keyword='sender')
     #~ def request_add( self, name, command, sender ):
@@ -322,7 +339,7 @@ class ProcessManager: #dbus.service.Object):
         #debug.dprint("TERMINAL: window state event: %s" % event.new_window_state) # debug print statements
         #debug.dprint(event.changed_mask
         state = event.new_window_state
-        if state & gtk.gdk.WINDOW_STATE_ICONIFIED:
+        if state & Gdk.WindowState.ICONIFIED:
             #debug.dprint("TERMINAL: new_window_state; event = minimized")
             self.minimized = True
             self.window.set_title(self.status_text)
@@ -371,7 +388,7 @@ class ProcessManager: #dbus.service.Object):
                 shell = "/bin/sh"
                 os.execve(shell, [shell, '-c', command_string],
                           self.env)
-                
+
             except Exception as e:
                 # print out the exception
                 debug.dprint("TERMINAL: Error in child" + e)
@@ -397,16 +414,16 @@ class ProcessManager: #dbus.service.Object):
         # kill any running processes
         self.kill_process()
         # make sure to reset the process list
-        self.process_queue.clear() 
+        self.process_queue.clear()
          # the window is no longer showing
         self.window_visible = False
         self.wtree = None
         if __name__ == "__main__":
             # if running standalone, quit
             try:
-                gtk.main_quit()
+                Gtk.main_quit()
             except:
-                gtk.mainquit()
+                Gtk.mainquit()
         if self.reader.isAlive():
             self.reader.die = "Please"
             debug.dprint("TERMINAL: reader process still alive - killing...")
@@ -502,12 +519,12 @@ class ProcessManager: #dbus.service.Object):
             retval = True
         if not self.task_completed:
             err = _("Confirm: Kill the Running Process")
-            dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                    gtk.MESSAGE_QUESTION,
-                                    gtk.BUTTONS_YES_NO, err);
+            dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                    Gtk.MessageType.QUESTION,
+                                    Gtk.ButtonsType.YES_NO, err)
             result = dialog.run()
             dialog.destroy()
-            if result != gtk.RESPONSE_YES:
+            if result != Gtk.ResponseType.YES:
                 debug.dprint("TERMINAL: confirm_delete(); stopping delete")
                 return True
             debug.dprint("TERMINAL: confirm_delete(); confirmed")
@@ -572,7 +589,7 @@ class ProcessManager: #dbus.service.Object):
                 if self.callback_armed:
                     self.do_callback()
                     self.callback_armed = False
-                        
+
         #~ if config.Config.isUnmerge(self.line_buffer):
             #~ tag = 'emerge'
             #~ if not self.file_input:
@@ -581,21 +598,21 @@ class ProcessManager: #dbus.service.Object):
                 #~ if self.callback_armed:
                     #~ self.do_callback()
                     #~ self.callback_armed = False
-                        
+
         elif config.Config.isAction(self.line_buffer):
             if not self.term.tab_showing[TAB_INFO]:
                 self.term.show_tab(TAB_INFO)
                 self.term.view_buffer[TAB_INFO].set_modified(True)
             tag = 'caution'
             self.term.append(TAB_INFO, self.line_buffer, tag)
-                        
+
         #elif config.Config.isInfo(self.process_buffer):
         elif config.Config.isInfo(self.line_buffer):
             # Info string has been found, show info tab if needed
             if not self.term.tab_showing[TAB_INFO]:
                 self.term.show_tab(TAB_INFO)
                 self.term.view_buffer[TAB_INFO].set_modified(True)
-                            
+
             # Check for fatal error
             #if config.Config.isError(self.process_buffer):
             if config.Config.isError(self.line_buffer):
@@ -605,7 +622,7 @@ class ProcessManager: #dbus.service.Object):
             else:
                 tag = 'info'
                 self.term.append(TAB_INFO, self.line_buffer)
-                            
+
             # Check if the info is ">>> category/package-version merged"
             # then set the callback to return the category/package to update the db
             #debug.dprint("TERMINAL: update(); checking info line: %s" %self.process_buffer)
@@ -615,7 +632,7 @@ class ProcessManager: #dbus.service.Object):
                 debug.dprint("TERMINAL: update(); Detected sucessfull merge of package: " + self.callback_package)
             #else:
                 #debug.dprint("TERMINAL: update(); merge not detected")
-                        
+
         elif config.Config.isWarning(self.line_buffer):
             # warning string has been found, show info tab if needed
             if not self.term.tab_showing[TAB_WARNING]:
@@ -625,7 +642,7 @@ class ProcessManager: #dbus.service.Object):
             tag = 'warning'
             self.term.append(TAB_WARNING, self.line_buffer)
             self.warning_count += 1
-                        
+
         elif config.Config.isCaution(self.line_buffer):
             # warning string has been found, show info tab if needed
             if not self.term.tab_showing[TAB_CAUTION]:
@@ -635,7 +652,7 @@ class ProcessManager: #dbus.service.Object):
             tag = 'caution'
             self.term.append(TAB_CAUTION, self.line_buffer)
             self.caution_count += 1
-                        
+
         if self.overwrite_till_nl:
             #debug.dprint("TERMINAL: '\\n' detected in overwrite mode, calling overwrite()")
             self.term.overwrite(TAB_PROCESS, self.line_buffer[:-1], tag)
@@ -762,7 +779,7 @@ class ProcessManager: #dbus.service.Object):
                             self.term.append(TAB_PROCESS, self.process_buffer)
                             self.process_buffer = ''
                         self.force_buffer_write = False
-                        gobject.timeout_add(200, self.force_buffer_write_timer)
+                        GLib.timeout_add(200, self.force_buffer_write_timer)
                 self.lastchar = char
         else: # if reader string is empty... maybe waiting for input
             if self.force_buffer_write and self.process_buffer:
@@ -775,7 +792,7 @@ class ProcessManager: #dbus.service.Object):
                     self.term.append(TAB_PROCESS, self.process_buffer)
                     self.process_buffer = ''
                 self.force_buffer_write = False
-                gobject.timeout_add(200, self.force_buffer_write_timer)
+                GLib.timeout_add(200, self.force_buffer_write_timer)
                 # perhaps sudo is waiting for a password
                 # note: the prompt is set to "Password:" in the command string
                 # to override any default.
@@ -793,7 +810,7 @@ class ProcessManager: #dbus.service.Object):
         # unlock the string
         self.reader.string_locked = False
         return True
-    
+
     def do_password_popup(self):
         """ Pops up a dialog asking for the users password """
         if hasattr(self, 'password'): # have already entered password, forward it
@@ -801,52 +818,50 @@ class ProcessManager: #dbus.service.Object):
             self.forward_password()
             return
         debug.dprint("TERMINAL: do_password_popup: asking for user's password")
-        dialog = gtk.Dialog("Password Required",
-                            self.window,
-                            gtk.DIALOG_MODAL & gtk.DIALOG_DESTROY_WITH_PARENT,
-                            (_("_Cancel"), gtk.RESPONSE_CANCEL));
-        dialog.vbox.set_spacing(10)
+        dialog = Gtk.Dialog(title="Password Required",
+                            transient_for=self.window,
+                            flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
+        dialog.get_content_area().set_spacing(10)
         #dialog.set_has_separator(False)
         dialog.set_border_width(10)
         command = self.process_queue.get_command()
         #if command.startswith('sudo '):
         if 'sudo -p "Password:'  in command:
             command = command[command.index('sudo -p "Password:')+21:]
-            label = gtk.Label(_("'sudo -p Password: ' requires your user password to perform the command:\n'%s'")
+            label = Gtk.Label(_("'sudo -p Password: ' requires your user password to perform the command:\n'%s'")
                             % command)
         elif command.startswith('sudo '):
             command = command[command.index('sudo ')+5:]
-            label = gtk.Label(_("'sudo: ' requires your user password to perform the command:\n'%s'")
+            label = Gtk.Label(_("'sudo: ' requires your user password to perform the command:\n'%s'")
                             % command)
-            
+
         elif 'su -c ' in command:
             command = command[command.index('su -c ')+6:]
-            label = gtk.Label(_("'su' requires the root password to perform the command:\n'%s'")
+            label = Gtk.Label(_("'su' requires the root password to perform the command:\n'%s'")
                             % command)
         elif command.startswith('su '):
             command = command[command.index('su ')+3:]
-            label = gtk.Label(_("'su' requires the root password to perform the command:\n'%s'")
+            label = Gtk.Label(_("'su' requires the root password to perform the command:\n'%s'")
                             % command)
         else:
-            label = gtk.Label(_("Password Required to perform the command:\n'%s'")
+            label = Gtk.Label(_("Password Required to perform the command:\n'%s'")
                             % command)
-        dialog.vbox.pack_start(label)
+        dialog.get_content_area().pack_start(label, True, True, 0)
         label.show()
-        hbox = gtk.HBox()
-        label = gtk.Label(_("Password: "))
-        entry = gtk.Entry()
+        hbox = Gtk.Box()
+        label = Gtk.Label(_("Password: "))
+        entry = Gtk.Entry()
         entry.set_property("visibility", False) # password mode
         entry.connect("activate", self.get_password_cb, dialog)
-        hbox.pack_start(label, expand=False)
-        hbox.pack_start(entry, expand=True)
-        dialog.vbox.pack_start(hbox)
+        hbox.pack_start(label, False, False, 0)
+        hbox.pack_start(entry, True, True, 0)
+        dialog.get_content_area().pack_start(hbox, True, True, 0)
         hbox.show_all()
-        gtk.gdk.threads_enter()
         result = dialog.run()
-        gtk.gdk.threads_leave()
         debug.dprint("TERMINAL: do_password_popup(): result %s" % result)
         dialog.destroy()
-        if result == gtk.RESPONSE_CANCEL:
+        if result == Gtk.ResponseType.CANCEL:
             self.kill_process()
             #self.write_to_term('\x03') # control-C
             self.term.append(TAB_PROCESS, '^C')
@@ -873,7 +888,7 @@ class ProcessManager: #dbus.service.Object):
             debug.dprint(" * TERMINAL: forward_password(): setting badpassword_check = True")
         else:
             debug.dprint("TERMINAL: forward_password(): reader has no open file descriptor, skipping")
-    
+
     def on_pty_keypress(self, widget, event):
         """Catch keypresses in the terminal process window, and forward
         them on to the emerge process.
@@ -885,7 +900,7 @@ class ProcessManager: #dbus.service.Object):
             # set the resume sensitive & set the queue icon to killed
             self.was_killed()
             self.killed = True
-    
+
     def write_to_term(self, text=''):
         """Forward text to the terminal process. Very low tech."""
         if self.reader.fd:
@@ -896,7 +911,7 @@ class ProcessManager: #dbus.service.Object):
                 debug.dprint(" * TERMINAL: write_to_term(): Error '%s' writing text '%s'"
                         % (e, text))
                 return False
-    
+
     def set_file_name(self, line):
         """extracts the ebuild name and assigns it to self.filename"""
         x = line.split("/")
@@ -935,7 +950,7 @@ class ProcessManager: #dbus.service.Object):
         debug.dprint("TERMINAL: process_done(): process id: %s" % os.getpid())
         debug.dprint("TERMINAL: process_done(): process group id: %s" % os.getpgrp())
         debug.dprint("TERMINAL: process_done(): parent process id: %s" % os.getppid())
-        
+
         # reset to None, so next one starts properly
         self.reader.fd = None
         # clean up finished emerge process
@@ -958,7 +973,7 @@ class ProcessManager: #dbus.service.Object):
                 #del self.password
             debug.dprint("TERMINAL: process_done; self.killed = True, returning")
             return
-            
+
         # If the user did an emerge --pretend, we print out
         # estimated build times on the output window
         if self.isPretend:
@@ -1003,7 +1018,7 @@ class ProcessManager: #dbus.service.Object):
                 remaining = self.extract_num(self.resume_line)
             else:
                 remaining = 0
-                
+
             if remaining:  # > 0
                 self.skip_first_menu.set_sensitive(True)
             else:
@@ -1019,7 +1034,7 @@ class ProcessManager: #dbus.service.Object):
         output = self.term.view_buffer[TAB_PROCESS].get_text(start_iter,
                                  self.term.view_buffer[TAB_PROCESS].get_end_iter(), False)
         package_list = []
-        total = datetime.timedelta()        
+        total = datetime.timedelta()
         for line in output.split("\n"):
             if config.Config.ebuild_re.match(line):
                 tokens = line.split(']')
@@ -1034,9 +1049,9 @@ class ProcessManager: #dbus.service.Object):
                     if tmp_name[j] == "-" and tmp_name[j+1].isdigit():
                         break
                     else:
-                        name += tmp_name[j]        
+                        name += tmp_name[j]
                 package_list.append(name)
-        if len(package_list) > 0:  
+        if len(package_list) > 0:
             for package in package_list:
                 try:
                     curr_estimate = estimate(package)
@@ -1087,8 +1102,8 @@ class ProcessManager: #dbus.service.Object):
             return False
         else:
             self.filename = filename
-            self.set_statusbar(_("*** File Loading... Processing...")) 
-            return True;
+            self.set_statusbar(_("*** File Loading... Processing..."))
+            return True
 
     def do_open(self, widget):
         """opens the file selector for file to open"""
@@ -1142,12 +1157,12 @@ class ProcessManager: #dbus.service.Object):
         if (not self.filename or filename != self.filename):
             if os.path.exists(filename):
                 err = _("Ovewrite existing file '%s'?")  % filename
-                dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                           gtk.MESSAGE_QUESTION,
-                                           gtk.BUTTONS_YES_NO, err);
+                dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                           Gtk.MessageType.QUESTION,
+                                           Gtk.ButtonsType.YES_NO, err)
                 result = dialog.run()
                 dialog.destroy()
-                if result != gtk.RESPONSE_YES:
+                if result != Gtk.ResponseType.YES:
                     return False
 
         self.filename = filename
@@ -1172,11 +1187,11 @@ class ProcessManager: #dbus.service.Object):
             ##        os.mkdir(self.directory + "/.porthole/logs")
             ##    self.directory += "/.porthole/logs/"
                 #os.chdir(self.directory)
- 
+
     def pretty_name(self):
         """pre-assigns generic filename & serial #"""
         debug.dprint("LOG: Entering pretty_name")
-        # check if filename set and set the extension to the correct buffer type 
+        # check if filename set and set the extension to the correct buffer type
         if self.filename and self.filename[:7] != "Untitled":
             filename = os.path.basename(self.filename)
             filename = filename.split(".")
@@ -1207,14 +1222,14 @@ class ProcessManager: #dbus.service.Object):
         self.caution_count = 0
         self.set_statusbar(_("*** Loading File : %s") % self.filename)
         try:
-            self.reader.f = open(filename, "r")
-        except IOError as xxx_todo_changeme1:
+            self.reader.f = open(filename)
+        except OSError as xxx_todo_changeme1:
             (errnum, errmsg) = xxx_todo_changeme1.args
             d = {"filename" : filename, "errmsg" : errmsg}
             err = _("Cannot open file '%(filename)s': %(errmsg)s") % d
-            dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                       gtk.MESSAGE_INFO,
-                                       gtk.BUTTONS_OK, err);
+            dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                       Gtk.MessageType.INFO,
+                                       Gtk.ButtonsType.OK, err)
             result = dialog.run()
             dialog.destroy()
             return False
@@ -1234,14 +1249,14 @@ class ProcessManager: #dbus.service.Object):
         bak_filename = self.filename + "~"
         try:
             os.rename(self.filename, bak_filename)
-        except (OSError, IOError) as xxx_todo_changeme2:
+        except OSError as xxx_todo_changeme2:
             (errnum, errmsg) = xxx_todo_changeme2.args
             if errnum != errno.ENOENT:
                 d = {"filename" : self.filename, "bak_filename" : bak_filename, "errmsg" : errmsg}
                 err = _("Cannot back up '%(filename)s' to '%(bak_filename)s': %(errmsg)s") % d
-                dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                           gtk.MESSAGE_INFO,
-                                           gtk.BUTTONS_OK, err);
+                dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                           Gtk.MessageType.INFO,
+                                           Gtk.ButtonsType.OK, err)
                 dialog.run()
                 dialog.destroy()
                 return False
@@ -1259,7 +1274,7 @@ class ProcessManager: #dbus.service.Object):
                     file.write(chars[7:])
                     chars = ""
                     start.forward_line()
-                    
+
             else: # save the entire buffer
                 start, end = self.buffer_to_save.get_bounds()
                 chars = self.buffer_to_save.get_text(start, end, False)
@@ -1268,12 +1283,12 @@ class ProcessManager: #dbus.service.Object):
             file.close()
             self.buffer_to_save.set_modified(False)
             result = True
-        except IOError as xxx_todo_changeme3:
+        except OSError as xxx_todo_changeme3:
             (errnum, errmsg) = xxx_todo_changeme3.args
             err = ("Error writing to '%s': %s") % (self.filename, errmsg)
-            dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                       gtk.MESSAGE_INFO,
-                                       gtk.BUTTONS_OK, err);
+            dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                       Gtk.MessageType.INFO,
+                                       Gtk.ButtonsType.OK, err)
             dialog.run()
             dialog.destroy()
 
@@ -1284,9 +1299,9 @@ class ProcessManager: #dbus.service.Object):
                 (errnum, errmsg) = xxx_todo_changeme.args
                 d = {"filename" : self.filename, "bak_filename" : bak_filename, "errmsg" : errmsg}
                 err = _("Can't restore backup file '%(filename)s' to '%(bak_filename)s': %(errmsg)s\nBackup left as '%(bak_filename)s'") % d
-                dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                           gtk.MESSAGE_INFO,
-                                           gtk.BUTTONS_OK, err);
+                dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                           Gtk.MessageType.INFO,
+                                           Gtk.ButtonsType.OK, err)
                 dialog.run()
                 dialog.destroy()
 
@@ -1301,17 +1316,17 @@ class ProcessManager: #dbus.service.Object):
         if _buffer.get_modified():
             if save:
                 msg = _("Save log to '%s'?") % self.filename
-                dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                           gtk.MESSAGE_QUESTION,
-                                           gtk.BUTTONS_YES_NO, msg);
-                dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+                dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                           Gtk.MessageType.QUESTION,
+                                           Gtk.ButtonsType.YES_NO, msg)
+                dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
                 result = dialog.run()
                 dialog.destroy()
-                if result == gtk.RESPONSE_YES:
+                if result == Gtk.ResponseType.YES:
                     if self.filename:
                         return self.save_buffer()
                     return self.save_as_buffer()
-                elif result == gtk.RESPONSE_NO:
+                elif result == Gtk.ResponseType.NO:
                     return self.save_as_buffer()
                 else:
                     return False
@@ -1319,15 +1334,15 @@ class ProcessManager: #dbus.service.Object):
                     return self.save_as_buffer()
         else:
             msg = "Buffer already saved &/or has not been modified: Proceed?"
-            dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                       gtk.MESSAGE_QUESTION,
-                                       gtk.BUTTONS_YES_NO, msg);
-            dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+            dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                                       Gtk.MessageType.QUESTION,
+                                       Gtk.ButtonsType.YES_NO, msg)
+            dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
             result = dialog.run()
             dialog.destroy()
-            if result == gtk.RESPONSE_YES:
+            if result == Gtk.ResponseType.YES:
                 return self.save_as_buffer()
-            elif result == gtk.RESPONSE_NO:
+            elif result == Gtk.ResponseType.NO:
                 return False
             else:
                 return False
@@ -1335,7 +1350,7 @@ class ProcessManager: #dbus.service.Object):
     def clear_buffer( self, *widget ):
         self.term.clear_buffers()
         self.filename = None
-        
+
 
 
 # very out of date!
@@ -1344,7 +1359,7 @@ class ProcessManager: #dbus.service.Object):
     #~ def callback():
         #~ """ Print a message to display that callbacks are working"""
         #~ debug.dprint("TERMINAL: Callback caught...")
-    
+
     #~ DATA_PATH = "/usr/share/porthole/"
 
     #~ from sys import argv, exit, stderr
@@ -1373,10 +1388,10 @@ class ProcessManager: #dbus.service.Object):
         #~ from os import chdir
         #~ chdir(DATA_PATH)
     #~ # make sure gtk lets threads run
-    #~ gtk.threads_init()
+    #~ Gtk.threads_init()
     #~ # setup our app icon
-    #~ myicon = gtk.gdk.pixbuf_new_from_file("pixmaps/porthole-icon.png")
-    #~ gtk.window_set_default_icon_list(myicon)
+    #~ myicon = GdkPixbuf.Pixbuf.new_from_file("pixmaps/porthole-icon.png")
+    #~ Gtk.Window.set_default_icon_list([myicon])
     #~ # load prefs
     #~ prefs_additions = [
         #~ ["DATA_PATH",DATA_PATH],
@@ -1395,6 +1410,6 @@ class ProcessManager: #dbus.service.Object):
     #~ test.process_queue.add("gtk+ (-vp)", "emerge -vp gtk+", callback)
     #~ test.process_queue.add("bzip2 (-v)", "emerge -v bzip2", callback)
     #~ # start the program loop
-    #~ gtk.mainloop()
+    #~ Gtk.mainloop()
     #~ # save the prefs to disk for next time
     #~ prefs.save()

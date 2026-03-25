@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole user_configs module
@@ -22,18 +22,19 @@
 '''
 
 import datetime
+
 id = datetime.datetime.now().microsecond
 print("USERCONFIGS: id initialized to ", id)
 
 import os
 
-from porthole import config
-from porthole.backends.utilities import read_bash, reduce_flags
+from porthole import backends, config
 from porthole.backends import set_config
-from porthole.utils.dispatcher import Dispatcher
-from porthole.sterminal import SimpleTerminal
+from porthole.backends.utilities import read_bash, reduce_flags
 from porthole.dialogs.fileselector import FileSelector
-from porthole import backends
+from porthole.sterminal import SimpleTerminal
+from porthole.utils.dispatcher import Dispatcher
+
 portage_lib = backends.portage_lib
 from porthole.utils import debug
 
@@ -125,7 +126,7 @@ class ConfigAtom:
 
 class UserConfigs:
     """get and store all user configs data"""
-    
+
     def __init__(self, go):
         debug.dprint("USER_CONFIGS: __init__()")
         # main index files
@@ -220,7 +221,7 @@ class UserConfigs:
 
     def get_unmask(self, ebuild):
         pass
-        
+
     def get_keywords(self, ebuild):
         """returns a unique list of matching keywords configured for the ebuild"""
         atoms = self.get_atom('KEYWORDS', None, ebuild)

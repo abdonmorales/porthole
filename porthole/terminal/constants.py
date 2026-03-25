@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -24,7 +24,6 @@
 """
 
 from gettext import gettext as _
-
 
 # some constants for the tabs
 TAB_PROCESS = 0

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole dialogs.simple Package
@@ -23,29 +23,32 @@
 '''
 
 
+import gi
+
+gi.require_version('Gtk', '3.0')
 from gettext import gettext as _
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk
+from gi.repository import Gtk
 
 #from porthole.utils import debug
 
-class CommonDialog(gtk.Dialog):
+class CommonDialog(Gtk.Dialog):
     """ A common gtk Dialog class """
     def __init__(self, title, parent, message, callback, button):
-        gtk.Dialog.__init__(self, title, parent, gtk.DIALOG_MODAL or
-                            gtk.DIALOG_DESTROY_WITH_PARENT, (str(button), 0))
+        Gtk.Dialog.__init__(self, title=title, transient_for=parent,
+                            flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        self.add_button(str(button), 0)
         # add message
-        text = gtk.Label(message)
+        text = Gtk.Label(message)
         text.set_padding(5, 5)
         text.show()
-        self.vbox.pack_start(text)
+        self.get_content_area().pack_start(text, True, True, 0)
         # register callback
         if not callback:
             callback = self.__callback
         self.connect("response", callback)
         self.show_all()
-    
+
     def __callback(self, widget, response):
         # If no callback is given, just remove the dialog when clicked
         self.destroy()
@@ -58,7 +61,7 @@ class YesNoDialog(CommonDialog):
                                            callback, _("_Yes"))
         # add "No" button
         self.add_button(_("_No"), 1)
-        
+
 
 class SingleButtonDialog(CommonDialog):
     """ A simple please wait dialog class """
@@ -67,8 +70,8 @@ class SingleButtonDialog(CommonDialog):
         CommonDialog.__init__(self, title, parent, message,
                                            callback, button)
         if progressbar:
-            self.progbar = gtk.ProgressBar()
+            self.progbar = Gtk.ProgressBar()
             self.progbar.set_text(_("Loading"))
             self.progbar.show()
-            self.vbox.add(self.progbar)
+            self.get_content_area().add(self.progbar)
 

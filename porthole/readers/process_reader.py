@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole  ProcessOutputReader Class
@@ -22,10 +22,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import signal, os, threading, time, gtk
-import errno, string
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+import errno
+import os
+import signal
+import string
+import threading
+import time
+
+from gi.repository import GLib, Gtk
 
 from porthole.utils import debug
+
 #from porthole.utils.dispatcher import Dispatcher
 
 class ProcessOutputReader(threading.Thread):
@@ -77,7 +88,7 @@ class ProcessOutputReader(threading.Thread):
                         char = None
                 elif self.file_input:
                     try:
-                        # keep read(number) small so as to not cripple the 
+                        # keep read(number) small so as to not cripple the
                         # system reading large files.  even 2 can hinder gui response
                         char = self.f.read(1)
                     except OSError as e:
@@ -111,9 +122,7 @@ class ProcessOutputReader(threading.Thread):
                     if self.file_input:
                         self.file_input = False
                     else:
-                        gtk.gdk.threads_enter()
-                        self.dispatcher()
-                        gtk.gdk.threads_leave()
+                        GLib.idle_add(self.dispatcher)
             else:
                 # sleep for .5 seconds before we check again
                 if time:

@@ -1,4 +1,32 @@
 
+0.7.0:
+    * Migrated entire codebase from Python 2 to Python 3.9+.
+
+    * Migrated from PyGTK (GTK 2) to PyGObject (GTK 3) while preserving the original UI.
+
+    * Converted all Glade XML files from libglade format to GtkBuilder format.
+
+    * Replaced distutils with modern setuptools packaging and added pyproject.toml.
+
+    * Added CI/CD pipeline with GitHub Actions for linting, testing, and building.
+
+    * Added ruff linting configuration for code quality enforcement.
+
+    * Added pytest-based test suite with import, version, and dispatcher tests.
+
+    * Created EAPI 8 Gentoo ebuild using distutils-r1 eclass.
+
+    * Updated all shebangs to python3.
+
+    * Fixed Python 3 compatibility: bytes for pipe I/O, pickle binary mode,
+      modern exception syntax, print functions, queue/thread module renames,
+      types module usage replaced with isinstance().
+
+    * Replaced deprecated Python 2 patterns: has_key(), iteritems(), string module
+      functions, and old-style exception handling.
+
+    * Updated README to Markdown format with installation instructions, badges,
+      and development guide.
 
 0.6.0:
     * Major slice and dice operation to split up the different files into more manageable modules.

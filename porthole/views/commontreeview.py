@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
     Porthole Views CommonTreeview class
@@ -21,18 +21,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import pygtk; pygtk.require("2.0") # make sure we have the right version
-import gtk
 #from gettext import gettext as _
 
 #from porthole.utils import debug
 
-class CommonTreeView(gtk.TreeView):
+import gi
+
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+
+class CommonTreeView(Gtk.TreeView):
     """ Common functions used by all views """
     def __init__(self):
         """ Initialize """
         # initialize the treeview
-        gtk.TreeView.__init__(self)
+        Gtk.TreeView.__init__(self)
         # set last selected
         self._last_selected = None
         # show yourself

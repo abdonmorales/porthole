@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -6,7 +6,7 @@
     -----------------------------------------------------------
     A graphical multipage notebook class
     -----------------------------------------------------------
-    Copyright (C) 2003 - 2008 Fredrik Arnerup, Brian Dolbec, 
+    Copyright (C) 2003 - 2008 Fredrik Arnerup, Brian Dolbec,
     Daniel G. Taylor, Wm. F. Wheeler, Tommy Iorns
 
     This program is free software; you can redistribute it and/or modify
@@ -25,37 +25,53 @@
 
     -------------------------------------------------------------------------
     To use this program as a module:
-    
+
         from fileselector import FileSel
 """
 
-import pygtk; pygtk.require('2.0')
-import gtk
+
+import os
+
+import gi
+
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 
-class FileSel(gtk.FileSelection):
+class FileSel:
+    """File selection dialog using Gtk.FileChooserDialog (replaces removed Gtk.FileSelection)."""
     def __init__(self, title):
-        gtk.FileSelection.__init__(self, title)
+        self.title = title
         self.result = False
 
-    def ok_cb(self, button):
-        self.hide()
-        if self.ok_func(self.get_filename()):
-            self.destroy()
-            self.result = True
-        else:
-            self.show()
-
     def run(self, parent, start_file, func):
+        dialog = Gtk.FileChooserDialog(
+            title=self.title,
+            parent=parent,
+            action=Gtk.FileChooserAction.SAVE,
+        )
+        dialog.add_buttons(
+            "Cancel", Gtk.ResponseType.CANCEL,
+            "OK", Gtk.ResponseType.OK,
+        )
+        dialog.set_modal(True)
+
         if start_file:
-            self.set_filename(start_file)
+            if os.path.isdir(start_file):
+                dialog.set_current_folder(start_file)
+            else:
+                folder = os.path.dirname(start_file)
+                if folder:
+                    dialog.set_current_folder(folder)
+                dialog.set_current_name(os.path.basename(start_file))
 
-        self.ok_func = func
-        self.ok_button.connect("clicked", self.ok_cb)
-        self.cancel_button.connect("clicked", lambda x: self.destroy())
-        self.connect("destroy", lambda x: gtk.main_quit())
-        self.set_modal(True)
-        self.show()
-        gtk.main()
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+            dialog.destroy()
+            if func(filename):
+                self.result = True
+        else:
+            dialog.destroy()
+
         return self.result
-

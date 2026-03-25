@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     ============
@@ -6,7 +6,7 @@
     -----------------------------------------------------------
     A graphical process output viewer/filter and emerge queue
     -----------------------------------------------------------
-    Copyright (C) 2003 - 2008 Fredrik Arnerup, Brian Dolbec, 
+    Copyright (C) 2003 - 2008 Fredrik Arnerup, Brian Dolbec,
     Daniel G. Taylor, Wm. F. Wheeler, Tommy Iorns
 
     This program is free software; you can redistribute it and/or modify
@@ -31,20 +31,25 @@
 
     -------------------------------------------------------------------------
     To use this program as a module:
-    
+
         from terminal import ProcessManager
 
         def callback():
-            print "This is called when a process finishes"
+            print("This is called when a process finishes")
 
         manager = ProcessManager(environment, preferences)
         manager.add(package_name, command_to_run, callback)
         ...
     -------------------------------------------------------------------------
     References & Notes
-    
+
     1. Pygtk2 refs & tutorials - http://www.pygtk.org
     2. GTK2 text tags can use named colors (see /usr/X11R6/lib/X11/rgb.txt)
        or standard internet rgb values (e.g. #02FF80)
- 
+
 """
+
+import gi
+
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
