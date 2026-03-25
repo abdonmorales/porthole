@@ -39,7 +39,6 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">normal</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">-11</property>
 	      <signal name="clicked" handler="on_help_clicked" last_modification_time="Sat, 22 May 2004 22:02:04 GMT"/>
 	    </object>
 	  </child>
@@ -53,7 +52,6 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">normal</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">-6</property>
 	      <signal name="clicked" handler="on_cancel_clicked" last_modification_time="Sat, 22 May 2004 22:01:50 GMT"/>
 	    </object>
 	  </child>
@@ -67,7 +65,6 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">normal</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">-5</property>
 	      <signal name="clicked" handler="on_ok_clicked" last_modification_time="Sat, 22 May 2004 22:01:36 GMT"/>
 	    </object>
 	  </child>

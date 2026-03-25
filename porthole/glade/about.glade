@@ -39,7 +39,7 @@
 	      <property name="can_focus">True</property>
 	      <property name="relief">normal</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">0</property>
+
 	      <signal name="clicked" handler="on_homepage_clicked"/>
 
 	      <child>
@@ -119,7 +119,7 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">normal</property>
 	      <property name="focus_on_click">True</property>
-	      <property name="response_id">-5</property>
+
 	      <signal name="clicked" handler="on_ok_clicked"/>
 	    </object>
 	  </child>

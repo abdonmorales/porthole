@@ -249,8 +249,11 @@ class MainWindow:
         self.setup_plugins()
         debug.dprint("MAINWINDOW: Showing main window")
         self.mainwindow.show_all()
-        if self.is_root:
-            # hide warning toolbar widget
+        # hide plugin menu if no plugins are active (show_all overrides prior hide)
+        if not self.needs_plugin_menu:
+            self.plugin_root_menu.hide()
+        if self.is_root or utils.can_gksu():
+            # hide warning toolbar widget if we have root or can escalate
             debug.dprint("MAINWINDOW: __init__(); hiding btn_root_warning")
             self.wtree.get_object("btn_root_warning").hide()
 
@@ -449,11 +452,12 @@ class MainWindow:
 
     def check_for_root(self, *args):
         """figure out if the user can emerge or not..."""
-        if not self.is_root:
+        if not self.is_root and not utils.can_gksu():
             self.no_root_dialog = SingleButtonDialog(_("No root privileges"),
                             self.mainwindow,
-                            _("In order to access all the features of Porthole,\n"
-                            "please run it with root privileges."),
+                            _("No privilege escalation tool found.\n"
+                            "Please install doas, sudo, or pkexec to use\n"
+                            "all features of Porthole."),
                             self.remove_nag_dialog,
                             _("_Ok"))
 

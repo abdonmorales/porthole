@@ -451,9 +451,15 @@ def xmatch(*args, **kwargs):
        control-center                       ebuilds for gnome-base/control-center
        >=gnome-base/control-center-2.8.2    only ebuilds with version >= 2.8.2
     """
-    #print >>stderr, "PORTAGELIB: xmatch(); thread ident ", thread.get_ident()
+    # portage 3.x removed 'match-list' from xmatch; use match_from_list instead
+    if args and args[0] == 'match-list':
+        atom = args[1] if len(args) > 1 else kwargs.get('origdep', '')
+        mylist = kwargs.get('mylist', [])
+        try:
+            return portage.match_from_list(atom, mylist)
+        except Exception:
+            return []
     results  =  settings.portdb.xmatch(*args, **kwargs)[:] # make a copy.  needed for <portage-svn-r5382
-    #print >>stderr, type(results), str(results)
     return results
 
 def get_version(ebuild):
